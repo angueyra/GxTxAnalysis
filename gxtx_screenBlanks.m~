@@ -24,7 +24,6 @@ set(gcf,'Position',[10 450 1111 800]);
     Selected=false(Rows,3);
     Selected(:,1)=hekadat.HEKAtagfind('ccc');
     Selected(:,2)=hekadat.HEKAtagfind('bad');
-    RowNames=cell(size(Rows));
     for i=1:Rows
         RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.waveNames{i});
     end
@@ -124,17 +123,14 @@ set(gcf,'Position',[10 450 1111 800]);
     set(sp2,'XLim',[min(hekadat.tAxis) max(hekadat.tAxis)])
     set(sp2,'YLim',[min(min(hekadat.data)) max(max(hekadat.data))])
     
-    % blanks mean
-    lH=line(hekadat.tAxis,NaN(size(hekadat.data(PlotNow,:))),'Parent',sp2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.5 .5 .5])
-    set(lH,'DisplayName','CurrentMean')
     
-    % current trace
     lH=line(hekadat.tAxis,hekadat.data(PlotNow,:),'Parent',sp2);
     set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
     set(lH,'DisplayName','CurrentTrace')
     
-    
+    lH=line(hekadat.tAxis,NaN(size(hekadat.data(PlotNow,:))),'Parent',sp2);
+    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.3 .3 .3])
+    set(lH,'DisplayName','CurrentMean')
     
     plotOne(figData.infoTable);
 end
@@ -148,25 +144,21 @@ figData.PlotNow=PlotNow;
 Rows=size(hekadat.waveNames,1);
 colors=pmkmp(Rows,'CubicL');
 
-% blank mean
-if sum(Selected(:,1))>0
-    lHMean=findobj('DisplayName','CurrentMean');
-    set(lHMean,'YData',hekadat.HEKAtagmean('ccc'));
-end
-
-%current trace
 lHNow=findobj('DisplayName','CurrentTrace');
 set(lHNow,'YData',hekadat.data(PlotNow,:),'Color',colors(PlotNow,:))
 
+if sum(Selected(:,1))>0
+    lHMean=findobj('DisplayName','CurrentMean');
+    set(lHMean,'YData',hekadat.data(PlotNow,:),'Color',colors(PlotNow,:))
+end
 
-% move current trace to top of all traces
 curt=findobj('DisplayName',hekadat.waveNames{PlotNow});
 if PlotNow==1
-    set(curt,'Color',[0,.7,0],'LineWidth',2)
+    set(curt,'Color',[0,1,0],'LineWidth',2)
 elseif PlotNow==Rows
     set(curt,'Color',[0,0,0],'LineWidth',2)
 else
-    set(curt,'Color',[.7,0,0],'LineWidth',2)
+    set(curt,'Color',[1,0,0],'LineWidth',2)
 end
     
 uistack(curt,'top')
@@ -222,7 +214,7 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 hekadat.HEKAsave();
-fprtinf('Saved to %s%s',hekadat.dirSave,hekadat.dirFile);
+disp('saved')
 set(figData.panel,'UserData',hekadat);
 enableGui(hObject);
 end

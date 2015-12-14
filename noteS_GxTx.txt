@@ -1,0 +1,10 @@
+Substates:
+
+	- Define 'substate'
+		- Quantify freq of substates -> ignored
+		- Toss open times < 1?? ms -> define from traces with obvious substates and pick threshold that eliminates substates optimally (make supp figure)
+	- "junk" and substates
+		- make that piece of data NaN and consider state didn't change in between (stiching)
+		- same criterion for all cells
+		- again quantify frequency
+		- other junk that doesn't fit criteria -> delete traces if fairly rare

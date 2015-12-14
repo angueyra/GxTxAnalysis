@@ -1,0 +1,10 @@
+%% Data loading
+% Pathcmaster mat file exports
+s=HEKAdat('2015_06_23_Juan');
+
+% quickly scroll through blanks and bad data
+% subtract blank average
+% put blanks and bad data in separate struct and save them
+%%
+f1=getfigH(1);
+gxtx_screenBlanks(f1,s,[]);

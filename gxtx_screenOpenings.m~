@@ -1,4 +1,4 @@
-function gxtx_screenBlanks(hekadat,params,fignumber)
+function gxtx_screenOpenings(hekadat,params,fignumber)
 
 if isfield(params,'PlotNow') && ~isempty(params.PlotNow)
     PlotNow=params.PlotNow;
@@ -18,25 +18,25 @@ set(gcf,'Position',[10 450 1111 800]);
     figData.PlotNow=PlotNow;
     l = .0001; %left position
     w = .9999; %width
+    
     Rows=size(hekadat.waveNames,1);
     colors=pmkmp(Rows,'CubicL');
     tcolors=round(colors./1.2.*255);
-    Selected=false(Rows,3);
-    Selected(:,1)=hekadat.HEKAtagfind('ccc');
-    Selected(:,2)=hekadat.HEKAtagfind('bad');
+    Selected=false(Rows,1);
     RowNames=cell(size(Rows));
     for i=1:Rows
         RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.waveNames{i});
     end
-    Selected(PlotNow,3)=true;
-    infoData = Selected;
+    Selected(PlotNow,1)=true;
+    infoData = [hekadat.tags num2cell(Selected)];
     figData.infoTable = uitable('Parent', figH, ...
         'Units', 'normalized', ...
         'Position', [0.01, .005, 0.21, .985], ...
-        'FontSize',6,...
-        'ColumnWidth',{50},...
+        'FontSize',10,...
+        'ColumnWidth',{40},...
         'Data', infoData, ...
-        'ColumnName',{'Blnk','Bad','P'},...
+        'ColumnName',{'tag','P'},...
+        'ColumnFormat',{'char','logical'},...
         'RowName', RowNames,...
         'ColumnEditable', true(1,Rows),...
         'CellEditCallback',{@table_callBack});
@@ -63,27 +63,54 @@ set(gcf,'Position',[10 450 1111 800]);
         'FontSize',10,...
         'UserData',params,...
         'callback',{@next_callBack});
-    figData.blankButton = uicontrol('Parent', figH, ...
+    figData.oooButton = uicontrol('Parent', figH, ...
         'Units', 'normalized', ...
         'Position', [.89 .68 0.10 .10], ...
         'Style', 'pushbutton', ...
-        'tag','blank_push',...
-        'string','tag as Blank',...
+        'tag','ooo',...
+        'string','tag as O O O',...
         'FontSize',10,...
         'UserData',[],...
-        'callback',{@blank_callBack});
+        'callback',{@tag_callBack});
+    figData.cocButton = uicontrol('Parent', figH, ...
+        'Units', 'normalized', ...
+        'Position', [.89 .58 0.10 .10], ...
+        'Style', 'pushbutton', ...
+        'tag','coc',...
+        'string','tag as C O C',...
+        'FontSize',10,...
+        'UserData',[],...
+        'callback',{@tag_callBack});
+    figData.zzzButton = uicontrol('Parent', figH, ...
+        'Units', 'normalized', ...
+        'Position', [.89 .48 0.10 .10], ...
+        'Style', 'pushbutton', ...
+        'tag','zzz',...
+        'string','tag as Z Z Z',...
+        'FontSize',10,...
+        'UserData',[],...
+        'callback',{@tag_callBack});
+    figData.blankButton = uicontrol('Parent', figH, ...
+        'Units', 'normalized', ...
+        'Position', [.89 .38 0.10 .10], ...
+        'Style', 'pushbutton', ...
+        'tag','ccc',...
+        'string','tag as blank',...
+        'FontSize',10,...
+        'UserData',[],...
+        'callback',{@tag_callBack});
     figData.badButton = uicontrol('Parent', figH, ...
         'Units', 'normalized', ...
-        'Position', [.89 .50 0.10 .10], ...
+        'Position', [.89 .28 0.10 .10], ...
         'Style', 'pushbutton', ...
-        'tag','bad_push',...
+        'tag','bad',...
         'string','tag as Bad Data',...
         'FontSize',10,...
         'UserData',[],...
-        'callback',{@bad_callBack});
+        'callback',{@tag_callBack});
     figData.untagButton = uicontrol('Parent', figH, ...
         'Units', 'normalized', ...
-        'Position', [.89 .39 0.10 .10], ...
+        'Position', [.89 .18 0.10 .10], ...
         'Style', 'pushbutton', ...
         'tag','untag_push',...
         'string','untag',...
@@ -92,7 +119,7 @@ set(gcf,'Position',[10 450 1111 800]);
         'callback',{@untag_callBack});
     figData.lockButton = uicontrol('Parent', figH, ...
         'Units', 'normalized', ...
-        'Position', [.89 .09 0.10 .10], ...
+        'Position', [.89 .03 0.10 .10], ...
         'Style', 'pushbutton', ...
         'tag','lock_push',...
         'string','Lock&Save',...
@@ -102,40 +129,35 @@ set(gcf,'Position',[10 450 1111 800]);
     modifyUITableHeaderWidth(figData.infoTable,63);
     set(figH, 'UserData', figData)%, 'ResizeFcn',{@canvasResizeFcn,figData});
     
-    % Data plot
-    sp = axes('Position',[.27 .08 .60 .43],'Parent', figData.panel,'tag','sp');
-    set(sp,'XScale','linear','YScale','linear')
-    set(get(sp,'XLabel'),'string','Time (s)')
-    set(get(sp,'YLabel'),'string','i (pA)')
-    set(sp,'YAxisLocation','left');
-    set(sp,'XLim',[min(hekadat.tAxis) max(hekadat.tAxis)])
-    set(sp,'YLim',[min(min(hekadat.data)) max(max(hekadat.data))])
+%     % Data plot
+%     sp = axes('Position',[.27 .08 .60 .43],'Parent', figData.panel,'tag','sp');
+%     set(sp,'XScale','linear','YScale','linear')
+%     set(get(sp,'XLabel'),'string','Time (s)')
+%     set(get(sp,'YLabel'),'string','i (pA)')
+%     set(sp,'YAxisLocation','left');
+%     set(sp,'XLim',[min(hekadat.tAxis) max(hekadat.tAxis)])
+%     set(sp,'YLim',[min(min(hekadat.data)) max(max(hekadat.data))])
     
-    for i=1:Rows
-        lH=line(hekadat.tAxis,hekadat.data(i,:),'Parent',sp);
-        set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(i,:))
-        set(lH,'DisplayName',hekadat.waveNames{i})
-    end
+    cccmean=hekadat.HEKAtagmean('ccc');
+%     for i=1:Rows
+%         lH=line(hekadat.tAxis,hekadat.data(i,:)-cccmean,'Parent',sp);
+%         set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(i,:))
+%         set(lH,'DisplayName',hekadat.waveNames{i})
+%     end
     
+
     sp2 = axes('Position',[.27 .55 .60 .43],'Parent', figData.panel,'tag','sp2');
     set(sp2,'XScale','linear','YScale','linear')
     set(get(sp2,'YLabel'),'string','i (pA)')
-    set(sp2,'YAxisLocation','left','XTickLabel',[])
+    set(get(sp2,'XLabel'),'string','Time (s)')
+%     set(sp2,'YAxisLocation','left','XTickLabel',[])
     set(sp2,'XLim',[min(hekadat.tAxis) max(hekadat.tAxis)])
-    set(sp2,'YLim',[min(min(hekadat.data)) max(max(hekadat.data))])
-    
-    % blanks mean
-    lH=line(hekadat.tAxis,NaN(size(hekadat.data(PlotNow,:))),'Parent',sp2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.5 .5 .5])
-    set(lH,'DisplayName','CurrentMean')
+    set(sp2,'YLim',[min(min(hekadat.data-repmat(cccmean,Rows,1))) max(max(hekadat.data-repmat(cccmean,Rows,1)))])
     
     % current trace
-    lH=line(hekadat.tAxis,hekadat.data(PlotNow,:),'Parent',sp2);
+    lH=line(hekadat.tAxis,hekadat.data(PlotNow,:)-cccmean,'Parent',sp2);
     set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
     set(lH,'DisplayName','CurrentTrace')
-    
-    
-    
     plotOne(figData.infoTable);
 end
 
@@ -143,63 +165,33 @@ function plotOne(hObject,eventdata)
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
-PlotNow=find(Selected(:,end));
+PlotNow=find(cell2mat(Selected(:,end)));
 figData.PlotNow=PlotNow;
+disp(PlotNow)
 Rows=size(hekadat.waveNames,1);
 colors=pmkmp(Rows,'CubicL');
-
-% blank mean
-if sum(Selected(:,1))>0
-    lHMean=findobj('DisplayName','CurrentMean');
-    set(lHMean,'YData',hekadat.HEKAtagmean('ccc'));
-end
-
+keyboard
+cccmean=hekadat.HEKAtagmean('ccc');
 %current trace
 lHNow=findobj('DisplayName','CurrentTrace');
-set(lHNow,'YData',hekadat.data(PlotNow,:),'Color',colors(PlotNow,:))
-
-
-% move current trace to top of all traces
-curt=findobj('DisplayName',hekadat.waveNames{PlotNow});
-if PlotNow==1
-    set(curt,'Color',[0,.7,0],'LineWidth',2)
-elseif PlotNow==Rows
-    set(curt,'Color',[0,0,0],'LineWidth',2)
-else
-    set(curt,'Color',[.7,0,0],'LineWidth',2)
-end
-    
-uistack(curt,'top')
+set(lHNow,'YData',hekadat.data(PlotNow,:)-cccmean,'Color',colors(PlotNow,:))
+t=text(0,0,hekadat.tags(PlotNow));
 end
 
-function blank_callBack(hObject,eventdata)
+function tag_callBack(hObject,eventdata)
 disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
-PlotNow=find(Selected(:,end));
-Selected(PlotNow,1)=true;
-hekadat.tags{PlotNow}='ccc';
+tag=get(hObject,'tag');
+PlotNow=find(cell2mat(Selected(:,end)));
+Selected{PlotNow,1}=tag;
+hekadat.tags{PlotNow}=tag;
 assignin('base','hekadat',hekadat);
+fprintf('tagged %s as %s\n',hekadat.waveNames{PlotNow},tag);
 set(figData.infoTable,'Data',Selected)
-next_callBack(figData.infoTable)
 set(figData.panel,'UserData',hekadat);
-fprintf('%s = ''ccc''\n',hekadat.waveNames{PlotNow})
-enableGui(hObject);
-end
-
-function bad_callBack(hObject,eventdata)
-disableGui(hObject);
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-PlotNow=find(Selected(:,end));
-Selected(PlotNow,2)=true;
-hekadat.tags{PlotNow}='bad';
-assignin('base','hekadat',hekadat);
-set(figData.infoTable,'Data',Selected)
 next_callBack(figData.infoTable)
-set(figData.panel,'UserData',hekadat);
 enableGui(hObject);
 end
 
@@ -222,7 +214,7 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 hekadat.HEKAsave();
-fprtinf('Saved to %s%s',hekadat.dirSave,hekadat.dirFile);
+fprintf('Saved to %s%s\n',hekadat.dirSave,hekadat.dirFile);
 set(figData.panel,'UserData',hekadat);
 enableGui(hObject);
 end
@@ -233,19 +225,14 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
-PlotNow=find(Selected(:,end));
+PlotNow=find(cell2mat(Selected(:,end)));
 PlotNext=PlotNow+1;
 if PlotNext>size(Selected,1)
     PlotNext=1;
 end
-Selected(PlotNow,end)=false;
-Selected(PlotNext,end)=true;
+Selected{PlotNow,end}=false;
+Selected{PlotNext,end}=true;
 set(figData.infoTable,'Data',Selected)
-
-Rows=size(hekadat.waveNames,1);
-colors=pmkmp(Rows,'CubicL');
-curt=findobj('DisplayName',hekadat.waveNames{PlotNow});
-set(curt,'Color',colors(PlotNow,:),'LineWidth',1)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
@@ -257,19 +244,14 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
-PlotNow=find(Selected(:,end));
+PlotNow=find(cell2mat(Selected(:,end)));
 PlotNext=PlotNow-1;
 if PlotNext<1
     PlotNext=size(Selected,1);
 end
-Selected(PlotNow,end)=false;
-Selected(PlotNext,end)=true;
+Selected{PlotNow,end}=false;
+Selected{PlotNext,end}=true;
 set(figData.infoTable,'Data',Selected)
-
-Rows=size(hekadat.waveNames,1);
-colors=pmkmp(Rows,'CubicL');
-curt=findobj('DisplayName',hekadat.waveNames{PlotNow});
-set(curt,'Color',colors(PlotNow,:),'LineWidth',1)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
@@ -282,10 +264,10 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
-Plotted=find(Selected(:,end));
-Plotted=Plotted(~ismember(find(Selected(:,end)),eventdata.Indices(1)));
+Plotted=find(cell2mat(Selected(:,end)));
+Plotted=Plotted(~ismember(find(cell2mat(Selected(:,end))),eventdata.Indices(1)));
 
-Selected(Plotted,end)=false;
+Selected{Plotted,end}=false;
 set(figData.infoTable,'Data',Selected)
 
 Rows=size(hekadat.waveNames,1);
