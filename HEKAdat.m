@@ -2,6 +2,7 @@ classdef HEKAdat
     properties
         data
         tAxis
+        stim
         waveNames
         dirData='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabExports/';
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/';
@@ -65,13 +66,23 @@ classdef HEKAdat
             matches=cellfun(tagfindfx(tag),hekadat.tags);
         end
         
+        function matchindex=HEKAnamefind(hekadat,tag)
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+            matchindex=find(cellfun(tagfindfx(tag),hekadat.waveNames));
+        end
+        
         function tagmean=HEKAtagmean(hekadat,tag)
             tagmean=mean(hekadat.data(hekadat.HEKAtagfind(tag),:));
         end
         
-        function stim=HEKAstim(hekadat)
-            stimt=[0 0.1 0.20 0.22 0.72 0.74 0.84];
-            stim=;
+        function t_stairs=HEKAstairsprotocol(hekadat)
+            t_stairs=struct;
+            t_stairs.st=0.22;
+            t_stairs.end=0.72;
+            t_stairs.delta=t_stairs.end-t_stairs.st;
+            t_stairs.sti=find(hekadat.tAxis<=t_stairs.st,1,'last');
+            t_stairs.endi=find(hekadat.tAxis<=t_stairs.end,1,'last');
+            t_stairs.deltai=find(hekadat.tAxis<=t_stairs.delta,1,'last');
         end
     end
 end
