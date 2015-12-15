@@ -1,4 +1,4 @@
-function gxtx_screenOpenings(hekadat,params,fignumber)
+function gxtx_tagOpenings(hekadat,params,fignumber)
 
 if isfield(params,'PlotNow') && ~isempty(params.PlotNow)
     PlotNow=params.PlotNow;
@@ -217,6 +217,7 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 hekadat.HEKAsave();
+assignin('base','hekadat',hekadat);
 fprintf('Saved to %s%s\n',hekadat.dirSave,hekadat.dirFile);
 set(figData.panel,'UserData',hekadat);
 enableGui(hObject);

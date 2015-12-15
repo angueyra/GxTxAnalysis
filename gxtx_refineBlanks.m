@@ -1,4 +1,4 @@
-function gxtx_idealizeTraces(hekadat,params,fignumber)
+function gxtx_refineBlanks(hekadat,params,fignumber)
 
 if isfield(params,'PlotNow') && ~isempty(params.PlotNow)
     PlotNow=params.PlotNow;

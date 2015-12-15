@@ -1,4 +1,4 @@
-function gxtx_screenBlanks(hekadat,params,fignumber)
+function gxtx_tagBlanks(hekadat,params,fignumber)
 
 if isfield(params,'PlotNow') && ~isempty(params.PlotNow)
     PlotNow=params.PlotNow;
@@ -222,6 +222,7 @@ disableGui(hObject);
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 hekadat.HEKAsave();
+assignin('base','hekadat',hekadat);
 fprtinf('Saved to %s%s',hekadat.dirSave,hekadat.dirFile);
 set(figData.panel,'UserData',hekadat);
 enableGui(hObject);
