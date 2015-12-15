@@ -1,32 +1,12 @@
-classdef HEKAdat
+classdef oldHEKAdat
     properties
-        % raw data
         data
         tAxis
         stim
         waveNames
-        
-        % curated data
-        sdata
-        stAxis
-        swaveNames
-        subtags
-        histx
-        histy
-        histfx
-        histfitcoeffs
-        
-        % idealized data
-        idata
-        itAxis
-        itags
-        iwaveNames
-        
-        % path
         dirData='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabExports/';
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/';
         dirFile
-        
         tags
 %             bad %bad data
 %             ccc %blanks
