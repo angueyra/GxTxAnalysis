@@ -6,6 +6,10 @@ else
     PlotNow=1;
 end
 
+if isempty(hekadat.sdata)
+    error('First run gxtx_refineBlanks and save curation')
+end
+
 figure(fignumber)
 clf
 figH=gcf;
@@ -22,15 +26,16 @@ set(gcf,'Position',[10 450 1111 800]);
     bl=0.995-bw;
     bh=0.08;
     % only plot ccc, coc and ooo
-    selWaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+%     selWaves=logical(hekadat.HEKAstagfind('ccc')+hekadat.HEKAstagfind('ooo')+hekadat.HEKAstagfind('coc'));
+    selWaves=logical(hekadat.HEKAstagfind('ccc'));
     selWavesi=find(selWaves==1);
-    Rows=size(hekadat.waveNames(selWaves),1);
+    Rows=size(hekadat.swaveNames(selWaves),1);
     colors=pmkmp(Rows,'CubicL');
     tcolors=round(colors./1.2.*255);
     Selected=false(Rows,2);
     RowNames=cell(size(Rows));
     for i=1:Rows
-        RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.waveNames{selWavesi(i)});
+        RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.swaveNames{selWavesi(i)});
     end
     if PlotNow<Rows
         Selected(PlotNow,end)=true;
@@ -38,10 +43,10 @@ set(gcf,'Position',[10 450 1111 800]);
         Selected(1,end)=true;
     end
     Selected(1,1)=true;
-    infoData = [hekadat.tags(selWaves) num2cell(Selected)];
+    infoData = [hekadat.stags(selWaves) num2cell(Selected)];
     figData.infoTable = uitable('Parent', figH, ...
         'Units', 'normalized', ...
-        'Position', [0.01, .005, 0.21, .985], ...
+        'Position', [0.01, .005, 0.185, .985], ...
         'FontSize',10,...
         'ColumnWidth',{40},...
         'Data', infoData, ...
@@ -112,73 +117,59 @@ set(gcf,'Position',[10 450 1111 800]);
     modifyUITableHeaderWidth(figData.infoTable,63);
     set(figH, 'UserData', figData)%, 'ResizeFcn',{@canvasResizeFcn,figData});
     
+    % plot positions
+    pp=struct;
+    pp.l=.24;
+    pp.tlim=[min(hekadat.stAxis) max(round(hekadat.stAxis*10)/10)];
+    pp.dlim=[-1.1 2.2];
     
-    %find current wave
-    tst=hekadat.HEKAstairsprotocol();
-    currWave=getRowName(figData.infoTable,PlotNow);
-    currWavei=hekadat.HEKAnamefind(currWave);
-    cccmean=hekadat.HEKAtagmean('ccc');
-    
-    %Data and blank
-    sp2 = axes('Position',[.265 .55 .45 .43],'Parent', figData.panel,'tag','sp2');
-    set(sp2,'XScale','linear','YScale','linear')
-    set(get(sp2,'YLabel'),'string','i (pA)')
-    set(get(sp2,'XLabel'),'string','Time (s)')
-%     set(sp2,'YAxisLocation','left','XTickLabel',[])
-    set(sp2,'XLim',[0 tst.delta])
-    set(sp2,'YLim',[-2 2])
-
-    % current trace
-    lH=line(hekadat.tAxis(1:tst.deltai),hekadat.data(currWavei,tst.sti:tst.endi)-cccmean(tst.sti:tst.endi),'Parent',sp2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','CurrentTrace')
-    
-    % nearest blank
-    lH=line(hekadat.tAxis(1:tst.deltai),hekadat.data(currWavei,tst.sti:tst.endi)-cccmean(tst.sti:tst.endi),'Parent',sp2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','nearestBlank')
-     
-    currtag=text((hekadat.tAxis(tst.deltai))*.9,1.8,hekadat.tags(currWavei),'Parent',sp2);
-    set(currtag,'tag','currtag','FontSize',24)
-    
-    
-    % subtracted and curated plot
-    sp = axes('Position',[.265 .08 .45 .43],'Parent', figData.panel,'tag','sp');
+    % all data
+    sp = axes('Position',[pp.l .78 .65 .20],'Parent', figData.panel,'tag','sp');
     set(sp,'XScale','linear','YScale','linear')
     set(get(sp,'XLabel'),'string','Time (s)')
     set(get(sp,'YLabel'),'string','i (pA)')
     set(sp,'YAxisLocation','left');
-    set(sp,'XLim',[0 tst.delta])
-    set(sp,'YLim',[-1 2])
+    set(sp,'XLim',pp.tlim)
+    set(sp,'YLim',pp.dlim)
     
-    lH=line(hekadat.tAxis(1:tst.deltai),NaN(size(hekadat.data(currWavei,tst.sti:tst.endi))),'Parent',sp);
+    for i=1:Rows
+        lH=line(hekadat.stAxis,hekadat.sdata(selWavesi(i),:),'Parent',sp);
+        set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(i,:))
+        set(lH,'DisplayName',hekadat.swaveNames{i})
+    end
+    lH=line(hekadat.stAxis,NaN(size(hekadat.sdata(selWavesi,:))),'Parent',sp);
+    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(i,:))
+    set(lH,'DisplayName','currTraceAll')
+    
+    sph = axes('Position',[pp.l .33 .65 .40],'Parent', figData.panel,'tag','sph');
+    set(sph,'XScale','linear','YScale','linear')
+    set(get(sph,'XLabel'),'string','i (pA)')
+    set(get(sph,'YLabel'),'string','Frequency')
+    set(sph,'YAxisLocation','left');
+    set(sph,'XLim',pp.dlim)
+    hH=line(1:100,NaN(1,100),'Parent',sph);
+    set(hH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
+    set(hH,'DisplayName','allHist')
+    
+    hH=line(1:100,NaN(1,100),'Parent',sph);
+    set(hH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
+    set(hH,'DisplayName','currHist')
+    
+    
+    sp2 = axes('Position',[pp.l .07 .65 .20],'Parent', figData.panel,'tag','sp2');
+    set(sp2,'XScale','linear','YScale','linear')
+    set(get(sp2,'XLabel'),'string','Time (s)')
+    set(get(sp2,'YLabel'),'string','i (pA)')
+    set(sp2,'YAxisLocation','left');
+    set(sp2,'XLim',pp.tlim)
+    set(sp2,'YLim',pp.dlim)
+      
+    lH=line(hekadat.stAxis,hekadat.sdata(PlotNow,:),'Parent',sp2);
     set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','subTrace')
-
-    % Data and blank histograms
-    sph2 = axes('Position',[.735 .55 .17 .43],'Parent', figData.panel,'tag','sph2');
-    set(sph2,'YAxisLocation','right')
-    set(sph2,'YLim',get(sp2,'YLim'))
-    
-    hnan=NaN(1,50);
-    lH=line(hnan,hnan,'Parent',sph2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','currHist')
-    
-    lH=line(hnan,hnan,'Parent',sph2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','cccHist')
-    
-    % subtracted and curated histogram
-    sph = axes('Position',[.735 .08 .17 .43],'Parent', figData.panel,'tag','sph');
-    set(sph,'YAxisLocation','right')
-    set(sph,'YLim',get(sp,'YLim'))
-    
-    lH=line(hnan,hnan,'Parent',sph);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','subHist')
+    set(lH,'DisplayName','currTrace')
     
     plotOne(figData.infoTable);
+    
 end
 
 function plotOne(hObject,eventdata)
@@ -187,62 +178,84 @@ hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
 PlotNow=find(cell2mat(Selected(:,end)));
 figData.PlotNow=PlotNow;
-
-% only plot ccc, coc and ooo
-currWave=getRowName(figData.infoTable,PlotNow);
-currWavei=hekadat.HEKAnamefind(currWave);
-tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
-cccLTablei=find(cellfun(tagfindfx('ccc'),Selected(1:PlotNow,1)),1,'last');
-if isempty(cccLTablei)
-    cccLTablei=find(cellfun(tagfindfx('ccc'),Selected(PlotNow:end,1)),1,'first');
-end
-cccLWave=getRowName(figData.infoTable,cccLTablei);
-cccLWavei=hekadat.HEKAnamefind(cccLWave);
-Selected{find(cell2mat(Selected(:,2))),2}=false;
-Selected{cccLTablei,2}=true;
 Rows=size(Selected,1);
 colors=pmkmp(Rows,'CubicL');
-cccmean=hekadat.HEKAtagmean('ccc');
-tst=hekadat.HEKAstairsprotocol();
 
+selWaves=logical(hekadat.HEKAstagfind('ccc'));
+currData=hekadat.sdata(selWaves,:);
 
-% current trace
-currentTrace=hekadat.data(currWavei,tst.sti:tst.endi)-(cccmean(tst.sti:tst.endi));
-lHNow=findobj('DisplayName','CurrentTrace');
-set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
-% nearest ccc
-nearestBlank=hekadat.data(cccLWavei,tst.sti:tst.endi)-(cccmean(tst.sti:tst.endi));
-lHNow=findobj('DisplayName','nearestBlank');
-set(lHNow,'YData',nearestBlank,'Color',whithen(colors(PlotNow,:),.5))
+% current wave
+curt=findobj('DisplayName','currTraceAll');
+set(curt,'YData',currData(PlotNow,:))
+if PlotNow==1
+    set(curt,'Color',[0,.7,0],'LineWidth',1)
+elseif PlotNow==Rows
+    set(curt,'Color',[.7,0,0],'LineWidth',1)
+else
+    set(curt,'Color',[0,0,0],'LineWidth',1)
+end
+uistack(curt,'top');
 
-% subtract nose and blank average
-tlim=find(hekadat.tAxis<=0.005,1,'last');
-subTrace=currentTrace;
-subTrace(1:tlim)=subTrace(1:tlim)-nearestBlank(1:tlim);
-subTrace(tlim+1:end)=subTrace(tlim+1:end)-mean(nearestBlank(2000:end),2);
-
-lHNow=findobj('DisplayName','subTrace');
-set(lHNow,'YData',subTrace,'Color',colors(PlotNow,:))
-currtag=findobj('tag','currtag');
-set(currtag,'String',hekadat.tags(currWavei));
-set(figData.infoTable,'Data',Selected)
+currTrace=currData(PlotNow,:);
+currTraceH=findobj('DisplayName','currTrace');
+set(currTraceH,'YData',currTrace,'Color',colors(PlotNow,:))
 
 % calculate histogram
+nbins=300;
+
+[currHistX,currHistY]=calculateHist(currTrace,nbins,-1.1,2.2);
+currHistY_norm=currHistY./size(currTrace,2);
 hHNow=findobj('DisplayName','currHist');
-nbins=100;
+set(hHNow,'XData',currHistX,'YData',currHistY_norm,'Color',colors(PlotNow,:))
 
-[currHistX,currHistY]=calculateHist(currentTrace,nbins,min(currentTrace),max(currentTrace));
-set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
+alldata=reshape(currData,1,numel(currData));
+[allHistX,allHistY]=calculateHist(alldata,nbins,-1.1,2.2);
+allHistY_norm=allHistY./size(alldata,2);
+hHNow=findobj('DisplayName','allHist');
+set(hHNow,'XData',allHistX,'YData',allHistY_norm,'Color',[0 0 0])
 
-hHNow=findobj('DisplayName','cccHist');
-[cccHistX,cccHistY]=calculateHist(nearestBlank,nbins,min(currentTrace),max(currentTrace));
-set(hHNow,'XData',cccHistY,'YData',cccHistX,'Color',whithen(colors(PlotNow,:),.5))
+
+end
+
+function lock_callBack(hObject,eventdata)
+disableGui();
+figData=get(get(hObject,'Parent'),'UserData');
+hekadat=get(figData.panel,'UserData');
+tst=hekadat.HEKAstairsprotocol();
+tlim=find(hekadat.tAxis<=0.003,1,'last');
+% parsing by tags. May not correspond to waves in table unless reloaded
+selWaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+        
+
+hekadat.swaveNames=hekadat.waveNames(selWaves);
+hekadat.stags=hekadat.tags(selWaves);
+hekadat.stAxis=hekadat.tAxis(1:tst.deltai);
+
+cccmean=hekadat.HEKAtagmean('ccc');
+sdata=hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hekadat.swaveNames,1),1);
 
 
-hHNow=findobj('DisplayName','subHist');
-[subHistX,subHistY]=calculateHist(subTrace,nbins,-.5,2);
-set(hHNow,'XData',subHistY,'YData',subHistX,'Color',colors(PlotNow,:))
+tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+cccLi=NaN(size(hekadat.swaveNames,1),1);
+cccLi(1)=find(cellfun(tagfindfx('ccc'),hekadat.stags),1,'first');
+for i=2:size(hekadat.swaveNames,1)
+    cccLi(i)=find(cellfun(tagfindfx('ccc'),hekadat.stags(1:i)),1,'last');
+end
+cccRi=NaN(size(hekadat.swaveNames,1),1);
+for i=1:size(hekadat.swaveNames,1)-1
+    cccRi(i)=i+find(cellfun(tagfindfx('ccc'),hekadat.stags(i+1:end)),1,'first');
+end
+cccRi(end)=find(cellfun(tagfindfx('ccc'),hekadat.stags),1,'last');
 
+submat=zeros(size(sdata));
+submat(:,1:tlim)=(sdata(cccLi,1:tlim)+sdata(cccRi,1:tlim))./2;
+hekadat.sdata=sdata-submat;
+
+hekadat.HEKAsave();
+assignin('base','hekadat',hekadat);
+fprintf('Saved  curated data to %s%s\n',hekadat.dirSave,hekadat.dirFile);
+set(figData.panel,'UserData',hekadat);
+enableGui();
 end
 
 function [hX,hY]=calculateHist(wave,nbins,edgemin,edgemax)
@@ -260,7 +273,7 @@ end
 
 
 function tag_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -277,11 +290,11 @@ fprintf('tagged %s as %s\n',hekadat.waveNames{currWavei},tag);
 set(figData.infoTable,'Data',Selected)
 set(figData.panel,'UserData',hekadat);
 next_callBack(figData.infoTable)
-enableGui(hObject);
+enableGui();
 end
 
 function untag_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -295,23 +308,12 @@ hekadat.tags{currWavei}='';
 assignin('base','hekadat',hekadat);
 set(figData.infoTable,'Data',Selected)
 set(figData.panel,'UserData',hekadat);
-enableGui(hObject);
-end
-
-function lock_callBack(hObject,eventdata)
-disableGui(hObject);
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-hekadat.HEKAsave();
-assignin('base','hekadat',hekadat);
-fprintf('Saved to %s%s\n',hekadat.dirSave,hekadat.dirFile);
-set(figData.panel,'UserData',hekadat);
-enableGui(hObject);
+enableGui();
 end
 
 
 function next_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -327,11 +329,11 @@ set(figData.infoTable,'Data',Selected)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
-enableGui(hObject);
+enableGui();
 end
 
 function previous_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -346,12 +348,12 @@ set(figData.infoTable,'Data',Selected)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
-enableGui(hObject);
+enableGui();
 end
 
 
 function table_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -368,14 +370,14 @@ set(curt,'Color',colors(Plotted,:),'LineWidth',1)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
-enableGui(hObject);
+enableGui();
 end
 
-function disableGui(hObject)
+function disableGui()
 set(findobj('-property','Enable'),'Enable','off')
 drawnow
 end
-function enableGui(hObject)
+function enableGui()
 set(findobj('-property','Enable'),'Enable','on')
 drawnow
 end

@@ -5,12 +5,24 @@ classdef HEKAdat
         tAxis
         stim
         waveNames
-        
+        tags
+%             bad %bad data
+%             ccc %blanks
+%             ooo %normal
+%             coc %toxin bound
+%             zzz %all others
+%               coo %toxin left
+%               cco %toxin left too
+%               occ %inactivation?
+%               ooc %inactivation?
+%               oco %weird one
+
         % curated data
         sdata
         stAxis
         swaveNames
-        subtags
+        stags
+        ssubCorrection
         histx
         histy
         histfx
@@ -27,17 +39,7 @@ classdef HEKAdat
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/';
         dirFile
         
-        tags
-%             bad %bad data
-%             ccc %blanks
-%             ooo %normal
-%             coc %toxin bound
-%             zzz %all others
-%               coo %toxin left
-%               cco %toxin left too
-%               occ %inactivation?
-%               ooc %inactivation?
-%               oco %weird one
+        
     end
     
     properties (SetAccess = private)
@@ -84,6 +86,11 @@ classdef HEKAdat
         function matches=HEKAtagfind(hekadat,tag)
             tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
             matches=cellfun(tagfindfx(tag),hekadat.tags);
+        end
+        
+        function matches=HEKAstagfind(hekadat,tag)
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+            matches=cellfun(tagfindfx(tag),hekadat.stags);
         end
         
         function matchindex=HEKAnamefind(hekadat,tag)

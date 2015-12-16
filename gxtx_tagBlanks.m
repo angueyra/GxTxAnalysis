@@ -173,7 +173,7 @@ uistack(curt,'top')
 end
 
 function blank_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -185,11 +185,11 @@ set(figData.infoTable,'Data',Selected)
 next_callBack(figData.infoTable)
 set(figData.panel,'UserData',hekadat);
 fprintf('%s = ''ccc''\n',hekadat.waveNames{PlotNow})
-enableGui(hObject);
+enableGui();
 end
 
 function bad_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -200,11 +200,11 @@ assignin('base','hekadat',hekadat);
 set(figData.infoTable,'Data',Selected)
 next_callBack(figData.infoTable)
 set(figData.panel,'UserData',hekadat);
-enableGui(hObject);
+enableGui();
 end
 
 function untag_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -214,23 +214,23 @@ hekadat.tags{PlotNow}='';
 assignin('base','hekadat',hekadat);
 set(figData.infoTable,'Data',Selected)
 set(figData.panel,'UserData',hekadat);
-enableGui(hObject);
+enableGui();
 end
 
 function lock_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 hekadat.HEKAsave();
 assignin('base','hekadat',hekadat);
 fprtinf('Saved to %s%s',hekadat.dirSave,hekadat.dirFile);
 set(figData.panel,'UserData',hekadat);
-enableGui(hObject);
+enableGui();
 end
 
 
 function next_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -250,11 +250,11 @@ set(curt,'Color',colors(PlotNow,:),'LineWidth',1)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
-enableGui(hObject);
+enableGui();
 end
 
 function previous_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -274,12 +274,12 @@ set(curt,'Color',colors(PlotNow,:),'LineWidth',1)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
-enableGui(hObject);
+enableGui();
 end
 
 
 function table_callBack(hObject,eventdata)
-disableGui(hObject);
+disableGui();
 figData=get(get(hObject,'Parent'),'UserData');
 hekadat=get(figData.panel,'UserData');
 Selected=get(figData.infoTable,'Data');
@@ -296,14 +296,14 @@ set(curt,'Color',colors(Plotted,:),'LineWidth',1)
 
 set(figData.panel,'UserData',hekadat);
 plotOne(hObject);
-enableGui(hObject);
+enableGui();
 end
 
-function disableGui(hObject)
+function disableGui()
 set(findobj('-property','Enable'),'Enable','off')
 drawnow
 end
-function enableGui(hObject)
+function enableGui()
 set(findobj('-property','Enable'),'Enable','on')
 drawnow
 end
