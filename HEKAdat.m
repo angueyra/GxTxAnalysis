@@ -1,4 +1,6 @@
-classdef HEKAdat
+classdef HEKAdat < handle
+    % with classdef HEKAdat<handle, all modificaitons of hekadat objects immediately apply to it
+    % it no longer works as a workspace variable
     properties
         % raw data
         data
