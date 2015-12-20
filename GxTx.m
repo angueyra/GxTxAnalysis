@@ -7,9 +7,9 @@ hekadat=HEKAdat('2015_06_23_Juan');
 % subtract blank average
 % put blanks and bad data in separate struct and save them
 %%
-gxtx_tagBlanks(hekadat,[],1);
+hGUI=gxtx_tagBlanks(hekadat,[],10);
 %%
-gxtx_tagOpenings(hekadat,[],1);
+gxtx_tagOpenings(hekadat,[],10);
 %% Idealization of ooo and coc traces only
 
 cccmean=hekadat.HEKAtagmean('ccc');

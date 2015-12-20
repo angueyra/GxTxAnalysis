@@ -18,7 +18,7 @@ classdef genericGUI < handle
             figure(fign);clf;
             hGUI.figH=gcf;
             set(hGUI.figH,'WindowStyle','normal');
-            set(hGUI.figH,'Position',[10 450 1111 800]);            
+            set(hGUI.figH,'Position',[250 450 1111 800]);            
             delete(get(hGUI.figH, 'Children')); %delete every ui object whithin figure
             set(hGUI.figH,'UserData',hGUI);            
             % set the base panel for ui interactions
@@ -49,7 +49,7 @@ classdef genericGUI < handle
             tableinput=checkStructField(tableinput,'CellEditCallback',@hGUI.updateTable);
             tableinput=checkStructField(tableinput,'Data',false(3,3));
             tableinput=checkStructField(tableinput,'headerWidth',20);
-                       
+              
             hGUI.figData.infoTable = uitable('Parent', tableinput.Parent, ...
                 'Data', tableinput.Data, ...
                 'Tag','infoTable',...
