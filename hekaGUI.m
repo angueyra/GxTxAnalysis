@@ -12,7 +12,23 @@ classdef hekaGUI < genericGUI
           hGUI.hekadat=hekadat;
           hGUI.params=params;
        end
-         
+       
+       % Object creation
+       function makePlot(hGUI,plotstruct,varargin)
+           if nargin < 2
+               plotstruct=struct;
+               plotstruct.tag='mainPlot';
+           else
+               plotstruct=checkStructField(plotstruct,'tag','mainPlot');
+           end
+           % if same exists, delete it
+           delete(findobj('tag',plotstruct.tag))
+           % plot properties
+           plotstruct.Parent=hGUI.figData.panel;
+           plotstruct=checkStructField(plotstruct,'Position',[.27 .55 .60 .43]);
+           hGUI.figData.(plotstruct.tag)=axes(plotstruct);
+       end
+       
        function tagButton(hGUI,buttonstruct)
            if nargin < 2
                buttonstruct=struct;
@@ -24,7 +40,6 @@ classdef hekaGUI < genericGUI
            delete(findobj('tag',buttonstruct.tag))
            % button definition
            buttonstruct.Parent=hGUI.figH;
-           buttonstruct.Units='normalized';
            buttonstruct.callback=@hGUI.tagButtonCall;
            buttonstruct=checkStructField(buttonstruct,'Position',[.895 .675 0.10 .10]);
            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
@@ -33,7 +48,29 @@ classdef hekaGUI < genericGUI
            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
            %create button
            buttonName=sprintf('%sButton',buttonstruct.tag);
-           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,buttonstruct);
+           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,'Units','normalized',buttonstruct);
+       end
+       
+       function untagButton(hGUI,buttonstruct)
+           if nargin < 2
+               buttonstruct=struct;
+               buttonstruct.tag='untag';
+           else
+               buttonstruct=checkStructField(buttonstruct,'tag','untag');
+           end
+           % if same exists, delete it
+           delete(findobj('tag',buttonstruct.tag))
+           % button definition
+           buttonstruct.Parent=hGUI.figH;
+           buttonstruct.callback=@hGUI.untagButtonCall;
+           buttonstruct=checkStructField(buttonstruct,'Position',[.89 .39 0.10 .10]);
+           buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
+           buttonstruct=checkStructField(buttonstruct,'string','untag');
+           buttonstruct=checkStructField(buttonstruct,'FontSize',10);
+           buttonstruct=checkStructField(buttonstruct,'UserData',[]);
+           %create button
+           buttonName=sprintf('%sButton',buttonstruct.tag);
+           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,'Units','normalized',buttonstruct);
        end
        
        function nextButton(hGUI,buttonstruct)
@@ -82,6 +119,30 @@ classdef hekaGUI < genericGUI
            hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,buttonstruct);
        end
        
+       function lockButton(hGUI,buttonstruct)
+           if nargin < 2
+               buttonstruct=struct;
+               buttonstruct.tag='lock';
+           else
+               buttonstruct=checkStructField(buttonstruct,'tag','lock');
+           end
+           % if same exists, delete it
+           delete(findobj('tag',buttonstruct.tag))
+           % button definition
+           buttonstruct.Parent=hGUI.figH;
+           buttonstruct.Units='normalized';
+           buttonstruct.callback=@hGUI.lockButtonCall;
+           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .09 0.10 .10]);
+           buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
+           buttonstruct=checkStructField(buttonstruct,'string','Lock&Save');
+           buttonstruct=checkStructField(buttonstruct,'FontSize',10);
+           buttonstruct=checkStructField(buttonstruct,'UserData',[]);
+           %create button
+           buttonName=sprintf('%sButton',buttonstruct.tag);
+           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,buttonstruct);
+       end
+       
+       % Callback functions
        function tagButtonCall(hGUI,hObject,~)
            hGUI.disableGui();
            disp('tag')
@@ -94,7 +155,25 @@ classdef hekaGUI < genericGUI
            currWavei=hGUI.hekadat.HEKAnamefind(currWave);
            
            hGUI.hekadat.tags{currWavei}=tag;
-           fprintf('tagged %s as %s\n',hekadat.waveNames{currWavei},tag);
+           fprintf('tagged %s as %s\n',hGUI.hekadat.waveNames{currWavei},tag);
+           set(hGUI.figData.infoTable,'Data',Selected)
+           hGUI.nextButtonCall();
+           hGUI.enableGui();
+       end
+       
+       function untagButtonCall(hGUI,~,~)
+           hGUI.disableGui();
+           disp('untag')
+           Selected=get(hGUI.figData.infoTable,'Data');
+           tag='';
+           Plotted=find(cell2mat(Selected(:,end)));
+           Selected{Plotted,1}=tag;
+           
+           currWave=getRowName(hGUI.figData.infoTable,Plotted);
+           currWavei=hGUI.hekadat.HEKAnamefind(currWave);
+           
+           hGUI.hekadat.tags{currWavei}=tag;
+           fprintf('untagged %s\n',hGUI.hekadat.waveNames{currWavei});
            set(hGUI.figData.infoTable,'Data',Selected)
            hGUI.nextButtonCall();
            hGUI.enableGui();
@@ -145,7 +224,21 @@ classdef hekaGUI < genericGUI
            hGUI.enableGui();
        end
        
-
+       function lockButtonCall(hGUI,~,~)
+           hGUI.disableGui();
+           hGUI.hekadat.HEKAsave();
+           hGUI.enableGui();
+       end
+       
+       function RowNames=waveTableNames(hGUI)
+           Rows=size(hGUI.hekadat.waveNames,1);
+           colors=pmkmp(Rows,'CubicL');
+           tcolors=round(colors./1.2.*255);
+           RowNames=cell(size(Rows));
+           for i=1:Rows
+               RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hGUI.hekadat.waveNames{i});
+           end
+       end
    end
    
    methods (Static=true)
@@ -155,5 +248,14 @@ classdef hekaGUI < genericGUI
            currWaveNameend=regexp(rowNames{index},'</font')-1;
            curr_RowName=rowNames{index}(currWaveNamestart:currWaveNameend);
        end
+       
+       function labelx(plothandle,xlabel)
+          set(get(plothandle,'XLabel'),'string',xlabel) 
+       end
+       
+       function labely(plothandle,ylabel)
+          set(get(plothandle,'YLabel'),'string',ylabel) 
+       end
+       
    end
 end

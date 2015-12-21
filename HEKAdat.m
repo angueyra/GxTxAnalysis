@@ -82,7 +82,8 @@ classdef HEKAdat < handle
         end
         
         function hekadat=HEKAsave(hekadat)
-           save(sprintf('%s%s',hekadat.dirSave,hekadat.dirFile),'hekadat') 
+           save(sprintf('%s%s',hekadat.dirSave,hekadat.dirFile),'hekadat')
+           fprintf('Saved to %s%s\n',hekadat.dirSave,hekadat.dirFile);
         end
         
         function matches=HEKAtagfind(hekadat,tag)

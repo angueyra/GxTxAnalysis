@@ -23,3 +23,5 @@ gxtx_refineBlanks(hekadat,p,10);
 gxtx_idealizeTraces(hekadat,[],10);
 
 %%
+
+clear; clear classes; clc;hekadat=HEKAdat('2015_06_23_Juan');hGUI=gxtx_tagBlanks(hekadat,[],10);

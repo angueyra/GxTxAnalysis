@@ -62,7 +62,7 @@ classdef genericGUI < handle
                 'RowName', tableinput.RowName,...
                 'ColumnEditable', tableinput.ColumnEditable,...
                 'CellEditCallback',tableinput.CellEditCallback);
-            modifyUITableHeaderWidth(hGUI.figData.infoTable,tableinput.headerWidth);
+            modifyUITableHeaderWidth(hGUI.figData.infoTable,tableinput.headerWidth,'left');
         end
         
         function updateTable(hGUI,~,~)
