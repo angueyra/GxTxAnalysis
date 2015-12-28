@@ -70,10 +70,36 @@ classdef genericGUI < handle
             hGUI.enableGui();
         end
         
+        function currIndex=getCurrIndex(hGUI,~,~)
+            if isfield(hGUI.figData,'infoTable')
+                Selected=get(hGUI.figData.infoTable,'Data');
+                currIndex=find(cell2mat(Selected(:,end)));
+            end
+        end
+        
+        function currRowName=getRowName(hGUI,~,~)
+            if isfield(hGUI.figData,'infoTable')
+                currIndex=hGUI.getCurrIndex();
+                rowNames=get(hGUI.figData.infoTable,'RowName');
+                currWaveNamestart=regexp(rowNames{currIndex},'e_');
+                currWaveNameend=regexp(rowNames{currIndex},'</font')-1;
+                currRowName=rowNames{currIndex}(currWaveNamestart:currWaveNameend);
+            end
+        end
     end
     
     methods (Static=true)
-        
+        function theRowName=getRowNamebyIndex(hGUI,index)
+           rowNames=get(hGUI.figData.infoTable,'RowName');
+           currWaveNamestart=regexp(rowNames{index},'e_');
+           currWaveNameend=regexp(rowNames{index},'</font')-1;
+           theRowName=rowNames{index}(currWaveNamestart:currWaveNameend);
+        end
+        function [hX,hY]=calculateHist(wave,nbins,edgemin,edgemax)
+            bins=linspace(edgemin*1.25,edgemax*1.25,nbins);
+            histcurr=histc(wave,bins)';
+            [hX,hY]=stairs(bins,histcurr);
+        end
         function disableGui()
             set(findobj('-property','Enable'),'Enable','off')
             drawnow

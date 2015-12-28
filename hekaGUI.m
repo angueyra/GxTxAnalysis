@@ -13,6 +13,24 @@ classdef hekaGUI < genericGUI
           hGUI.params=params;
        end
        
+       function updatePlots(~,~)
+          fprintf('gxtx_GUI should override the updatePlots function\n') 
+       end
+       
+       function updateTable(hGUI,~,eventdata)
+           hGUI.disableGui();
+           Selected=get(hGUI.figData.infoTable,'Data');
+           Plotted=find(cell2mat(Selected(:,end)));
+           Previous=Plotted(Plotted~=eventdata.Indices(1));
+           Plotted=Plotted(Plotted==eventdata.Indices(1));
+           
+           Selected{Previous,end}=false;
+           Selected{Plotted,end}=true;
+           set(hGUI.figData.infoTable,'Data',Selected)
+           
+           updatePlots(hGUI);
+           hGUI.enableGui();
+       end
        % Object creation
        function makePlot(hGUI,plotstruct,varargin)
            if nargin < 2
@@ -84,16 +102,15 @@ classdef hekaGUI < genericGUI
            delete(findobj('tag',buttonstruct.tag))
            % button definition
            buttonstruct.Parent=hGUI.figH;
-           buttonstruct.Units='normalized';
            buttonstruct.callback=@hGUI.nextButtonCall;
-           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .825 0.10 .08]);
+           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .79 0.10 .10]);
            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
-           buttonstruct=checkStructField(buttonstruct,'string','-->');
+           buttonstruct=checkStructField(buttonstruct,'string','--->');
            buttonstruct=checkStructField(buttonstruct,'FontSize',10);
            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
            %create button
            buttonName=sprintf('%sButton',buttonstruct.tag);
-           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,buttonstruct);
+           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,'Units','normalized',buttonstruct);
        end
        
        function prevButton(hGUI,buttonstruct)
@@ -107,16 +124,15 @@ classdef hekaGUI < genericGUI
            delete(findobj('tag',buttonstruct.tag))
            % button definition
            buttonstruct.Parent=hGUI.figH;
-           buttonstruct.Units='normalized';
            buttonstruct.callback=@hGUI.prevButtonCall;
-           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .91 0.10 .08]);
+           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .895 0.10 .10]);
            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
-           buttonstruct=checkStructField(buttonstruct,'string','<--');
+           buttonstruct=checkStructField(buttonstruct,'string','<---');
            buttonstruct=checkStructField(buttonstruct,'FontSize',10);
            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
            %create button
            buttonName=sprintf('%sButton',buttonstruct.tag);
-           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,buttonstruct);
+           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,'Units','normalized',buttonstruct);
        end
        
        function lockButton(hGUI,buttonstruct)
@@ -130,103 +146,90 @@ classdef hekaGUI < genericGUI
            delete(findobj('tag',buttonstruct.tag))
            % button definition
            buttonstruct.Parent=hGUI.figH;
-           buttonstruct.Units='normalized';
            buttonstruct.callback=@hGUI.lockButtonCall;
-           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .09 0.10 .10]);
+           buttonstruct=checkStructField(buttonstruct,'Position',[.895 .01 0.10 .10]);
            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
            buttonstruct=checkStructField(buttonstruct,'string','Lock&Save');
            buttonstruct=checkStructField(buttonstruct,'FontSize',10);
            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
            %create button
            buttonName=sprintf('%sButton',buttonstruct.tag);
-           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,buttonstruct);
+           hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,'Units','normalized',buttonstruct);
        end
        
        % Callback functions
        function tagButtonCall(hGUI,hObject,~)
            hGUI.disableGui();
-           disp('tag')
            Selected=get(hGUI.figData.infoTable,'Data');
            tag=get(hObject,'tag');
            Plotted=find(cell2mat(Selected(:,end)));
            Selected{Plotted,1}=tag;
            
-           currWave=getRowName(hGUI.figData.infoTable,Plotted);
+           currWave=hGUI.getRowName(hGUI.figData.infoTable,Plotted);
            currWavei=hGUI.hekadat.HEKAnamefind(currWave);
            
            hGUI.hekadat.tags{currWavei}=tag;
            fprintf('tagged %s as %s\n',hGUI.hekadat.waveNames{currWavei},tag);
            set(hGUI.figData.infoTable,'Data',Selected)
            hGUI.nextButtonCall();
+           hGUI.updatePlots();
            hGUI.enableGui();
        end
        
        function untagButtonCall(hGUI,~,~)
            hGUI.disableGui();
-           disp('untag')
            Selected=get(hGUI.figData.infoTable,'Data');
            tag='';
            Plotted=find(cell2mat(Selected(:,end)));
            Selected{Plotted,1}=tag;
            
-           currWave=getRowName(hGUI.figData.infoTable,Plotted);
+           currWave=hGUI.getRowName(hGUI.figData.infoTable,Plotted);
            currWavei=hGUI.hekadat.HEKAnamefind(currWave);
            
            hGUI.hekadat.tags{currWavei}=tag;
            fprintf('untagged %s\n',hGUI.hekadat.waveNames{currWavei});
            set(hGUI.figData.infoTable,'Data',Selected)
            hGUI.nextButtonCall();
+           hGUI.updatePlots();
            hGUI.enableGui();
        end
        
        function nextButtonCall(hGUI,~,~)
            hGUI.disableGui();
-           disp('next')
            Selected=get(hGUI.figData.infoTable,'Data');
-           Plotted=find(Selected(:,end));
-           PlotNext=Plotted+1;
+           Current=find(cell2mat(Selected(:,end)));
+           PlotNext=Current+1;
            if PlotNext>size(Selected,1)
                PlotNext=1;
            end
-           Selected(Plotted,end)=false;
-           Selected(PlotNext,end)=true;
+           Selected{Current,end}=false;
+           Selected{PlotNext,end}=true;
            set(hGUI.figData.infoTable,'Data',Selected)
            
-           Rows=size(hGUI.hekadat.waveNames,1);
-           colors=pmkmp(Rows,'CubicL');
-           curt=findobj('DisplayName',hGUI.hekadat.waveNames{Plotted});
-           set(curt,'Color',colors(Plotted,:),'LineWidth',1)
-           
-%            plotOne(hObject);
-
+           hGUI.updatePlots();
            hGUI.enableGui();
        end
        
        function prevButtonCall(hGUI,~,~)
            hGUI.disableGui();
-           disp('prev')
            Selected=get(hGUI.figData.infoTable,'Data');
-           Plotted=find(Selected(:,end));
-           PlotNext=Plotted-1;
+           Previous=find(cell2mat(Selected(:,end)));
+           PlotNext=Previous-1;
            if PlotNext<1
                PlotNext=size(Selected,1);
            end
-           Selected(Plotted,end)=false;
-           Selected(PlotNext,end)=true;
+           Selected{Previous,end}=false;
+           Selected{PlotNext,end}=true;
            set(hGUI.figData.infoTable,'Data',Selected)
            
-           Rows=size(hGUI.hekadat.waveNames,1);
-           colors=pmkmp(Rows,'CubicL');
-           curt=findobj('DisplayName',hGUI.hekadat.waveNames{Plotted});
-           set(curt,'Color',colors(Plotted,:),'LineWidth',1)
-%            plotOne(hObject);
-           
+           hGUI.updatePlots();
            hGUI.enableGui();
        end
        
        function lockButtonCall(hGUI,~,~)
            hGUI.disableGui();
            hGUI.hekadat.HEKAsave();
+           hGUI.updatePlots();
            hGUI.enableGui();
        end
        
@@ -242,13 +245,6 @@ classdef hekaGUI < genericGUI
    end
    
    methods (Static=true)
-       function curr_RowName=getRowName(infoTable,index)
-           rowNames=get(infoTable,'RowName');
-           currWaveNamestart=regexp(rowNames{index},'e_');
-           currWaveNameend=regexp(rowNames{index},'</font')-1;
-           curr_RowName=rowNames{index}(currWaveNamestart:currWaveNameend);
-       end
-       
        function labelx(plothandle,xlabel)
           set(get(plothandle,'XLabel'),'string',xlabel) 
        end
