@@ -24,7 +24,7 @@ classdef HEKAdat < handle
         stAxis
         swaveNames
         stags
-        ssubCorrection
+        sBaseline
         histx
         histy
         histfx
@@ -99,6 +99,11 @@ classdef HEKAdat < handle
         function matchindex=HEKAnamefind(hekadat,tag)
             tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
             matchindex=find(cellfun(tagfindfx(tag),hekadat.waveNames));
+        end
+        
+        function matchindex=HEKAsnamefind(hekadat,tag)
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+            matchindex=find(cellfun(tagfindfx(tag),hekadat.swaveNames));
         end
         
         function tagmean=HEKAtagmean(hekadat,tag)

@@ -23,7 +23,8 @@ classdef gxtx_refineBaseline<hekaGUI
           % info Table
           Selected=false(Rows,1);         
           Selected(params.PlotNow,end)=true;
-          infoData=[hGUI.hekadat.stags num2cell(hekadat.sBaseline) num2cell(Selected)];
+          Baselines=zeros(Rows,1);
+          infoData=[hGUI.hekadat.stags num2cell(Baselines) num2cell(Selected)];
           
           tableinput=struct;
           tableinput.Position=[0.01, .005, 0.185, .985];
@@ -38,6 +39,20 @@ classdef gxtx_refineBaseline<hekaGUI
           bw=.065;
           bh=0.08;
           bl=0.995-bw;
+          % buttons
+          nextBt=struct('Position',[bl .80 bw bh]);
+          hGUI.nextButton(nextBt);
+          prevBt=struct('Position',[bl .90 bw bh]);
+          hGUI.prevButton(prevBt);
+          
+          cccBt=struct('tag','ccc','Position',[bl .38 bw bh]);
+          hGUI.tagButton(cccBt);
+          badBt=struct('tag','bad','Position',[bl .28 bw bh]);
+          hGUI.tagButton(badBt);
+          untagBt=struct('tag','untag','Position',[bl .18 bw bh]);
+          hGUI.untagButton(untagBt);
+          lockBt=struct('Position', [bl .03 bw bh]);
+          hGUI.lockButton(lockBt);
           
           pleft=.235;
           pwidth=.48;
@@ -47,18 +62,7 @@ classdef gxtx_refineBaseline<hekaGUI
           hleft=.735;
           hwidth=.17;
           
-          % Next and Previous Buttons
-          nextBt=struct('Position',[bl pheight bw bh]);
-          hGUI.nextButton(nextBt);
-          prevBt=struct('Position',[bl pheight+.1 bw bh]);
-          hGUI.prevButton(prevBt);
-          
-          lockBt=struct('Position', [bl .03 bw bh]);
-          hGUI.lockButton(lockBt);
-          
-         
-          
-          % Sliders
+          % Sliders and Zoom button
           lSlide=struct('tag','leftSlider','Position',[pleft-.015 .45 pwidth+.03 .05]);
           lSlide.Min=1;
           lSlide.Max=size(hekadat.sdata,2);
@@ -75,18 +79,12 @@ classdef gxtx_refineBaseline<hekaGUI
           rSlide.Callback=@hGUI.lSlideCall;
           hGUI.createSlider(rSlide);
           
-          % Zoom button
-          zBt=struct('tag','Zoom','Position',[pleft+pwidth+0.085 pheight .065 .08]);
+          zBt=struct('tag','Zoom','Position',[pleft+pwidth+0.025 pheight-.0 .08 .08]);
           zBt.Callback=@hGUI.zoomCall;
           hGUI.createButton(zBt);
           
-          % Unzoom button
-          uzBt=struct('tag','Unzoom','Position',[pleft+pwidth+0.15 pheight .065 .08]);
-          uzBt.Callback=@hGUI.unzoomCall;
-          hGUI.createButton(uzBt);
-          
-          % Baseline button
-          blBt=struct('tag','Baseline','Position',[pleft+pwidth+0.02 pheight .065 .08]);
+          % Calculate baseline button
+          blBt=struct('tag','Baseline','Position',[pleft+pwidth+0.105 pheight-.0 .08 .08]);
           blBt.Callback=@hGUI.baselineCall;
           hGUI.createButton(blBt);
           
@@ -101,7 +99,7 @@ classdef gxtx_refineBaseline<hekaGUI
 
           % refined trace
           lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','+','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           
           %left line
@@ -110,7 +108,7 @@ classdef gxtx_refineBaseline<hekaGUI
           set(lH,'DisplayName','leftLine')
           %right line
           lH=line([hGUI.hekadat.stAxis(rSlide.Value) hGUI.hekadat.stAxis(rSlide.Value)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 1])
+          set(lH,'LineStyle','-','Marker','.','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 1])
           set(lH,'DisplayName','rightLine')
           %zero line
           lH=line(hGUI.hekadat.stAxis,zeros(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotCurr);
@@ -184,9 +182,8 @@ classdef gxtx_refineBaseline<hekaGUI
           
           % All data Hist2ogram
           if ~isempty(hekadat.sdata)
-              alldatab=hekadat.sdata-repmat(hekadat.sBaseline,1,size(hekadat.sdata,2));
-              alldatab=reshape(alldatab,1,numel(alldatab));
-              [allHist2X,allHist2Y]=hGUI.calculateHist(alldatab,params.nbins,-1,2);
+              alldata=reshape(hekadat.sdata,1,numel(hekadat.sdata));
+              [allHist2X,allHist2Y]=hGUI.calculateHist(alldata,params.nbins,-1,2);
               lH=line(allHist2Y,allHist2X,'Parent',hGUI.figData.plotHist2);
               set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
               set(lH,'DisplayName','allHist2')
@@ -228,15 +225,43 @@ classdef gxtx_refineBaseline<hekaGUI
             set(lHNow,'YData',currentTrace-baseline,'Color',colors(PlotNow,:))
             
             [currHistX,currHistY]=hGUI.calculateHist(currentTrace-baseline,hGUI.params.nbins,-1,2);
-            hHNow=findobj('DisplayName','subHist');
+            hHNow=findobj('DisplayName','currHist');
             set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
 
         end
         
         function lockButtonCall(hGUI,~,~)
             hGUI.disableGui();
-            Selected=get(hGUI.figData.infoTable,'Data');
-            hGUI.hekadat.sBaseline=cell2mat(Selected(:,2));
+            tst=hGUI.hekadat.HEKAstairsprotocol();
+            tlim=find(hGUI.hekadat.tAxis<=0.003,1,'last');
+            % parsing by tags. May not correspond to waves in table unless reloaded
+            selWaves=logical(hGUI.hekadat.HEKAtagfind('ccc')+hGUI.hekadat.HEKAtagfind('ooo')+hGUI.hekadat.HEKAtagfind('coc'));
+            
+            
+            hGUI.hekadat.swaveNames=hGUI.hekadat.waveNames(selWaves);
+            hGUI.hekadat.stags=hGUI.hekadat.tags(selWaves);
+            hGUI.hekadat.stAxis=hGUI.hekadat.tAxis(1:tst.deltai);
+            
+            cccmean=hGUI.hekadat.HEKAtagmean('ccc');
+            sdata=hGUI.hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hGUI.hekadat.swaveNames,1),1);
+            
+            
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+            cccLi=NaN(size(hGUI.hekadat.swaveNames,1),1);
+            cccLi(1)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'first');
+            for i=2:size(hGUI.hekadat.swaveNames,1)
+                cccLi(i)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(1:i)),1,'last');
+            end
+            cccRi=NaN(size(hGUI.hekadat.swaveNames,1),1);
+            for i=1:size(hGUI.hekadat.swaveNames,1)-1
+                cccRi(i)=i+find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(i+1:end)),1,'first');
+            end
+            cccRi(end)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
+            
+            submat=zeros(size(sdata));
+            submat(:,1:tlim)=(sdata(cccLi,1:tlim)+sdata(cccRi,1:tlim))./2;
+            hGUI.hekadat.sdata=sdata-submat;
+            
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui();
         end
@@ -244,23 +269,21 @@ classdef gxtx_refineBaseline<hekaGUI
         function baselineCall(hGUI,~,~)
             hGUI.disableGui();
             Selected=get(hGUI.figData.infoTable,'Data');
-            PlotNow=find(cell2mat(Selected(:,end)));
             % take care of sliders
-            lValue=floor(get(hGUI.figData.leftSlider,'Value'));
-            rValue=ceil(get(hGUI.figData.rightSlider,'Value'));
+            lValue=get(hGUI.figData.leftSlider,'Value');
+            rValue=get(hGUI.figData.rightSlider,'Value');
             if lValue>rValue
                 tempValue=lValue;
-                lValue=rValue;
-                rValue=tempValue;
+                
             end
             %calculate baseline between lines and update table
             currWave=hGUI.getRowName;
             currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
             currentTrace=hGUI.hekadat.sdata(currWavei,:);
-            baseline=mean(currentTrace(lValue:rValue));
-            Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
+            baseline=mean(currentTrace
+            
+            
             set(hGUI.figData.infoTable,'Data',Selected)
-            hGUI.updatePlots();
             hGUI.enableGui();
         end
         
@@ -297,25 +320,6 @@ classdef gxtx_refineBaseline<hekaGUI
             end
             set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
             
-            hGUI.enableGui();
-        end
-        
-        function unzoomCall(hGUI,~,~)
-            hGUI.disableGui();
-            
-            lValue=get(hGUI.figData.leftSlider,'Min');
-            lTime=hGUI.hekadat.stAxis(ceil(lValue));
-            set(hGUI.figData.leftSlider,'Value',lValue);
-            
-            rValue=get(hGUI.figData.rightSlider,'Max');
-            rTime=hGUI.hekadat.stAxis(floor(rValue));
-            set(hGUI.figData.rightSlider,'Value',rValue);
-            
-            lH=findobj('DisplayName','leftLine');
-            set(lH,'XData',[lTime lTime])
-            rH=findobj('DisplayName','rightLine');
-            set(rH,'XData',[rTime rTime])
-            set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
             hGUI.enableGui();
         end
         
@@ -356,7 +360,6 @@ classdef gxtx_refineBaseline<hekaGUI
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Current});
            set(curt,'Color',colors(Current,:),'LineWidth',1)
            hGUI.updatePlots();
-           hGUI.unzoomCall();
            hGUI.enableGui();
        end
        
@@ -377,7 +380,6 @@ classdef gxtx_refineBaseline<hekaGUI
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Previous});
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            hGUI.updatePlots();
-           hGUI.unzoomCall();
            hGUI.enableGui();
        end
     end
