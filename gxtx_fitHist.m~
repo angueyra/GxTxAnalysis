@@ -1,10 +1,10 @@
-classdef gxtx_refineBaseline<hekaGUI
+classdef gxtx_fitHist<hekaGUI
     properties
     end
     
     methods
         % Constructor (gui objects and initial plotting)
-        function hGUI=gxtx_refineBaseline(hekadat,params,fign) 
+        function hGUI=gxtx_fitHist(hekadat,params,fign) 
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
           params=checkStructField(params,'nbins',200);
@@ -60,16 +60,16 @@ classdef gxtx_refineBaseline<hekaGUI
           
           % Sliders
           lSlide=struct('tag','leftSlider','Position',[pleft-.015 .45 pwidth+.03 .05]);
-          lSlide.Min=1;
-          lSlide.Max=size(hekadat.sdata,2);
-          lSlide.Value=floor(lSlide.Min)+1;
+          lSlide.Min=-1;
+          lSlide.Max=2;
+          lSlide.Value=floor(lSlide.Min);
           lSlide.SliderStep=[1/10000 1/100];
           lSlide.Callback=@hGUI.lSlideCall;
           hGUI.createSlider(lSlide);
           
           rSlide=struct('tag','rightSlider','Position',[pleft-.015 .42 pwidth+.03 .05]);
-          rSlide.Min=1;
-          rSlide.Max=size(hekadat.sdata,2);
+          rSlide.Min=-1;
+          rSlide.Max=2;
           rSlide.Value=floor(rSlide.Max);
           rSlide.SliderStep=[1/10000 1/100];
           rSlide.Callback=@hGUI.lSlideCall;
@@ -85,68 +85,45 @@ classdef gxtx_refineBaseline<hekaGUI
           uzBt.Callback=@hGUI.unzoomCall;
           hGUI.createButton(uzBt);
           
-          % Baseline button
-          blBt=struct('tag','Baseline','Position',[pleft+pwidth+0.02 pheight .065 .08]);
-          blBt.Callback=@hGUI.baselineCall;
+          % Fit button
+          blBt=struct('tag','Fit','Position',[pleft+pwidth+0.02 pheight .065 .08]);
+          blBt.Callback=@hGUI.fittingCall;
           hGUI.createButton(blBt);
-          
-           
-          % current wave (after subtraction)
-          plotCurr=struct('Position',[pleft ptop pwidth pheight],'tag','plotCurr');
-          plotCurr.XLim=[0 hekadat.stAxis(end)];
-          plotCurr.YLim=[-1 2];
-          hGUI.makePlot(plotCurr);
-          hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
-          hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
-
-          % refined trace
-          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','+','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
-          set(lH,'DisplayName','currWave')
-          
-          %left line
-          lH=line([hGUI.hekadat.stAxis(lSlide.Value) hGUI.hekadat.stAxis(lSlide.Value)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[1 .75 .75])
-          set(lH,'DisplayName','leftLine')
-          %right line
-          lH=line([hGUI.hekadat.stAxis(rSlide.Value) hGUI.hekadat.stAxis(rSlide.Value)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 1])
-          set(lH,'DisplayName','rightLine')
-          %zero line
-          lH=line(hGUI.hekadat.stAxis,zeros(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLine')
-          
-          % Data and blank histograms
-          plotHist=struct('Position',[hleft ptop hwidth pheight],'tag','plotHist');
-          plotHist.YAxisLocation='right';
-          plotHist.XLim=[0 0.3];
-          plotHist.YLim=plotCurr.YLim;
-          hGUI.makePlot(plotHist);
-          hGUI.labelx(hGUI.figData.plotHist,'Freq');
           
           hnan=NaN(1,50);
           
-          %zero line
-          lH=line([0 1],[0 0],'Parent',hGUI.figData.plotHist);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLineHist')
+          % Histograms and fits
+          plotHist=struct('Position',[pleft ptop pwidth pheight],'tag','plotHist');
+          plotHist.YLim=[0 .12];
+          plotHist.XLim=[-1 2];
+          hGUI.makePlot(plotHist);
+          hGUI.labelx(hGUI.figData.plotHist,'i (pA)');
+          hGUI.labely(hGUI.figData.plotHist,'Freq');
           
-          % Curated hist
+          %left line
+          lH=line([lSlide.Value lSlide.Value],plotHist.YLim,'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[1 .75 .75])
+          set(lH,'DisplayName','leftLine')
+          %right line
+          lH=line([rSlide.Value rSlide.Value],plotHist.YLim,'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 1])
+          set(lH,'DisplayName','rightLine')
+          %zero line
+          lH=line([0 0],[0 1],'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','zeroLine')
+          
+          % corrected Hist
           lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currHist')
           
-          % All data histogram
-          if ~isempty(hekadat.sdata)
-              alldata=reshape(hekadat.sdata,1,numel(hekadat.sdata));
-              [allHistX,allHistY]=hGUI.calculateHist(alldata,params.nbins,-1,2);
-              lH=line(allHistY,allHistX,'Parent',hGUI.figData.plotHist);
-              set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
-              set(lH,'DisplayName','allHist')
-          end
+          % All data Hist2ogram
+          lH=line(hekadat.stairx,hekadat.stairy,'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
+          set(lH,'DisplayName','allHist')
           
-
+          
           plotSub=struct('Position',[pleft ptop2 pwidth pheight-.11],'tag','plotSub');
           plotSub.XLim=[0 hekadat.stAxis(end)];
           plotSub.YLim=[-1 2];
@@ -157,40 +134,14 @@ classdef gxtx_refineBaseline<hekaGUI
           % refined trace
           lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
-          set(lH,'DisplayName','subWave')
+          set(lH,'DisplayName','currWave')
           
           %zero line
           lH=line(hGUI.hekadat.stAxis,zeros(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLineSub')
+          set(lH,'DisplayName','zeroLineCurr')
           
-          % Data and blank histograms
-          plotHist2=struct('Position',[hleft ptop2 hwidth pheight-.11],'tag','plotHist2');
-          plotHist2.YAxisLocation='right';
-          plotHist2.XLim=[0 0.3];
-          plotHist2.YLim=plotCurr.YLim;
-          hGUI.makePlot(plotHist2);
-          hGUI.labelx(hGUI.figData.plotHist2,'Freq');
-          
-          %zero line
-          lH=line([0 1],[0 0],'Parent',hGUI.figData.plotHist2);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLineHist2')
-          
-          % corrected Hist
-          lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist2);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
-          set(lH,'DisplayName','subHist')
-          
-          % All data Hist2ogram
-          if ~isempty(hekadat.sdata)
-              alldatab=hekadat.sdata-repmat(hekadat.sBaseline,1,size(hekadat.sdata,2));
-              alldatab=reshape(alldatab,1,numel(alldatab));
-              [allHist2X,allHist2Y]=hGUI.calculateHist(alldatab,params.nbins,-1,2);
-              lH=line(allHist2Y,allHist2X,'Parent',hGUI.figData.plotHist2);
-              set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
-              set(lH,'DisplayName','allHist2')
-          end
+
           
           hGUI.updatePlots();
 %           if params.LockNow
@@ -211,7 +162,7 @@ classdef gxtx_refineBaseline<hekaGUI
             colors=pmkmp(Rows,'CubicL');
             
             % current trace
-            currentTrace=hGUI.hekadat.sdata(currWavei,:);
+            currentTrace=hGUI.hekadat.sdata(currWavei,:)-hGUI.hekadat.sBaseline(currWavei);
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
             
@@ -220,50 +171,29 @@ classdef gxtx_refineBaseline<hekaGUI
             % current histograms
             [currHistX,currHistY]=hGUI.calculateHist(currentTrace,hGUI.params.nbins,-1,2);
             hHNow=findobj('DisplayName','currHist');
-            set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
+            set(hHNow,'XData',currHistX,'YData',currHistY,'Color',colors(PlotNow,:))
             
-            % after baseline correction
-            baseline=Selected{PlotNow,2};
-            lHNow=findobj('DisplayName','subWave');
-            set(lHNow,'YData',currentTrace-baseline,'Color',colors(PlotNow,:))
-            
-            [currHistX,currHistY]=hGUI.calculateHist(currentTrace-baseline,hGUI.params.nbins,-1,2);
-            hHNow=findobj('DisplayName','subHist');
-            set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
-
+%             % after baseline correction
+%             baseline=Selected{PlotNow,2};
+%             lHNow=findobj('DisplayName','subWave');
+%             set(lHNow,'YData',currentTrace-baseline,'Color',colors(PlotNow,:))
+%             
+%             [currHistX,currHistY]=hGUI.calculateHist(currentTrace-baseline,hGUI.params.nbins,-1,2);
+%             hHNow=findobj('DisplayName','subHist');
+%             set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
         end
         
         function lockButtonCall(hGUI,~,~)
             hGUI.disableGui();
             Selected=get(hGUI.figData.infoTable,'Data');
-            hGUI.hekadat.sBaseline=cell2mat(Selected(:,2));
-            alldata=hGUI.hekadat.HEKAbldata;
-            alldata=reshape(alldata,1,numel(alldata));
-            [hGUI.hekadat.histx,hGUI.hekadat.histy]=hGUI.calculateHist(alldata,params.nbins,-1,2);
+            
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui();
         end
         
-        function baselineCall(hGUI,~,~)
+        function fittingCall(hGUI,~,~)
             hGUI.disableGui();
-            Selected=get(hGUI.figData.infoTable,'Data');
-            PlotNow=find(cell2mat(Selected(:,end)));
-            % take care of sliders
-            lValue=floor(get(hGUI.figData.leftSlider,'Value'));
-            rValue=ceil(get(hGUI.figData.rightSlider,'Value'));
-            if lValue>rValue
-                tempValue=lValue;
-                lValue=rValue;
-                rValue=tempValue;
-            end
-            %calculate baseline between lines and update table
-            currWave=hGUI.getRowName;
-            currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
-            currentTrace=hGUI.hekadat.sdata(currWavei,:);
-            baseline=mean(currentTrace(lValue:rValue));
-            Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
-            set(hGUI.figData.infoTable,'Data',Selected)
-            hGUI.updatePlots();
+           
             hGUI.enableGui();
         end
         
@@ -271,13 +201,13 @@ classdef gxtx_refineBaseline<hekaGUI
             hGUI.disableGui();
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
-            lTime=hGUI.hekadat.stAxis(ceil(lValue));
-            rTime=hGUI.hekadat.stAxis(floor(rValue));
+%             li=hGUI.hekadat.histx(ceil(lValue));
+%             ri=hGUI.hekadat.histy(floor(rValue));
             
             lH=findobj('DisplayName','leftLine');
-            set(lH,'XData',[lTime lTime])
+            set(lH,'XData',[lValue lValue])
             rH=findobj('DisplayName','rightLine');
-            set(rH,'XData',[rTime rTime])
+            set(rH,'XData',[rValue rValue])
             hGUI.enableGui();
         end
         
@@ -285,20 +215,15 @@ classdef gxtx_refineBaseline<hekaGUI
             hGUI.disableGui();
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
-            if lValue<rValue
-                lTime=hGUI.hekadat.stAxis(ceil(lValue));
-                rTime=hGUI.hekadat.stAxis(floor(rValue));
-            else
+            if lValue>rValue
                 set(hGUI.figData.leftSlider,'Value',rValue);
                 set(hGUI.figData.rightSlider,'Value',lValue);
-                lTime=hGUI.hekadat.stAxis(ceil(rValue));
-                rTime=hGUI.hekadat.stAxis(floor(lValue));
                 lH=findobj('DisplayName','leftLine');
-                set(lH,'XData',[lTime lTime])
+                set(lH,'XData',[rValue rValue])
                 rH=findobj('DisplayName','rightLine');
-                set(rH,'XData',[rTime rTime])
+                set(rH,'XData',[lValue lValue])
             end
-            set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
+            set(hGUI.figData.plotHist,'XLim',[lValue rValue])
             
             hGUI.enableGui();
         end
@@ -307,18 +232,12 @@ classdef gxtx_refineBaseline<hekaGUI
             hGUI.disableGui();
             
             lValue=get(hGUI.figData.leftSlider,'Min');
-            lTime=hGUI.hekadat.stAxis(ceil(lValue));
             set(hGUI.figData.leftSlider,'Value',lValue);
             
             rValue=get(hGUI.figData.rightSlider,'Max');
-            rTime=hGUI.hekadat.stAxis(floor(rValue));
             set(hGUI.figData.rightSlider,'Value',rValue);
             
-            lH=findobj('DisplayName','leftLine');
-            set(lH,'XData',[lTime lTime])
-            rH=findobj('DisplayName','rightLine');
-            set(rH,'XData',[rTime rTime])
-            set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
+            hGUI.zoomCall;
             hGUI.enableGui();
         end
         

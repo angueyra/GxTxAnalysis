@@ -237,6 +237,11 @@ classdef gxtx_refineBaseline<hekaGUI
             hGUI.disableGui();
             Selected=get(hGUI.figData.infoTable,'Data');
             hGUI.hekadat.sBaseline=cell2mat(Selected(:,2));
+            alldata=hGUI.hekadat.HEKAbldata;
+            alldata=reshape(alldata,1,numel(alldata));
+            [hGUI.hekadat.stairx,hGUI.hekadat.stairy]=hGUI.calculateHist(alldata,hGUI.params.nbins,-1,2);
+            hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end);
+            hGUI.hekadat.histy=hGUI.hekadat.stairy(1:2:end);
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui();
         end

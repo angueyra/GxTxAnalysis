@@ -29,7 +29,8 @@ classdef HEKAdat < handle
         histy
         histfx
         histfitcoeffs
-        
+        stairx
+        stairy
         % idealized data
         idata
         itAxis
@@ -118,6 +119,15 @@ classdef HEKAdat < handle
             t_stairs.sti=find(hekadat.tAxis<=t_stairs.st,1,'last');
             t_stairs.endi=find(hekadat.tAxis<=t_stairs.end,1,'last');
             t_stairs.deltai=find(hekadat.tAxis<=t_stairs.delta,1,'last');
+        end
+        
+        function blData=HEKAbldata(hekadat)
+            %baseline corrected data
+            if ~isempty(hekadat.sBaseline)
+                blData=hekadat.sdata-repmat(hekadat.sBaseline,1,size(hekadat.sdata,2));
+            else
+                error('Run refineBlanks and refineBaseline first\n')
+            end
         end
     end
 end
