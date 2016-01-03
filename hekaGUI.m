@@ -18,7 +18,7 @@ classdef hekaGUI < genericGUI
        end
        
        function updateTable(hGUI,~,eventdata)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Plotted=find(cell2mat(Selected(:,end)));
            Previous=Plotted(Plotted~=eventdata.Indices(1));
@@ -29,7 +29,7 @@ classdef hekaGUI < genericGUI
            set(hGUI.figData.infoTable,'Data',Selected)
            
            updatePlots(hGUI);
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        % Object creation
        function makePlot(hGUI,plotstruct,varargin)
@@ -159,7 +159,7 @@ classdef hekaGUI < genericGUI
        
        % Callback functions
        function tagButtonCall(hGUI,hObject,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            tag=get(hObject,'tag');
            Plotted=find(cell2mat(Selected(:,end)));
@@ -173,11 +173,11 @@ classdef hekaGUI < genericGUI
            set(hGUI.figData.infoTable,'Data',Selected)
            hGUI.nextButtonCall();
            hGUI.updatePlots();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function untagButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            tag='';
            Plotted=find(cell2mat(Selected(:,end)));
@@ -191,11 +191,11 @@ classdef hekaGUI < genericGUI
            set(hGUI.figData.infoTable,'Data',Selected)
            hGUI.nextButtonCall();
            hGUI.updatePlots();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function nextButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Current=find(cell2mat(Selected(:,end)));
            PlotNext=Current+1;
@@ -207,11 +207,11 @@ classdef hekaGUI < genericGUI
            set(hGUI.figData.infoTable,'Data',Selected)
            
            hGUI.updatePlots();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function prevButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Previous=find(cell2mat(Selected(:,end)));
            PlotNext=Previous-1;
@@ -223,14 +223,14 @@ classdef hekaGUI < genericGUI
            set(hGUI.figData.infoTable,'Data',Selected)
            
            hGUI.updatePlots();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function lockButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            hGUI.hekadat.HEKAsave();
            hGUI.updatePlots();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function RowNames=waveTableNames(hGUI)

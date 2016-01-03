@@ -7,7 +7,7 @@ classdef gxtx_fitHist<hekaGUI
         function hGUI=gxtx_fitHist(hekadat,params,fign) 
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
-          params=checkStructField(params,'nbins',200);
+          params=checkStructField(params,'nbins',400);
           hGUI@hekaGUI(hekadat,params,fign);
           
           % only plot ccc, coc and ooo
@@ -56,8 +56,7 @@ classdef gxtx_fitHist<hekaGUI
           lockBt=struct('Position', [bl .03 bw bh]);
           hGUI.lockButton(lockBt);
           
-         
-          
+
           % Sliders
           lSlide=struct('tag','leftSlider','Position',[pleft-.015 .45 pwidth+.03 .05]);
           lSlide.Min=-1;
@@ -90,11 +89,12 @@ classdef gxtx_fitHist<hekaGUI
           blBt.Callback=@hGUI.fittingCall;
           hGUI.createButton(blBt);
           
+          
           hnan=NaN(1,50);
           
           % Histograms and fits
           plotHist=struct('Position',[pleft ptop pwidth pheight],'tag','plotHist');
-          plotHist.YLim=[0 .12];
+          plotHist.YLim=[0 .08];
           plotHist.XLim=[-1 2];
           hGUI.makePlot(plotHist);
           hGUI.labelx(hGUI.figData.plotHist,'i (pA)');
@@ -141,8 +141,6 @@ classdef gxtx_fitHist<hekaGUI
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','zeroLineCurr')
           
-
-          
           hGUI.updatePlots();
 %           if params.LockNow
 %               hGUI.lockButtonCall();
@@ -184,21 +182,43 @@ classdef gxtx_fitHist<hekaGUI
         end
         
         function lockButtonCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             Selected=get(hGUI.figData.infoTable,'Data');
             
             hGUI.hekadat.HEKAsave();
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function fittingCall(hGUI,~,~)
-            hGUI.disableGui();
-           
-            hGUI.enableGui();
+            hGUI.disableGui;
+            tg=1.1/2; %threshold guess
+            tg_ind=find(hGUI.hekadat.histx<tg,1,'last');
+            c_peak=max(hGUI.hekadat.histy(1:tg_ind));
+            c_i=find(hGUI.hekadat.histy==c_peak);
+            c_hw1=find(hGUI.hekadat.histy(1:tg_ind)>c_peak/2,1,'first'); %half width
+            c_hw2=find(hGUI.hekadat.histy(1:tg_ind)>c_peak/2,1,'last'); %half width
+            o_peak=max(hGUI.hekadat.histy(tg_ind+1:end));
+            o_i=find(hGUI.hekadat.histy==o_peak);
+            o_hw1=find(hGUI.hekadat.histy(tg_ind+1:end)>o_peak/2,1,'first'); %half width
+            o_hw2=find(hGUI.hekadat.histy(tg_ind+1:end)>o_peak/2,1,'last'); %half width
+            
+            clsq.objective=@(beta,x)(1/sqrt(2*pi*beta(2)^2)).*(exp(-((x-beta(1)).^2)./(2*beta(2)^2)));;
+            clsq.x0=[0 0.1];
+            clsq.xdata=hGUI.hekadat.histx(1:tg_ind);
+            clsq.ydata=hGUI.hekadat.histx(1:tg_ind);
+            clsq.lb=[];
+            clsq.ub=[];
+            clsq.solver='lsqcurvefit';
+            clsq.options=optimset('TolX',1e-20,'TolFun',1e-20,'MaxFunEvals',1000);
+            
+            c_fitcoeffs=lsqcurvefit(clsq);
+            disp(c_fitcoeffs);
+            
+            hGUI.enableGui;
         end
         
         function lSlideCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
 %             li=hGUI.hekadat.histx(ceil(lValue));
@@ -208,11 +228,11 @@ classdef gxtx_fitHist<hekaGUI
             set(lH,'XData',[lValue lValue])
             rH=findobj('DisplayName','rightLine');
             set(rH,'XData',[rValue rValue])
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function zoomCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
             if lValue>rValue
@@ -225,11 +245,11 @@ classdef gxtx_fitHist<hekaGUI
             end
             set(hGUI.figData.plotHist,'XLim',[lValue rValue])
             
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function unzoomCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             
             lValue=get(hGUI.figData.leftSlider,'Min');
             set(hGUI.figData.leftSlider,'Value',lValue);
@@ -242,11 +262,11 @@ classdef gxtx_fitHist<hekaGUI
             rH=findobj('DisplayName','rightLine');
             set(rH,'XData',[rValue rValue])
             set(hGUI.figData.plotHist,'XLim',[lValue rValue])
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function updateTable(hGUI,~,eventdata)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Plotted=find(cell2mat(Selected(:,end)));
            Previous=Plotted(Plotted~=eventdata.Indices(1));
@@ -262,11 +282,11 @@ classdef gxtx_fitHist<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            
            updatePlots(hGUI);
-           hGUI.enableGui();
+           hGUI.enableGui;
         end
        
         function nextButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Current=find(cell2mat(Selected(:,end)));
            PlotNext=Current+1;
@@ -283,11 +303,11 @@ classdef gxtx_fitHist<hekaGUI
            set(curt,'Color',colors(Current,:),'LineWidth',1)
            hGUI.updatePlots();
            hGUI.unzoomCall();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function prevButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Previous=find(cell2mat(Selected(:,end)));
            PlotNext=Previous-1;
@@ -304,7 +324,7 @@ classdef gxtx_fitHist<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            hGUI.updatePlots();
            hGUI.unzoomCall();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
     end
     

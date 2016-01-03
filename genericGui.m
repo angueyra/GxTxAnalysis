@@ -108,14 +108,14 @@ classdef genericGUI < handle
        end
         
         function updateTable(hGUI,~,~)
-            hGUI.disableGui();
-            hGUI.enableGui();
+            hGUI.disableGui;
+            hGUI.enableGui;
         end
         
         function defaultCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             fprintf('Works!\n')
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function currIndex=getCurrIndex(hGUI,~,~)
@@ -147,13 +147,13 @@ classdef genericGUI < handle
             bins=linspace(edgemin*1.25,edgemax*1.25,nbins);
             histcurr=histc(wave,bins)';
             [hX,hY]=stairs(bins,histcurr);
-            hY=hY/length(wave);
+            hY=hY/(length(wave));
         end
-        function disableGui()
+        function disableGui
             set(findobj('-property','Enable'),'Enable','off')
             drawnow
         end
-        function enableGui()
+        function enableGui
             set(findobj('-property','Enable'),'Enable','on')
             drawnow
         end

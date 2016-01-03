@@ -7,7 +7,7 @@ classdef gxtx_refineBaseline<hekaGUI
         function hGUI=gxtx_refineBaseline(hekadat,params,fign) 
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
-          params=checkStructField(params,'nbins',200);
+          params=checkStructField(params,'nbins',400);
           hGUI@hekaGUI(hekadat,params,fign);
           
           % only plot ccc, coc and ooo
@@ -234,7 +234,7 @@ classdef gxtx_refineBaseline<hekaGUI
         end
         
         function lockButtonCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             Selected=get(hGUI.figData.infoTable,'Data');
             hGUI.hekadat.sBaseline=cell2mat(Selected(:,2));
             alldata=hGUI.hekadat.HEKAbldata;
@@ -243,11 +243,11 @@ classdef gxtx_refineBaseline<hekaGUI
             hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end);
             hGUI.hekadat.histy=hGUI.hekadat.stairy(1:2:end);
             hGUI.hekadat.HEKAsave();
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function baselineCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             Selected=get(hGUI.figData.infoTable,'Data');
             PlotNow=find(cell2mat(Selected(:,end)));
             % take care of sliders
@@ -266,11 +266,11 @@ classdef gxtx_refineBaseline<hekaGUI
             Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
             set(hGUI.figData.infoTable,'Data',Selected)
             hGUI.updatePlots();
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function lSlideCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
             lTime=hGUI.hekadat.stAxis(ceil(lValue));
@@ -280,11 +280,11 @@ classdef gxtx_refineBaseline<hekaGUI
             set(lH,'XData',[lTime lTime])
             rH=findobj('DisplayName','rightLine');
             set(rH,'XData',[rTime rTime])
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function zoomCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
             if lValue<rValue
@@ -302,11 +302,11 @@ classdef gxtx_refineBaseline<hekaGUI
             end
             set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
             
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function unzoomCall(hGUI,~,~)
-            hGUI.disableGui();
+            hGUI.disableGui;
             
             lValue=get(hGUI.figData.leftSlider,'Min');
             lTime=hGUI.hekadat.stAxis(ceil(lValue));
@@ -321,11 +321,11 @@ classdef gxtx_refineBaseline<hekaGUI
             rH=findobj('DisplayName','rightLine');
             set(rH,'XData',[rTime rTime])
             set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
-            hGUI.enableGui();
+            hGUI.enableGui;
         end
         
         function updateTable(hGUI,~,eventdata)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Plotted=find(cell2mat(Selected(:,end)));
            Previous=Plotted(Plotted~=eventdata.Indices(1));
@@ -341,11 +341,11 @@ classdef gxtx_refineBaseline<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            
            updatePlots(hGUI);
-           hGUI.enableGui();
+           hGUI.enableGui;
         end
        
         function nextButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Current=find(cell2mat(Selected(:,end)));
            PlotNext=Current+1;
@@ -362,11 +362,11 @@ classdef gxtx_refineBaseline<hekaGUI
            set(curt,'Color',colors(Current,:),'LineWidth',1)
            hGUI.updatePlots();
            hGUI.unzoomCall();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
        
        function prevButtonCall(hGUI,~,~)
-           hGUI.disableGui();
+           hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Previous=find(cell2mat(Selected(:,end)));
            PlotNext=Previous-1;
@@ -383,7 +383,7 @@ classdef gxtx_refineBaseline<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            hGUI.updatePlots();
            hGUI.unzoomCall();
-           hGUI.enableGui();
+           hGUI.enableGui;
        end
     end
     
