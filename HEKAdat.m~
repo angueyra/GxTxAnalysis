@@ -30,7 +30,7 @@ classdef HEKAdat < handle
         histfx
         hist_c
         hist_o
-        hath %half-amplitude threshold
+        hat %half-amplitude threshold
         stairx
         stairy
         % idealized data

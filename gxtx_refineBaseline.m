@@ -240,7 +240,8 @@ classdef gxtx_refineBaseline<hekaGUI
             alldata=hGUI.hekadat.HEKAbldata;
             alldata=reshape(alldata,1,numel(alldata));
             [hGUI.hekadat.stairx,hGUI.hekadat.stairy]=hGUI.calculateHist(alldata,hGUI.params.nbins,-1,2);
-            hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end);
+            deltax=(hGUI.hekadat.stairx(2)-hGUI.hekadat.stairx(1))/2;
+            hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end)+deltax;
             hGUI.hekadat.histy=hGUI.hekadat.stairy(1:2:end);
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui;

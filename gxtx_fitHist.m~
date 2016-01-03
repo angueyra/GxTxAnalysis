@@ -108,10 +108,18 @@ classdef gxtx_fitHist<hekaGUI
           lH=line([rSlide.Value rSlide.Value],plotHist.YLim,'Parent',hGUI.figData.plotHist);
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 1])
           set(lH,'DisplayName','rightLine')
-          %zero line
-          lH=line([0 0],[0 1],'Parent',hGUI.figData.plotHist);
+          %c line
+          lH=line([NaN NaN],[0 1],'Parent',hGUI.figData.plotHist);
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLine')
+          set(lH,'DisplayName','cLine')
+          %o line
+          lH=line([NaN NaN],[0 1],'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','oLine')
+          %hath line
+          lH=line([NaN NaN],[0 1],'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','hathLine')
           
           % corrected Hist
           lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist);
@@ -140,6 +148,16 @@ classdef gxtx_fitHist<hekaGUI
           lH=line(hGUI.hekadat.stAxis,zeros(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','zeroLineCurr')
+          
+          % closed fit
+          lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[1 .5 .5])
+          set(lH,'DisplayName','cFit')
+          
+          % open fit
+          lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.5 .5 1])
+          set(lH,'DisplayName','oFit')
           
           hGUI.updatePlots();
 %           if params.LockNow
@@ -181,39 +199,67 @@ classdef gxtx_fitHist<hekaGUI
 %             set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
         end
         
-        function lockButtonCall(hGUI,~,~)
-            hGUI.disableGui;
-            Selected=get(hGUI.figData.infoTable,'Data');
-            
-            hGUI.hekadat.HEKAsave();
-            hGUI.enableGui;
-        end
-        
         function fittingCall(hGUI,~,~)
             hGUI.disableGui;
             tg=1.1/2; %threshold guess
-            tg_ind=find(hekadat.histx<tg,1,'last');
+            tg_ind=find(hGUI.hekadat.histx<tg,1,'last');
             c_peak=max(hGUI.hekadat.histy(1:tg_ind));
-            c_i=find(hekadat.histy==c_peak);
-            c_hw1=find(hekadat.histy(1:tg_ind)>c_peak/2,1,'first'); %half width
-            c_hw2=find(hekadat.histy(1:tg_ind)>c_peak/2,1,'last'); %half width
-            o_peak=max(hekadat.histy(tg_ind+1:end));
-            o_i=find(hekadat.histy==o_peak);
-            o_hw1=find(hekadat.histy(tg_ind+1:end)>o_peak/2,1,'first'); %half width
-            o_hw2=find(hekadat.histy(tg_ind+1:end)>o_peak/2,1,'last'); %half width
+            c_i=find(hGUI.hekadat.histy==c_peak);
+            c_hw1=find(hGUI.hekadat.histy(1:tg_ind)>c_peak/2,1,'first'); %half width
+            c_hw2=find(hGUI.hekadat.histy(1:tg_ind)>c_peak/2,1,'last'); %half width
+            o_peak=max(hGUI.hekadat.histy(tg_ind+1:end));
+            o_i=find(hGUI.hekadat.histy==o_peak);
+            o_hw1=find(hGUI.hekadat.histy(tg_ind+1:end)>o_peak/2,1,'first'); %half width
+            o_hw2=find(hGUI.hekadat.histy(tg_ind+1:end)>o_peak/2,1,'last'); %half width
             
-            clsq.objective='normalpdf';
-            clsq.x0=[0 0.1];
-            clsq.xdata=hekadat.histx(1:tg_ind);
-            clsq.ydata=hekadat.histx(1:tg_ind);
-            clsq.lb=[];
-            clsq.ub=[];
-            clsq.solver='lsqcurvefit';
-            clsq.options=optimset('TolX',1e-20,'TolFun',1e-20,'MaxFunEvals',1000);
+            gauss=@(b,x)(b(3).*normalize(normpdf(x,b(1),b(2))));
+            c0=[0 0.1 c_peak];
+            c_coeffs=nlinfit(hGUI.hekadat.histx(1:tg_ind),hGUI.hekadat.histy(1:tg_ind),gauss,c0);
             
-            c_fitcoeffs=lsqcurvefit(clsq);
-            disp(c_fitcoeffs);
+            o0=[1.1 0.1 o_peak];
+            o_coeffs=nlinfit(hGUI.hekadat.histx(tg_ind+1:end),hGUI.hekadat.histy(tg_ind+1:end),gauss,o0);
             
+            lHNow=findobj('DisplayName','cFit');
+            set(lHNow,'XData',hGUI.hekadat.histx,'YData',gauss(c_coeffs,hGUI.hekadat.histx))
+            
+            lHNow=findobj('DisplayName','oFit');
+            set(lHNow,'XData',hGUI.hekadat.histx,'YData',gauss(o_coeffs,hGUI.hekadat.histx))
+            
+            % hist line
+            lHNow=findobj('DisplayName','cLine');
+            set(lHNow,'XData',[c_coeffs(1) c_coeffs(1)])
+            lHNow=findobj('DisplayName','oLine');
+            set(lHNow,'XData',[o_coeffs(1) o_coeffs(1)])
+            lHNow=findobj('DisplayName','hathLine');
+            set(lHNow,'XData',[c_coeffs(1)+o_coeffs(1) c_coeffs(1)+o_coeffs(1)]/2)
+            
+            % plot line
+            lHNow=findobj('DisplayName','cLine2');
+            set(lHNow,'YData',[c_coeffs(1) c_coeffs(1)])
+            lHNow=findobj('DisplayName','oLine2');
+            set(lHNow,'YData',[o_coeffs(1) o_coeffs(1)])
+            lHNow=findobj('DisplayName','hathLine2');
+            set(lHNow,'YData',[c_coeffs(1)+o_coeffs(1) c_coeffs(1)+o_coeffs(1)]/2)
+            
+            uistack(findobj('DisplayName','allHist'),'top')
+            
+            fprintf('i_c = %g \ni_o = %g\n',c_coeffs(1),o_coeffs(1))
+            % save current coeffs
+            hGUI.params.histfx=gauss;
+            hGUI.params.hist_c=c_coeffs;
+            hGUI.params.hist_o=o_coeffs;
+            
+            hGUI.enableGui;
+        end
+        
+        function lockButtonCall(hGUI,~,~)
+            hGUI.disableGui;
+            
+            hGUI.hekadat.histfx=hGUI.params.histfx;
+            hGUI.hekadat.hist_c=hGUI.params.hist_c;
+            hGUI.hekadat.hist_o=hGUI.params.hist_o;
+            hGUI.hekadat.hath=(hGUI.params.hist_c(1)+hGUI.params.hist_o(1))/2;
+            hGUI.hekadat.HEKAsave();
             hGUI.enableGui;
         end
         
