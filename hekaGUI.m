@@ -149,7 +149,7 @@ classdef hekaGUI < genericGUI
            buttonstruct.callback=@hGUI.lockButtonCall;
            buttonstruct=checkStructField(buttonstruct,'Position',[.895 .01 0.10 .10]);
            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
-           buttonstruct=checkStructField(buttonstruct,'string','Lock&Save');
+           buttonstruct=checkStructField(buttonstruct,'String','Lock&Save');
            buttonstruct=checkStructField(buttonstruct,'FontSize',10);
            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
            %create button

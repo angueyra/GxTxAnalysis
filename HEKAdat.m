@@ -25,11 +25,12 @@ classdef HEKAdat < handle
         swaveNames
         stags
         sBaseline
+        % distributions
         histx
         histy
-        histfx
-        hist_c
-        hist_o
+        histfx %gaussian
+        hist_c % fit coefficients for closed
+        hist_o % fit coefficients for open
         hath %half-amplitude threshold
         stairx
         stairy
@@ -131,5 +132,33 @@ classdef HEKAdat < handle
                 error('Run refineBlanks and refineBaseline first\n')
             end
         end
+        
+        function iAnalysis=HEKAianalyze(hekadat)
+            %analyze idealized waves
+            if isempty(hekadat.idata)
+                error('Idealize data first\n')
+            end
+            iAnalysis=struct;
+            iAnalysis.firstlats=HEKAfirstlats(hekadat);
+            iAnalysis.odwellt=0;
+            iAnalysis.cdwellt=0;
+        end
+        
+        function firstlats=HEKAfirstlats(hekadat)
+            %first latencies
+            firstlats=NaN(size(hekadat.idata,1),1);
+            for i=1:size(hekadat.idata,1)
+                if ~isempty(find(hekadat.idata(i,:),1,'first'))
+                    firstlats(i)=hekadat.itAxis(find(hekadat.idata(i,:),1,'first'));
+                end
+            end
+        end
+    end
+    
+    methods (Static=true)
+        function idata=HEKAidealize(data,hath)
+            idata=zeros(size(data));
+            idata(data>hath)=1;
+        end 
     end
 end

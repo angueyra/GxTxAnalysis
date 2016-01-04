@@ -99,7 +99,7 @@ classdef genericGUI < handle
            buttonstruct=checkStructField(buttonstruct,'Callback',@hGUI.defaultCall);
            buttonstruct=checkStructField(buttonstruct,'Position',[.895 .01 0.10 .10]);
            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
-           buttonstruct=checkStructField(buttonstruct,'string',sprintf('%s',buttonstruct.tag));
+           buttonstruct=checkStructField(buttonstruct,'String',sprintf('%s',buttonstruct.tag));
            buttonstruct=checkStructField(buttonstruct,'FontSize',10);
            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
            %create button
