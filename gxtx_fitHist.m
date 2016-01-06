@@ -148,18 +148,18 @@ classdef gxtx_fitHist<hekaGUI
           hGUI.labely(hGUI.figData.plotSub,'i (pA)');
           
           % Current wave
-          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
+          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.HEKAbldata,2)),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           % Idealied wave
-          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
+          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.HEKAbldata,2)),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',whithen(colors(params.PlotNow,:),0.5))
           set(lH,'DisplayName','iWave')
           
           % Wave Sliders
           wlSlide=struct('tag','wleftSlider','Position',[pleft-.015 .035 pwidth+.03 .05]);
           wlSlide.Min=1;
-          wlSlide.Max=size(hekadat.sdata,2);
+          wlSlide.Max=size(hekadat.HEKAbldata,2);
           wlSlide.Value=floor(wlSlide.Min);
           wlSlide.SliderStep=[1/1000 1/100];
           wlSlide.Callback=@hGUI.wSlideCall;
@@ -167,7 +167,7 @@ classdef gxtx_fitHist<hekaGUI
           
           wrSlide=struct('tag','wrightSlider','Position',[pleft-.015 .005 pwidth+.03 .05]);
           wrSlide.Min=1;
-          wrSlide.Max=size(hekadat.sdata,2);
+          wrSlide.Max=size(hekadat.HEKAbldata,2);
           wrSlide.Value=floor(wrSlide.Max);
           wrSlide.SliderStep=[1/10000 1/100];
           wrSlide.Callback=@hGUI.wSlideCall;
@@ -223,8 +223,8 @@ classdef gxtx_fitHist<hekaGUI
             Rows=size(Selected,1);
             colors=pmkmp(Rows,'CubicL');
             
-            % current trace
-            currWave=hGUI.hekadat.sdata(currWavei,:)-hGUI.hekadat.sBaseline(currWavei);
+            % current trace (baseline corrected)
+            currWave=hGUI.hekadat.HEKAbldata(currWavei);
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currWave,'Color',colors(PlotNow,:))
             
@@ -255,12 +255,10 @@ classdef gxtx_fitHist<hekaGUI
             
             gauss=@(b,x)(b(3).*normalize(normpdf(x,b(1),b(2))));
             c0=[0 0.1 c_peak];
-%             c_coeffs=nlinfit(hGUI.hekadat.histx(1:tg_ind),hGUI.hekadat.histy(1:tg_ind),gauss,c0);
             c_coeffs=nlinfit(hGUI.hekadat.histx(c_hw1:c_hw2),hGUI.hekadat.histy(c_hw1:c_hw2),gauss,c0);
             disp(c_coeffs)
             
             o0=[1.1 0.1 o_peak];
-%             o_coeffs=nlinfit(hGUI.hekadat.histx(tg_ind+1:end),hGUI.hekadat.histy(tg_ind+1:end),gauss,o0);
             o_coeffs=nlinfit(hGUI.hekadat.histx(o_hw1:o_hw2),hGUI.hekadat.histy(o_hw1:o_hw2),gauss,o0);
             
             lHNow=findobj('DisplayName','cFit');
@@ -302,7 +300,7 @@ classdef gxtx_fitHist<hekaGUI
             hGUI.hekadat.itAxis=hGUI.hekadat.stAxis;
             hGUI.hekadat.itags=hGUI.hekadat.stags;
             hGUI.hekadat.iwaveNames=hGUI.hekadat.swaveNames;
-            hGUI.hekadat.idata=hGUI.hekadat.HEKAidealize(hGUI.hekadat.sdata,hGUI.hekadat.hath);
+            hGUI.hekadat.idata=hGUI.hekadat.HEKAidealize(hGUI.hekadat.HEKAbldata,hGUI.hekadat.hath);
             
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui;
@@ -449,6 +447,8 @@ classdef gxtx_fitHist<hekaGUI
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Previous});
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            
+           hGUI.unzoomCall();
+           hGUI.wunzoomCall();
            updatePlots(hGUI);
            hGUI.enableGui;
         end
@@ -469,8 +469,9 @@ classdef gxtx_fitHist<hekaGUI
            colors=whithen(pmkmp(Rows,'CubicL'),0.6);
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Current});
            set(curt,'Color',colors(Current,:),'LineWidth',1)
-           hGUI.updatePlots();
            hGUI.unzoomCall();
+           hGUI.wunzoomCall();
+           hGUI.updatePlots();
            hGUI.enableGui;
        end
        
@@ -490,8 +491,9 @@ classdef gxtx_fitHist<hekaGUI
            colors=whithen(pmkmp(Rows,'CubicL'),0.6);
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Previous});
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
-           hGUI.updatePlots();
            hGUI.unzoomCall();
+           hGUI.wunzoomCall();
+           hGUI.updatePlots();
            hGUI.enableGui;
        end
     end

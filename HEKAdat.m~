@@ -5,6 +5,7 @@ classdef HEKAdat < handle
         % raw data
         data
         tAxis
+        dt
         stim
         waveNames
         tags
@@ -77,6 +78,7 @@ classdef HEKAdat < handle
             
             hekadat.waveNames=regexprep(regexprep(fnames,'Trace','e'),'_1$','');
             hekadat.tAxis=HEKAexport.(fnames{1})(:,1)';
+            hekadat.dt=hekadat.tAxis(2)-hekadat.tAxis(1);
             hekadat.data=NaN(size(fnames,1),size(hekadat.tAxis,2));
             for i=1:size(fnames,1)
                 hekadat.data(i,:)=HEKAexport.(fnames{i})(:,2)*1e12; %transform into pA
@@ -98,6 +100,11 @@ classdef HEKAdat < handle
         function matches=HEKAstagfind(hekadat,tag)
             tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
             matches=cellfun(tagfindfx(tag),hekadat.stags);
+        end
+        
+        function matches=HEKAitagfind(hekadat,tag)
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+            matches=cellfun(tagfindfx(tag),hekadat.itags);
         end
         
         function matchindex=HEKAnamefind(hekadat,tag)
@@ -124,12 +131,17 @@ classdef HEKAdat < handle
             t_stairs.deltai=find(hekadat.tAxis<=t_stairs.delta,1,'last');
         end
         
-        function blData=HEKAbldata(hekadat)
+        function blData=HEKAbldata(hekadat,varargin)
             %baseline corrected data
-            if ~isempty(hekadat.sBaseline)
-                blData=hekadat.sdata-repmat(hekadat.sBaseline,1,size(hekadat.sdata,2));
-            else
+            if isempty(hekadat.sBaseline)
                 error('Run refineBlanks and refineBaseline first\n')
+            else
+                if nargin==1 %spit out entire data matrix 
+                    blData=hekadat.sdata-repmat(hekadat.sBaseline,1,size(hekadat.sdata,2));
+                elseif nargin==2
+                    i=varargin{1};
+                    blData=hekadat.sdata(i,:)-hekadat.sBaseline(i);
+                end
             end
         end
         
@@ -139,7 +151,9 @@ classdef HEKAdat < handle
                 error('Idealize data first\n')
             end
             iAnalysis=struct;
-            iAnalysis.firstlats=HEKAfirstlats(hekadat);
+            iAnalysis.firstlatsi=hekadat.HEKAfirstlatsi;
+            iAnalysis.firstlats=hekadat.HEKAfirstlats; %in ms
+            [iAnalysis.odt,iAnalysis.cdwellt]=hekadat.HEKAdwelltimes; %in ms
         end
         
         function firstlats=HEKAfirstlats(hekadat)
@@ -147,7 +161,71 @@ classdef HEKAdat < handle
             firstlats=NaN(size(hekadat.idata,1),1);
             for i=1:size(hekadat.idata,1)
                 if ~isempty(find(hekadat.idata(i,:),1,'first'))
-                    firstlats(i)=hekadat.itAxis(find(hekadat.idata(i,:),1,'first'));
+                    firstlats(i)=hekadat.itAxis(find(hekadat.idata(i,:),1,'first'))*1e3;
+                end
+            end
+        end
+        
+        function firstlatsi=HEKAfirstlatsi(hekadat)
+            %first latencies indices
+            firstlatsi=NaN(size(hekadat.idata,1),1);
+            for i=1:size(hekadat.idata,1)
+                if ~isempty(find(hekadat.idata(i,:),1,'first'))
+                    firstlatsi(i)=find(hekadat.idata(i,:),1,'first');
+                end
+            end
+        end
+        
+        function [odt,cdt]=HEKAdwelltimes(hekadat)
+            if isempty(hekadat.idata)
+                error('Please idealize data first\n')
+            else
+                odt=[];
+                cdt=[];
+                for i=1:size(hekadat.idata,1)
+                    [curr_odt,curr_cdt]=HEKAdwelltime_single(hekadat,i);
+                    odt=[odt curr_odt];
+                    cdt=[cdt curr_cdt];
+                end
+            end
+        end
+        
+        function [odt,cdt]=HEKAdwelltime_single(hekadat,index)
+            ideData=hekadat.idata(index,:);
+            fli=hekadat.HEKAfirstlatsi;
+            fli=fli(index);
+            
+            now=1;
+            odt=[];
+            cdt=[];
+            
+            if ~isnan(fli)
+                i(now)=fli;
+                state(now)=logical(ideData(i(now)));
+                
+                while 1
+                    now=now+1;
+                    prev=now-1;
+                    if isempty(find(ideData(i(prev):end)~=state(prev),1,'first'))
+                        break
+                    else
+                        i(now)=i(prev)-1+find(ideData(i(prev):end)~=state(prev),1,'first');
+                        state(now)=logical(ideData(i(now)));
+                    end
+                    
+                end
+                
+                oi=i(state);
+                ci=i(~state);
+                
+                if state(end)
+                    %wave ends in open state
+                    odt=(ci-oi(1:end-1))*hekadat.dt*1e3; %in us
+                    cdt=(oi(2:end)-ci)*hekadat.dt*1e3; %in us
+                else
+                    %wave ends in open state
+                    odt=(ci-oi)*hekadat.dt*1e3; %in us
+                    cdt=(oi(2:end)-ci(1:end-1))*hekadat.dt*1e3; %in us
                 end
             end
         end
@@ -157,6 +235,19 @@ classdef HEKAdat < handle
         function idata=HEKAidealize(data,hath)
             idata=zeros(size(data));
             idata(data>hath)=1;
-        end 
+        end
+        
+        function [hX,hY]=HEKAhist(wave,nbins,edgemin,edgemax)
+            bins=linspace(edgemin,edgemax,nbins);
+            hY=histc(wave,bins);
+            d=diff(bins)/2;
+            hX= [bins(1:end-1)+d, bins(end)];
+        end
+        
+        function [hX,hY]=HEKAloghist(wave,nbins,edgemin,edgemax)
+            hX=logspace(log10(edgemin),log10(edgemax*1.1),nbins);
+            hY=histc(wave,bins)';
+        end
+        
     end
 end
