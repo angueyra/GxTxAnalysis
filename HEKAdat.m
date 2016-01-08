@@ -145,15 +145,16 @@ classdef HEKAdat < handle
             end
         end
         
-        function iAnalysis=HEKAianalyze(hekadat)
+        function iA=HEKAianalyze(hekadat)
             %analyze idealized waves
             if isempty(hekadat.idata)
                 error('Idealize data first\n')
             end
-            iAnalysis=struct;
-            iAnalysis.firstlatsi=hekadat.HEKAfirstlatsi;
-            iAnalysis.firstlats=hekadat.HEKAfirstlats; %in ms
-            [iAnalysis.odt,iAnalysis.cdwellt]=hekadat.HEKAdwelltimes; %in ms
+            iA=struct;
+            iA.firstlatsi=hekadat.HEKAfirstlatsi;
+            iA.firstlats=hekadat.HEKAfirstlats; %in ms
+            iA.cumfirstlats=sort(iA.firstlats)./length(iA.firstlats); %in ms
+            [iA.odt,iA.cdt]=hekadat.HEKAdwelltimes; %in ms
         end
         
         function firstlats=HEKAfirstlats(hekadat)
@@ -220,12 +221,12 @@ classdef HEKAdat < handle
                 
                 if state(end)
                     %wave ends in open state
-                    odt=(ci-oi(1:end-1))*hekadat.dt*1e3; %in us
-                    cdt=(oi(2:end)-ci)*hekadat.dt*1e3; %in us
+                    odt=(ci-oi(1:end-1))*hekadat.dt*1e3; %in ms
+                    cdt=(oi(2:end)-ci)*hekadat.dt*1e3; %in ms
                 else
                     %wave ends in open state
-                    odt=(ci-oi)*hekadat.dt*1e3; %in us
-                    cdt=(oi(2:end)-ci(1:end-1))*hekadat.dt*1e3; %in us
+                    odt=(ci-oi)*hekadat.dt*1e3; %in ms
+                    cdt=(oi(2:end)-ci(1:end-1))*hekadat.dt*1e3; %in ms
                 end
             end
         end
@@ -237,18 +238,25 @@ classdef HEKAdat < handle
             idata(data>hath)=1;
         end
         
-        function [hX,hY]=HEKAhist(wave,nbins,edgemin,edgemax)
+        function [hx,hy,sx,sy]=HEKAhist(wave,nbins,edgemin,edgemax)
             bins=linspace(edgemin,edgemax,nbins);
-            hY=histc(wave,bins);
+            hy=histc(wave,bins);
             d=diff(bins)/2;
-            hX= [bins(1:end-1)+d, bins(end)];
+            hx= [bins(1:end-1)+d, bins(end)];
+            if nargout>2 && nargout==4
+                [sx,sy]=stairs(bins,hy);
+            end
         end
         
-        function [hX,hY]=HEKAloghist(wave,nbins,edgemin,edgemax)
-            bins=logspace(log10(edgemin),log10(edgemax*1.1),nbins);
-            hY=histc(wave,bins)';
-            d=diff(bins)/2;
-            hX= [bins(1:end-1)+d, bins(end)];
+        function [hx_log,hy_log,sx_log,sy_log]=HEKAloghist(wave,nbins,edgemin,edgemax)
+            wave_log=log10(wave);
+            logbins=linspace(edgemin,edgemax,nbins);
+            d=diff(logbins)/2;
+            hx_log= [logbins(1:end-1)+d, logbins(end)];                   
+            hy_log=sqrt(histc(wave_log,logbins));                      
+            if nargout>2 && nargout==4
+                [sx_log,sy_log]=stairs(logbins,hy_log);
+            end
         end
         
     end
