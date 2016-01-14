@@ -74,7 +74,10 @@ lH=line(ohx,ofy,'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
 
 %% closedDwellTimes log-binned histogram and fitting
-[chx_log,chy_log,csx_log,csy_log]=hekadat.HEKAloghist(cdt,80,-1,3);
+nbins=80;
+clogmin=-1;
+clogmax=2.5;
+[chx_log,chy_log,csx_log,csy_log]=hekadat.HEKAloghist(cdt,nbins,clogmin,clogmax);
 
 logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
 dblogbinexp=@(q,x)sqrt( (10.^x) .* (  logexp([q(1) q(2)],x) + logexp([q(3) q(4)],x)  ) );
@@ -105,17 +108,17 @@ set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
 
 % replotting in linear time
 [chx,chy,csx,csy]=hekadat.HEKAhist(cdt,nbins,10^clogmin,10^clogmax);
-doubleexpdecayfixedtau=@(q,x)((q(1)*exp(-(x)/10^(cfc_log(2)))));
-cfc=nlinfit(chx(2:end),chy(2:end),doubleexpdecayfixedtau,400);
+doubleexpdecayfixedtau=@(q,x)((q(1)*exp(-(x)/10^(cfc_log(2)))))+((q(2)*exp(-(x)/10^(cfc_log(4)))));
+cfc=nlinfit(chx(2:end),chy(2:end),doubleexpdecayfixedtau,[1000 157]);
 cfy=doubleexpdecayfixedtau(cfc,chx);
 
 f2=getfigH(2);
-set(f2,'xscale','linear')
+set(f2,'yscale','linear')
 lH=line(chx,chy,'Parent',f2);
 set(lH,'Marker','.','LineStyle','none','Color','k')
 lH=line(csx,csy,'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','k')
-lH=line(chx,cfy,'Parent',f2);
+lH=line(chx(2:end),cfy(2:end),'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
 
 

@@ -1,7 +1,15 @@
+%% ANALYSIS OF KV2.1 SINGLE CHANNEL DATA
+% Flow
+% 1) hekadat=HEKAdat('2015_06_23_Juan'): load data from Patchmaster into HEKAdat class
+% 2) gxtx_tagBlanks(hekadata,p,10):  scroll through data and identify blanks and bad traces
+% 3) gxtx_tagOpenings(hekadata,p,10): after baseline subtraction find 'ooo' and 'coc' epochs
+% 4) gxtx_refineBlanks(hekadata,p,10): use local correction for blanks (flanking blanks) when capacitance drifts
+% 5) gxtx_refinaBaseline((hekadata,p,10): 
+
 %% Data loading
 % Patchmaster mat file exports
 clear; clear classes; clc;
-hekadat=HEKAdat('2015_06_23_Juan');
+hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
 
 % quickly scroll through blanks and bad data
 % subtract blank average
@@ -74,20 +82,23 @@ lH=line(ohx,ofy,'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
 
 %% closedDwellTimes log-binned histogram and fitting
-[chx_log,chy_log,csx_log,csy_log]=hekadat.HEKAloghist(cdt,80,-1,3);
+nbins=80;
+clogmin=-1;
+clogmax=2.5;
+[chx_log,chy_log,csx_log,csy_log]=hekadat.HEKAloghist(cdt,nbins,clogmin,clogmax);
 
 logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
 dblogbinexp=@(q,x)sqrt( (10.^x) .* (  logexp([q(1) q(2)],x) + logexp([q(3) q(4)],x)  ) );
 g=[10 -0.1 4 0.9];
 gy_log=dblogbinexp(g,chx_log);
 
-fc=nlinfit(chx_log,chy_log,dblogbinexp,g);
-fy_log=dblogbinexp(fc,chx_log);
+cfc_log=nlinfit(chx_log,chy_log,dblogbinexp,g);
+fy_log=dblogbinexp(cfc_log,chx_log);
 fprintf('_________________________________________\n')
 fprintf('Fit of closed dwell times:\n')
 fprintf('   First exponential\tSecond exponential\n')
-fprintf('     tau1 = %g ms\t   tau2 = %g ms\n',round(10^(fc(2))*1000)/1000,round(10^(fc(4))*1000)/1000)
-fprintf('     alpha1 = %g\t   alpha2 = %g ms\n\n',round((fc(1))*1000)/1000,round((fc(3))*1000)/1000)
+fprintf('     tau1 = %g ms\t   tau2 = %g ms\n',round(10^(cfc_log(2))*1000)/1000,round(10^(cfc_log(4))*1000)/1000)
+fprintf('     alpha1 = %g\t   alpha2 = %g ms\n\n',round((cfc_log(1))*1000)/1000,round((cfc_log(3))*1000)/1000)
 fprintf('-----------------------------------------\n')
 
 f1=getfigH(1);
@@ -105,17 +116,17 @@ set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
 
 % replotting in linear time
 [chx,chy,csx,csy]=hekadat.HEKAhist(cdt,nbins,10^clogmin,10^clogmax);
-doubleexpdecayfixedtau=@(q,x)((q(1)*exp(-(x)/10^(cfc_log(2)))));
-cfc=nlinfit(chx(2:end),chy(2:end),doubleexpdecayfixedtau,400);
+doubleexpdecayfixedtau=@(q,x)((q(1)*exp(-(x)/10^(cfc_log(2)))))+((q(2)*exp(-(x)/10^(cfc_log(4)))));
+cfc=nlinfit(chx(2:end),chy(2:end),doubleexpdecayfixedtau,[1000 157]);
 cfy=doubleexpdecayfixedtau(cfc,chx);
 
 f2=getfigH(2);
-set(f2,'xscale','linear')
+set(f2,'yscale','linear')
 lH=line(chx,chy,'Parent',f2);
 set(lH,'Marker','.','LineStyle','none','Color','k')
 lH=line(csx,csy,'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','k')
-lH=line(chx,cfy,'Parent',f2);
+lH=line(chx(2:end),cfy(2:end),'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
 
 
