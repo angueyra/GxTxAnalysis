@@ -1,7 +1,15 @@
+%% ANALYSIS OF KV2.1 SINGLE CHANNEL DATA
+% Flow
+% 1) hekadat=HEKAdat('2015_06_23_Juan'): load data from Patchmaster into HEKAdat class
+% 2) gxtx_tagBlanks(hekadata,p,10):  scroll through data and identify blanks and bad traces
+% 3) gxtx_tagOpenings(hekadata,p,10): after baseline subtraction find 'ooo' and 'coc' epochs
+% 4) gxtx_refineBlanks(hekadata,p,10): use local correction for blanks (flanking blanks) when capacitance drifts
+% 5) gxtx_refinaBaseline((hekadata,p,10): 
+
 %% Data loading
 % Patchmaster mat file exports
 clear; clear classes; clc;
-hekadat=HEKAdat('2015_06_23_Juan');
+hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
 
 % quickly scroll through blanks and bad data
 % subtract blank average
