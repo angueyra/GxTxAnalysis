@@ -141,7 +141,7 @@ classdef HEKAdat < handle
                 hekadat.stAxis=hekadat.tAxis(1:tst.deltai);
                 cccmean=hekadat.HEKAtagmean('ccc');
                 hekadat.sdata=hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hekadat.swaveNames,1),1);
-                hekadat.sBaseline=zeros(size(hekadat.sdata,1),1);
+                hekadat.sBaseline=zeros(1,size(hekadat.sdata,1));
             end
         end
         

@@ -9,7 +9,7 @@ classdef gxtx_refineBlanks<hekaGUI
           params=checkStructField(params,'LockNow',0);
           params=checkStructField(params,'nbins',200);
           params=checkStructField(params,'tcorrlim',0.015);
-          tcorrlimi=find(hekadat.tAxis>=params.tcorrlim,1,'first');
+          tcorrlimi=find(hekadat.tAxis==params.tcor
           hGUI@hekaGUI(hekadat,params,fign);
           
           % only plot ccc, coc and ooo
@@ -84,8 +84,8 @@ classdef gxtx_refineBlanks<hekaGUI
           set(lH,'DisplayName','zeroLine')
           
           %correction limit line
-          lH=line([hGUI.hekadat.tAxis(tcorrlimi) hGUI.hekadat.tAxis(tcorrlimi)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.75 .75 .75])
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','zeroLine')
           
           % current trace
@@ -285,18 +285,17 @@ classdef gxtx_refineBlanks<hekaGUI
             hGUI.disableGui;
             tst=hGUI.hekadat.HEKAstairsprotocol();
             tlim=find(hGUI.hekadat.tAxis<=hGUI.params.tcorrlim,1,'last');
-%             % parsing by tags. May not correspond to waves in table unless reloaded
-%             selWaves=logical(hGUI.hekadat.HEKAtagfind('ccc')+hGUI.hekadat.HEKAtagfind('ooo')+hGUI.hekadat.HEKAtagfind('coc'));
-%             
-%             
-%             hGUI.hekadat.swaveNames=hGUI.hekadat.waveNames(selWaves);
-%             hGUI.hekadat.stags=hGUI.hekadat.tags(selWaves);
-%             hGUI.hekadat.stAxis=hGUI.hekadat.tAxis(1:tst.deltai);
-%             
-%             cccmean=hGUI.hekadat.HEKAtagmean('ccc');
-%             sdata=hGUI.hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hGUI.hekadat.swaveNames,1),1);
-
-            error ('Need corrections here')
+            % parsing by tags. May not correspond to waves in table unless reloaded
+            selWaves=logical(hGUI.hekadat.HEKAtagfind('ccc')+hGUI.hekadat.HEKAtagfind('ooo')+hGUI.hekadat.HEKAtagfind('coc'));
+            
+            
+            hGUI.hekadat.swaveNames=hGUI.hekadat.waveNames(selWaves);
+            hGUI.hekadat.stags=hGUI.hekadat.tags(selWaves);
+            hGUI.hekadat.stAxis=hGUI.hekadat.tAxis(1:tst.deltai);
+            
+            cccmean=hGUI.hekadat.HEKAtagmean('ccc');
+            sdata=hGUI.hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hGUI.hekadat.swaveNames,1),1);
+            
             
             tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
             cccLi=NaN(size(hGUI.hekadat.swaveNames,1),1);
@@ -313,7 +312,7 @@ classdef gxtx_refineBlanks<hekaGUI
             submat=zeros(size(sdata));
             submat(:,1:tlim)=(sdata(cccLi,1:tlim)+sdata(cccRi,1:tlim))./2;
             hGUI.hekadat.sdata=sdata-submat;
-            
+            hGUI.hekadat.sBaseline=zeros(size(sdata,1),1);
             
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui;

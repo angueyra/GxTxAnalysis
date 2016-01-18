@@ -52,8 +52,13 @@ classdef gxtx_tagOpenings<hekaGUI
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
           
           % tag label
-          currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data-repmat(cccmean,Rows,1)))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+%           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data-repmat(cccmean,Rows,1)))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currTag=text((hGUI.hekadat.tAxis(end))*.9,3,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
           set(currTag,'tag','currTag','FontSize',24)
+          % index label
+%           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currIndex=text(0.01,3,num2str(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          set(currIndex,'tag','currIndex','FontSize',24)
           
           % current trace
           lH=line(hGUI.hekadat.tAxis,NaN(size(hGUI.hekadat.data(params.PlotNow,:))),'Parent',hGUI.figData.plotCurr);
@@ -87,6 +92,8 @@ classdef gxtx_tagOpenings<hekaGUI
             
             currtag=findobj('tag','currTag');
             set(currtag,'String',hGUI.hekadat.tags(PlotNow));
+            curri=findobj('tag','currIndex');
+            set(curri,'String',num2str(PlotNow));
         end
         
         function updateTable(hGUI,~,eventdata)

@@ -1,383 +1,394 @@
-function gxtx_refineBaseline(hekadat,params,fignumber)
-
-if isfield(params,'PlotNow') && ~isempty(params.PlotNow)
-    PlotNow=params.PlotNow;
-else 
-    PlotNow=1;
-end
-
-if isempty(hekadat.sdata)
-    error('First run gxtx_refineBlanks and save curation')
-end
-
-figure(fignumber)
-clf
-figH=gcf;
-set(gcf,'WindowStyle','normal');
-set(gcf,'Position',[10 450 1111 800]);
-
- % create new panel slider, info table
-    delete(get(figH, 'Children'));
-    figData.currentFunction = mfilename;
-    figData.PlotNow=PlotNow;
-    l = .0001; %left position
-    w = .9999; %width
-    bw=.065;
-    bl=0.995-bw;
-    bh=0.08;
-    % only plot ccc, coc and ooo
-%     selWaves=logical(hekadat.HEKAstagfind('ccc')+hekadat.HEKAstagfind('ooo')+hekadat.HEKAstagfind('coc'));
-    selWaves=logical(hekadat.HEKAstagfind('ccc'));
-    selWavesi=find(selWaves==1);
-    Rows=size(hekadat.swaveNames(selWaves),1);
-    colors=pmkmp(Rows,'CubicL');
-    tcolors=round(colors./1.2.*255);
-    Selected=false(Rows,2);
-    RowNames=cell(size(Rows));
-    for i=1:Rows
-        RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.swaveNames{selWavesi(i)});
+classdef gxtx_refineBaseline<hekaGUI
+    properties
     end
-    if PlotNow<Rows
-        Selected(PlotNow,end)=true;
-    else
-        Selected(1,end)=true;
-    end
-    Selected(1,1)=true;
-    infoData = [hekadat.stags(selWaves) num2cell(Selected)];
-    figData.infoTable = uitable('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [0.01, .005, 0.185, .985], ...
-        'FontSize',10,...
-        'ColumnWidth',{40},...
-        'Data', infoData, ...
-        'ColumnName',{'tag','ccc','P'},...
-        'ColumnFormat',{'char','logical'},...
-        'RowName', RowNames,...
-        'ColumnEditable', true(1,Rows),...
-        'CellEditCallback',{@table_callBack});
-    figData.panel = uipanel('Parent', figH, ...
-        'Units', 'normalized', ...
-        'UserData',hekadat, ...
-        'Position', [l 0.00001 w 1],...
-        'tag','panel');
-    figData.previousButton = uicontrol('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [bl .90 bw bh], ...
-        'Style', 'pushbutton', ...
-        'tag','prev_push',...
-        'string','<---',...
-        'FontSize',10,...
-        'UserData',params,...
-        'callback',{@previous_callBack});
-    figData.nextButton = uicontrol('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [bl .80 bw bh], ...
-        'Style', 'pushbutton', ...
-        'tag','next_push',...
-        'string','--->',...
-        'FontSize',10,...
-        'UserData',params,...
-        'callback',{@next_callBack});
-    figData.blankButton = uicontrol('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [bl .38 bw bh], ...
-        'Style', 'pushbutton', ...
-        'tag','ccc',...
-        'string','tag as blank',...
-        'FontSize',10,...
-        'UserData',[],...
-        'callback',{@tag_callBack});
-    figData.badButton = uicontrol('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [bl .28 bw bh], ...
-        'Style', 'pushbutton', ...
-        'tag','bad',...
-        'string','tag as bad',...
-        'FontSize',10,...
-        'UserData',[],...
-        'callback',{@tag_callBack});
-    figData.untagButton = uicontrol('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [bl .18 bw bh], ...
-        'Style', 'pushbutton', ...
-        'tag','untag_push',...
-        'string','untag',...
-        'FontSize',10,...
-        'UserData',[],...
-        'callback',{@untag_callBack});
-    figData.lockButton = uicontrol('Parent', figH, ...
-        'Units', 'normalized', ...
-        'Position', [bl .03 bw bh], ...
-        'Style', 'pushbutton', ...
-        'tag','lock_push',...
-        'string','Lock&Save',...
-        'FontSize',10,...
-        'UserData',[],...
-        'callback',{@lock_callBack});
-    modifyUITableHeaderWidth(figData.infoTable,63);
-    set(figH, 'UserData', figData)%, 'ResizeFcn',{@canvasResizeFcn,figData});
     
-    % plot positions
-    pp=struct;
-    pp.l=.24;
-    pp.tlim=[min(hekadat.stAxis) max(round(hekadat.stAxis*10)/10)];
-    pp.dlim=[-1.1 2.2];
-    
-    % all data
-    sp = axes('Position',[pp.l .78 .65 .20],'Parent', figData.panel,'tag','sp');
-    set(sp,'XScale','linear','YScale','linear')
-    set(get(sp,'XLabel'),'string','Time (s)')
-    set(get(sp,'YLabel'),'string','i (pA)')
-    set(sp,'YAxisLocation','left');
-    set(sp,'XLim',pp.tlim)
-    set(sp,'YLim',pp.dlim)
-    
-    for i=1:Rows
-        lH=line(hekadat.stAxis,hekadat.sdata(selWavesi(i),:),'Parent',sp);
-        set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(i,:))
-        set(lH,'DisplayName',hekadat.swaveNames{i})
-    end
-    lH=line(hekadat.stAxis,NaN(size(hekadat.sdata(selWavesi,:))),'Parent',sp);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(i,:))
-    set(lH,'DisplayName','currTraceAll')
-    
-    sph = axes('Position',[pp.l .33 .65 .40],'Parent', figData.panel,'tag','sph');
-    set(sph,'XScale','linear','YScale','linear')
-    set(get(sph,'XLabel'),'string','i (pA)')
-    set(get(sph,'YLabel'),'string','Frequency')
-    set(sph,'YAxisLocation','left');
-    set(sph,'XLim',pp.dlim)
-    hH=line(1:100,NaN(1,100),'Parent',sph);
-    set(hH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
-    set(hH,'DisplayName','allHist')
-    
-    hH=line(1:100,NaN(1,100),'Parent',sph);
-    set(hH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
-    set(hH,'DisplayName','currHist')
-    
-    
-    sp2 = axes('Position',[pp.l .07 .65 .20],'Parent', figData.panel,'tag','sp2');
-    set(sp2,'XScale','linear','YScale','linear')
-    set(get(sp2,'XLabel'),'string','Time (s)')
-    set(get(sp2,'YLabel'),'string','i (pA)')
-    set(sp2,'YAxisLocation','left');
-    set(sp2,'XLim',pp.tlim)
-    set(sp2,'YLim',pp.dlim)
-      
-    lH=line(hekadat.stAxis,hekadat.sdata(PlotNow,:),'Parent',sp2);
-    set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(PlotNow,:))
-    set(lH,'DisplayName','currTrace')
-    
-    plotOne(figData.infoTable);
-    
-end
+    methods
+        % Constructor (gui objects and initial plotting)
+        function hGUI=gxtx_refineBaseline(hekadat,params,fign) 
+          params=checkStructField(params,'PlotNow',1);
+          params=checkStructField(params,'LockNow',0);
+          params=checkStructField(params,'nbins',400);
+          hGUI@hekaGUI(hekadat,params,fign);
+          
+          % only plot ccc, coc and ooo
+          Rows=size(hekadat.swaveNames,1);
+          colors=pmkmp(Rows,'CubicL');
+          tcolors=round(colors./1.2.*255);
+          
+          RowNames=cell(size(Rows));
+          for i=1:Rows
+              RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.swaveNames{i});
+          end
+          
+          % info Table
+          Selected=false(Rows,1);         
+          Selected(params.PlotNow,end)=true;
+          infoData=[hGUI.hekadat.stags num2cell(hekadat.sBaseline) num2cell(Selected)];
+          
+          tableinput=struct;
+          tableinput.Position=[0.01, .005, 0.185, .985];
+          tableinput.FontSize=10;
+          tableinput.ColumnWidth={40};
+          tableinput.Data=infoData;
+          tableinput.ColumnName={'tag','bline','P'};
+          tableinput.RowName=RowNames;
+          tableinput.headerWidth=63;
+          hGUI.infoTable(tableinput);
+          
+          bw=.065;
+          bh=0.08;
+          bl=0.995-bw;
+          
+          pleft=.235;
+          pwidth=.48;
+          pheight=.43;
+          ptop=.555;
+          ptop2=.08;
+          hleft=.735;
+          hwidth=.17;
+          
+          % Next and Previous Buttons
+          nextBt=struct('Position',[bl pheight bw bh]);
+          hGUI.nextButton(nextBt);
+          prevBt=struct('Position',[bl pheight+.1 bw bh]);
+          hGUI.prevButton(prevBt);
+          
+          lockBt=struct('Position', [bl .03 bw bh]);
+          hGUI.lockButton(lockBt);
+          
+         
+          
+          % Sliders
+          lSlide=struct('tag','leftSlider','Position',[pleft-.015 .45 pwidth+.03 .05]);
+          lSlide.Min=1;
+          lSlide.Max=size(hekadat.sdata,2);
+          lSlide.Value=floor(lSlide.Min)+1;
+          lSlide.SliderStep=[1/10000 1/100];
+          lSlide.Callback=@hGUI.lSlideCall;
+          hGUI.createSlider(lSlide);
+          
+          rSlide=struct('tag','rightSlider','Position',[pleft-.015 .42 pwidth+.03 .05]);
+          rSlide.Min=1;
+          rSlide.Max=size(hekadat.sdata,2);
+          rSlide.Value=floor(rSlide.Max);
+          rSlide.SliderStep=[1/10000 1/100];
+          rSlide.Callback=@hGUI.lSlideCall;
+          hGUI.createSlider(rSlide);
+          
+          % Zoom button
+          zBt=struct('tag','Zoom','Position',[pleft+pwidth+0.085 pheight .065 .08]);
+          zBt.Callback=@hGUI.zoomCall;
+          hGUI.createButton(zBt);
+          
+          % Unzoom button
+          uzBt=struct('tag','Unzoom','Position',[pleft+pwidth+0.15 pheight .065 .08]);
+          uzBt.Callback=@hGUI.unzoomCall;
+          hGUI.createButton(uzBt);
+          
+          % Baseline button
+          blBt=struct('tag','Baseline','Position',[pleft+pwidth+0.02 pheight .065 .08]);
+          blBt.Callback=@hGUI.baselineCall;
+          hGUI.createButton(blBt);
+          
+           
+          % current wave (after subtraction)
+          plotCurr=struct('Position',[pleft ptop pwidth pheight],'tag','plotCurr');
+          plotCurr.XLim=[0 hekadat.stAxis(end)];
+          plotCurr.YLim=[-1 2];
+          hGUI.makePlot(plotCurr);
+          hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
+          hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
 
-function plotOne(hObject,eventdata)
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-PlotNow=find(cell2mat(Selected(:,end)));
-figData.PlotNow=PlotNow;
-Rows=size(Selected,1);
-colors=pmkmp(Rows,'CubicL');
+          % refined trace
+          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','+','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
+          set(lH,'DisplayName','currWave')
+          
+          %left line
+          lH=line([hGUI.hekadat.stAxis(lSlide.Value) hGUI.hekadat.stAxis(lSlide.Value)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[1 .75 .75])
+          set(lH,'DisplayName','leftLine')
+          %right line
+          lH=line([hGUI.hekadat.stAxis(rSlide.Value) hGUI.hekadat.stAxis(rSlide.Value)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 1])
+          set(lH,'DisplayName','rightLine')
+          %zero line
+          lH=line(hGUI.hekadat.stAxis,zeros(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','zeroLine')
+          
+          % Data and blank histograms
+          plotHist=struct('Position',[hleft ptop hwidth pheight],'tag','plotHist');
+          plotHist.YAxisLocation='right';
+          plotHist.XLim=[0 0.3];
+          plotHist.YLim=plotCurr.YLim;
+          hGUI.makePlot(plotHist);
+          hGUI.labelx(hGUI.figData.plotHist,'Freq');
+          
+          hnan=NaN(1,50);
+          
+          %zero line
+          lH=line([0 1],[0 0],'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','zeroLineHist')
+          
+          % Curated hist
+          lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
+          set(lH,'DisplayName','currHist')
+          
+          % All data histogram
+          if ~isempty(hekadat.sdata)
+              alldata=reshape(hekadat.sdata,1,numel(hekadat.sdata));
+              [allHistX,allHistY]=hGUI.calculateHist(alldata,params.nbins,-1,2);
+              lH=line(allHistY,allHistX,'Parent',hGUI.figData.plotHist);
+              set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
+              set(lH,'DisplayName','allHist')
+          end
+          
 
-selWaves=logical(hekadat.HEKAstagfind('ccc'));
-currData=hekadat.sdata(selWaves,:);
-
-% current wave
-curt=findobj('DisplayName','currTraceAll');
-set(curt,'YData',currData(PlotNow,:))
-if PlotNow==1
-    set(curt,'Color',[0,.7,0],'LineWidth',1)
-elseif PlotNow==Rows
-    set(curt,'Color',[.7,0,0],'LineWidth',1)
-else
-    set(curt,'Color',[0,0,0],'LineWidth',1)
-end
-uistack(curt,'top');
-
-currTrace=currData(PlotNow,:);
-currTraceH=findobj('DisplayName','currTrace');
-set(currTraceH,'YData',currTrace,'Color',colors(PlotNow,:))
-
-% calculate histogram
-nbins=300;
-
-[currHistX,currHistY]=calculateHist(currTrace,nbins,-1.1,2.2);
-currHistY_norm=currHistY./size(currTrace,2);
-hHNow=findobj('DisplayName','currHist');
-set(hHNow,'XData',currHistX,'YData',currHistY_norm,'Color',colors(PlotNow,:))
-
-alldata=reshape(currData,1,numel(currData));
-[allHistX,allHistY]=calculateHist(alldata,nbins,-1.1,2.2);
-allHistY_norm=allHistY./size(alldata,2);
-hHNow=findobj('DisplayName','allHist');
-set(hHNow,'XData',allHistX,'YData',allHistY_norm,'Color',[0 0 0])
-
-
-end
-
-function lock_callBack(hObject,eventdata)
-disableGui();
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-tst=hekadat.HEKAstairsprotocol();
-tlim=find(hekadat.tAxis<=0.003,1,'last');
-% parsing by tags. May not correspond to waves in table unless reloaded
-selWaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+          plotSub=struct('Position',[pleft ptop2 pwidth pheight-.11],'tag','plotSub');
+          plotSub.XLim=[0 hekadat.stAxis(end)];
+          plotSub.YLim=[-1 2];
+          hGUI.makePlot(plotSub);
+          hGUI.labelx(hGUI.figData.plotSub,'Time (s)');
+          hGUI.labely(hGUI.figData.plotSub,'i (pA)');
+          
+          % refined trace
+          lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
+          set(lH,'DisplayName','subWave')
+          
+          %zero line
+          lH=line(hGUI.hekadat.stAxis,zeros(1,size(hGUI.hekadat.sdata,2)),'Parent',hGUI.figData.plotSub);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','zeroLineSub')
+          
+          % Data and blank histograms
+          plotHist2=struct('Position',[hleft ptop2 hwidth pheight-.11],'tag','plotHist2');
+          plotHist2.YAxisLocation='right';
+          plotHist2.XLim=[0 0.3];
+          plotHist2.YLim=plotCurr.YLim;
+          hGUI.makePlot(plotHist2);
+          hGUI.labelx(hGUI.figData.plotHist2,'Freq');
+          
+          %zero line
+          lH=line([0 1],[0 0],'Parent',hGUI.figData.plotHist2);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'DisplayName','zeroLineHist2')
+          
+          % corrected Hist
+          lH=line(hnan,hnan,'Parent',hGUI.figData.plotHist2);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
+          set(lH,'DisplayName','subHist')
+          
+          % All data Hist2ogram
+          if ~isempty(hekadat.sdata)
+              alldatab=hekadat.sdata-repmat(hekadat.sBaseline,1,size(hekadat.sdata,2));
+              alldatab=reshape(alldatab,1,numel(alldatab));
+              [allHist2X,allHist2Y]=hGUI.calculateHist(alldatab,params.nbins,-1,2);
+              lH=line(allHist2Y,allHist2X,'Parent',hGUI.figData.plotHist2);
+              set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
+              set(lH,'DisplayName','allHist2')
+          end
+          
+          hGUI.updatePlots();
+%           if params.LockNow
+%               hGUI.lockButtonCall();
+%           end
+        end
         
+        function updatePlots(hGUI,~,~)
+            Selected=get(hGUI.figData.infoTable,'Data');
+            PlotNow=find(cell2mat(Selected(:,end)));
+            hGUI.params.PlotNow=PlotNow;
+            
+            % current wave
+            currWave=hGUI.getRowName;
+            currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
+            
+            Rows=size(Selected,1);
+            colors=pmkmp(Rows,'CubicL');
+            
+            % current trace
+            currentTrace=hGUI.hekadat.sdata(currWavei,:);
+            lHNow=findobj('DisplayName','currWave');
+            set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
+            
+            
+            
+            % current histograms
+            [currHistX,currHistY]=hGUI.calculateHist(currentTrace,hGUI.params.nbins,-1,2);
+            hHNow=findobj('DisplayName','currHist');
+            set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
+            
+            % after baseline correction
+            baseline=Selected{PlotNow,2};
+            lHNow=findobj('DisplayName','subWave');
+            set(lHNow,'YData',currentTrace-baseline,'Color',colors(PlotNow,:))
+            
+            [currHistX,currHistY]=hGUI.calculateHist(currentTrace-baseline,hGUI.params.nbins,-1,2);
+            hHNow=findobj('DisplayName','subHist');
+            set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
 
-hekadat.swaveNames=hekadat.waveNames(selWaves);
-hekadat.stags=hekadat.tags(selWaves);
-hekadat.stAxis=hekadat.tAxis(1:tst.deltai);
-
-cccmean=hekadat.HEKAtagmean('ccc');
-sdata=hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hekadat.swaveNames,1),1);
-
-
-tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
-cccLi=NaN(size(hekadat.swaveNames,1),1);
-cccLi(1)=find(cellfun(tagfindfx('ccc'),hekadat.stags),1,'first');
-for i=2:size(hekadat.swaveNames,1)
-    cccLi(i)=find(cellfun(tagfindfx('ccc'),hekadat.stags(1:i)),1,'last');
-end
-cccRi=NaN(size(hekadat.swaveNames,1),1);
-for i=1:size(hekadat.swaveNames,1)-1
-    cccRi(i)=i+find(cellfun(tagfindfx('ccc'),hekadat.stags(i+1:end)),1,'first');
-end
-cccRi(end)=find(cellfun(tagfindfx('ccc'),hekadat.stags),1,'last');
-
-submat=zeros(size(sdata));
-submat(:,1:tlim)=(sdata(cccLi,1:tlim)+sdata(cccRi,1:tlim))./2;
-hekadat.sdata=sdata-submat;
-
-hekadat.HEKAsave();
-assignin('base','hekadat',hekadat);
-fprintf('Saved  curated data to %s%s\n',hekadat.dirSave,hekadat.dirFile);
-set(figData.panel,'UserData',hekadat);
-enableGui();
-end
-
-function [hX,hY]=calculateHist(wave,nbins,edgemin,edgemax)
-bins=linspace(edgemin*1.25,edgemax*1.25,nbins);
-histcurr=histc(wave,bins)';
-[hX,hY]=stairs(bins,histcurr);
-end
-
-function curr_RowName=getRowName(infoTable,index)
-rowNames=get(infoTable,'RowName');
-currWaveNamestart=regexp(rowNames{index},'e_');
-currWaveNameend=regexp(rowNames{index},'</font')-1;
-curr_RowName=rowNames{index}(currWaveNamestart:currWaveNameend);
-end
-
-
-function tag_callBack(hObject,eventdata)
-disableGui();
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-tag=get(hObject,'tag');
-PlotNow=find(cell2mat(Selected(:,end)));
-Selected{PlotNow,1}=tag;
-
-currWave=getRowName(figData.infoTable);
-currWavei=hekadat.HEKAnamefind(currWave);
-
-hekadat.tags{currWavei}=tag;
-assignin('base','hekadat',hekadat);
-fprintf('tagged %s as %s\n',hekadat.waveNames{currWavei},tag);
-set(figData.infoTable,'Data',Selected)
-set(figData.panel,'UserData',hekadat);
-next_callBack(figData.infoTable)
-enableGui();
-end
-
-function untag_callBack(hObject,eventdata)
-disableGui();
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-PlotNow=find(cell2mat(Selected(:,end)));
-Selected{PlotNow,1}='';
-
-currWave=getRowName(figData.infoTable);
-currWavei=hekadat.HEKAnamefind(currWave);
-
-hekadat.tags{currWavei}='';
-assignin('base','hekadat',hekadat);
-set(figData.infoTable,'Data',Selected)
-set(figData.panel,'UserData',hekadat);
-enableGui();
-end
-
-
-function next_callBack(hObject,eventdata)
-disableGui();
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-PlotNow=find(cell2mat(Selected(:,end)));
-PlotNext=PlotNow+1;
-if PlotNext>size(Selected,1)
-    PlotNext=1;
-end
-PlotNext;
-Selected{PlotNow,end}=false;
-Selected{PlotNext,end}=true;
-set(figData.infoTable,'Data',Selected)
-
-set(figData.panel,'UserData',hekadat);
-plotOne(hObject);
-enableGui();
-end
-
-function previous_callBack(hObject,eventdata)
-disableGui();
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-PlotNow=find(cell2mat(Selected(:,end)));
-PlotNext=PlotNow-1;
-if PlotNext<1
-    PlotNext=size(Selected,1);
-end
-Selected{PlotNow,end}=false;
-Selected{PlotNext,end}=true;
-set(figData.infoTable,'Data',Selected)
-
-set(figData.panel,'UserData',hekadat);
-plotOne(hObject);
-enableGui();
-end
-
-
-function table_callBack(hObject,eventdata)
-disableGui();
-figData=get(get(hObject,'Parent'),'UserData');
-hekadat=get(figData.panel,'UserData');
-Selected=get(figData.infoTable,'Data');
-Plotted=find(cell2mat(Selected(:,end)));
-Plotted=Plotted(~ismember(find(cell2mat(Selected(:,end))),eventdata.Indices(1)));
-
-Selected{Plotted,end}=false;
-set(figData.infoTable,'Data',Selected)
-
-Rows=size(hekadat.waveNames,1);
-colors=pmkmp(Rows,'CubicL');
-curt=findobj('DisplayName',hekadat.waveNames{Plotted});
-set(curt,'Color',colors(Plotted,:),'LineWidth',1)
-
-set(figData.panel,'UserData',hekadat);
-plotOne(hObject);
-enableGui();
-end
-
-function disableGui()
-set(findobj('-property','Enable'),'Enable','off')
-drawnow
-end
-function enableGui()
-set(findobj('-property','Enable'),'Enable','on')
-drawnow
+        end
+        
+        function lockButtonCall(hGUI,~,~)
+            hGUI.disableGui;
+            Selected=get(hGUI.figData.infoTable,'Data');
+            hGUI.hekadat.sBaseline=cell2mat(Selected(:,2));
+            alldata=hGUI.hekadat.HEKAbldata;
+            alldata=reshape(alldata,1,numel(alldata));
+            [hGUI.hekadat.stairx,hGUI.hekadat.stairy]=hGUI.calculateHist(alldata,hGUI.params.nbins,-1,2);
+            deltax=(hGUI.hekadat.stairx(2)-hGUI.hekadat.stairx(1))/2;
+            hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end)+deltax;
+            hGUI.hekadat.histy=hGUI.hekadat.stairy(1:2:end);
+            hGUI.hekadat.HEKAsave();
+            hGUI.enableGui;
+        end
+        
+        function baselineCall(hGUI,~,~)
+            hGUI.disableGui;
+            Selected=get(hGUI.figData.infoTable,'Data');
+            PlotNow=find(cell2mat(Selected(:,end)));
+            % take care of sliders
+            lValue=floor(get(hGUI.figData.leftSlider,'Value'));
+            rValue=ceil(get(hGUI.figData.rightSlider,'Value'));
+            if lValue>rValue
+                tempValue=lValue;
+                lValue=rValue;
+                rValue=tempValue;
+            end
+            %calculate baseline between lines and update table
+            currWave=hGUI.getRowName;
+            currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
+            currentTrace=hGUI.hekadat.sdata(currWavei,:);
+            baseline=mean(currentTrace(lValue:rValue));
+            Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
+            set(hGUI.figData.infoTable,'Data',Selected)
+            hGUI.updatePlots();
+            hGUI.enableGui;
+        end
+        
+        function lSlideCall(hGUI,~,~)
+            hGUI.disableGui;
+            lValue=get(hGUI.figData.leftSlider,'Value');
+            rValue=get(hGUI.figData.rightSlider,'Value');
+            lTime=hGUI.hekadat.stAxis(ceil(lValue));
+            rTime=hGUI.hekadat.stAxis(floor(rValue));
+            
+            lH=findobj('DisplayName','leftLine');
+            set(lH,'XData',[lTime lTime])
+            rH=findobj('DisplayName','rightLine');
+            set(rH,'XData',[rTime rTime])
+            hGUI.enableGui;
+        end
+        
+        function zoomCall(hGUI,~,~)
+            hGUI.disableGui;
+            lValue=get(hGUI.figData.leftSlider,'Value');
+            rValue=get(hGUI.figData.rightSlider,'Value');
+            if lValue<rValue
+                lTime=hGUI.hekadat.stAxis(ceil(lValue));
+                rTime=hGUI.hekadat.stAxis(floor(rValue));
+            else
+                set(hGUI.figData.leftSlider,'Value',rValue);
+                set(hGUI.figData.rightSlider,'Value',lValue);
+                lTime=hGUI.hekadat.stAxis(ceil(rValue));
+                rTime=hGUI.hekadat.stAxis(floor(lValue));
+                lH=findobj('DisplayName','leftLine');
+                set(lH,'XData',[lTime lTime])
+                rH=findobj('DisplayName','rightLine');
+                set(rH,'XData',[rTime rTime])
+            end
+            set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
+            
+            hGUI.enableGui;
+        end
+        
+        function unzoomCall(hGUI,~,~)
+            hGUI.disableGui;
+            
+            lValue=get(hGUI.figData.leftSlider,'Min');
+            lTime=hGUI.hekadat.stAxis(ceil(lValue));
+            set(hGUI.figData.leftSlider,'Value',lValue);
+            
+            rValue=get(hGUI.figData.rightSlider,'Max');
+            rTime=hGUI.hekadat.stAxis(floor(rValue));
+            set(hGUI.figData.rightSlider,'Value',rValue);
+            
+            lH=findobj('DisplayName','leftLine');
+            set(lH,'XData',[lTime lTime])
+            rH=findobj('DisplayName','rightLine');
+            set(rH,'XData',[rTime rTime])
+            set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
+            hGUI.enableGui;
+        end
+        
+        function updateTable(hGUI,~,eventdata)
+           hGUI.disableGui;
+           Selected=get(hGUI.figData.infoTable,'Data');
+           Plotted=find(cell2mat(Selected(:,end)));
+           Previous=Plotted(Plotted~=eventdata.Indices(1));
+           Plotted=Plotted(Plotted==eventdata.Indices(1));
+           
+           Selected{Previous,end}=false;
+           Selected{Plotted,end}=true;
+           set(hGUI.figData.infoTable,'Data',Selected)
+           
+           Rows=size(hGUI.hekadat.waveNames,1);
+           colors=whithen(pmkmp(Rows,'CubicL'),0.5);
+           curt=findobj('DisplayName',hGUI.hekadat.waveNames{Previous});
+           set(curt,'Color',colors(Previous,:),'LineWidth',1)
+           
+           updatePlots(hGUI);
+           hGUI.enableGui;
+        end
+       
+        function nextButtonCall(hGUI,~,~)
+           hGUI.disableGui;
+           Selected=get(hGUI.figData.infoTable,'Data');
+           Current=find(cell2mat(Selected(:,end)));
+           PlotNext=Current+1;
+           if PlotNext>size(Selected,1)
+               PlotNext=1;
+           end
+           Selected{Current,end}=false;
+           Selected{PlotNext,end}=true;
+           set(hGUI.figData.infoTable,'Data',Selected)
+           
+           Rows=size(hGUI.hekadat.waveNames,1);
+           colors=whithen(pmkmp(Rows,'CubicL'),0.6);
+           curt=findobj('DisplayName',hGUI.hekadat.waveNames{Current});
+           set(curt,'Color',colors(Current,:),'LineWidth',1)
+           hGUI.updatePlots();
+           hGUI.unzoomCall();
+           hGUI.enableGui;
+       end
+       
+       function prevButtonCall(hGUI,~,~)
+           hGUI.disableGui;
+           Selected=get(hGUI.figData.infoTable,'Data');
+           Previous=find(cell2mat(Selected(:,end)));
+           PlotNext=Previous-1;
+           if PlotNext<1
+               PlotNext=size(Selected,1);
+           end
+           Selected{Previous,end}=false;
+           Selected{PlotNext,end}=true;
+           set(hGUI.figData.infoTable,'Data',Selected)
+           
+           Rows=size(hGUI.hekadat.waveNames,1);
+           colors=whithen(pmkmp(Rows,'CubicL'),0.6);
+           curt=findobj('DisplayName',hGUI.hekadat.waveNames{Previous});
+           set(curt,'Color',colors(Previous,:),'LineWidth',1)
+           hGUI.updatePlots();
+           hGUI.unzoomCall();
+           hGUI.enableGui;
+       end
+    end
+    
+    methods (Static=true)
+         
+    end
 end

@@ -22,7 +22,7 @@ classdef gxtx_tagBlanks<hekaGUI
           tableinput.Data=infoData;
           tableinput.ColumnName={'tag','P'};
           tableinput.RowName=hGUI.waveTableNames();
-          tableinput.headerWidth=77;
+          tableinput.headerWidth=63;
           hGUI.infoTable(tableinput);
           
           % buttons
@@ -40,7 +40,7 @@ classdef gxtx_tagBlanks<hekaGUI
           plotAll=struct('Position',[.255 .08 .60 .43],'tag','plotAll');
           plotAll.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)];
           plotAll.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
-          plotAll.YLim=[-5 10];
+          plotAll.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
           hGUI.makePlot(plotAll);
           hGUI.labelx(hGUI.figData.plotAll,'Time (s)');
           hGUI.labely(hGUI.figData.plotAll,'i (pA)');
@@ -54,7 +54,6 @@ classdef gxtx_tagBlanks<hekaGUI
           plotCurr=struct('Position',[.255 .555 .60 .43],'tag','plotCurr');
           plotCurr.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)];
           plotCurr.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
-          plotCurr.YLim=[-5 10];
           hGUI.makePlot(plotCurr);
           hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
@@ -70,14 +69,8 @@ classdef gxtx_tagBlanks<hekaGUI
           set(lH,'DisplayName','currWave')
           
           % tag label
-%           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
-          currTag=text((hGUI.hekadat.tAxis(end))*.9,8,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
           set(currTag,'tag','currTag','FontSize',24)
-          
-          % index label
-%           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
-          currIndex=text(0.01,8,num2str(params.PlotNow),'Parent',hGUI.figData.plotCurr);
-          set(currIndex,'tag','currIndex','FontSize',24)
         end
         
         function updatePlots(hGUI,~,~)
@@ -106,9 +99,6 @@ classdef gxtx_tagBlanks<hekaGUI
             
             currtag=findobj('tag','currTag');
             set(currtag,'String',hGUI.hekadat.tags(PlotNow));
-            
-            curri=findobj('tag','currIndex');
-            set(curri,'String',num2str(PlotNow));
         end
         
         function updateTable(hGUI,~,eventdata)

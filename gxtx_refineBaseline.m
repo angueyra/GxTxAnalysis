@@ -76,7 +76,7 @@ classdef gxtx_refineBaseline<hekaGUI
           hGUI.createSlider(rSlide);
           
           % Zoom button
-          zBt=struct('tag','Zoom','Position',[pleft+pwidth+0.085 pheight .065 .08]);
+          zBt=struct('tag','Zoom','Position',[pleft+pwidth+0.02 pheight .065 .08]);
           zBt.Callback=@hGUI.zoomCall;
           hGUI.createButton(zBt);
           
@@ -86,15 +86,20 @@ classdef gxtx_refineBaseline<hekaGUI
           hGUI.createButton(uzBt);
           
           % Baseline button
-          blBt=struct('tag','Baseline','Position',[pleft+pwidth+0.02 pheight .065 .08]);
+          blBt=struct('tag','Baseline','Position',[pleft+pwidth+0.085 pheight .065 .08]);
           blBt.Callback=@hGUI.baselineCall;
           hGUI.createButton(blBt);
+          
+          % lock Baseline button
+          lblBt=struct('tag','lockBline','Position',[bl pheight-.2 bw bh]);
+          lblBt.Callback=@hGUI.lockbblineCall;
+          hGUI.createButton(lblBt);
           
            
           % current wave (after subtraction)
           plotCurr=struct('Position',[pleft ptop pwidth pheight],'tag','plotCurr');
           plotCurr.XLim=[0 hekadat.stAxis(end)];
-          plotCurr.YLim=[-1 2];
+          plotCurr.YLim=[-1 3];
           hGUI.makePlot(plotCurr);
           hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
@@ -120,7 +125,7 @@ classdef gxtx_refineBaseline<hekaGUI
           % Data and blank histograms
           plotHist=struct('Position',[hleft ptop hwidth pheight],'tag','plotHist');
           plotHist.YAxisLocation='right';
-          plotHist.XLim=[0 0.3];
+          plotHist.XLim=[0 0.15];
           plotHist.YLim=plotCurr.YLim;
           hGUI.makePlot(plotHist);
           hGUI.labelx(hGUI.figData.plotHist,'Freq');
@@ -192,6 +197,11 @@ classdef gxtx_refineBaseline<hekaGUI
               set(lH,'DisplayName','allHist2')
           end
           
+          % index label
+          % currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currIndex=text(0.01,2.5,num2str(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          set(currIndex,'tag','currIndex','FontSize',24)
+          
           hGUI.updatePlots();
 %           if params.LockNow
 %               hGUI.lockButtonCall();
@@ -230,7 +240,9 @@ classdef gxtx_refineBaseline<hekaGUI
             [currHistX,currHistY]=hGUI.calculateHist(currentTrace-baseline,hGUI.params.nbins,-1,2);
             hHNow=findobj('DisplayName','subHist');
             set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
-
+            
+            curri=findobj('tag','currIndex');
+            set(curri,'String',num2str(PlotNow));
         end
         
         function lockButtonCall(hGUI,~,~)
@@ -243,6 +255,14 @@ classdef gxtx_refineBaseline<hekaGUI
             deltax=(hGUI.hekadat.stairx(2)-hGUI.hekadat.stairx(1))/2;
             hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end)+deltax;
             hGUI.hekadat.histy=hGUI.hekadat.stairy(1:2:end);
+            hGUI.hekadat.HEKAsave();
+            hGUI.enableGui;
+        end
+        
+        function lockbblineCall(hGUI,~,~)
+            hGUI.disableGui;
+            Selected=get(hGUI.figData.infoTable,'Data');
+            hGUI.hekadat.sBaseline=cell2mat(Selected(:,2));
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui;
         end
@@ -266,7 +286,7 @@ classdef gxtx_refineBaseline<hekaGUI
             baseline=mean(currentTrace(lValue:rValue));
             Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
             set(hGUI.figData.infoTable,'Data',Selected)
-            hGUI.updatePlots();
+            hGUI.nextButtonCall();
             hGUI.enableGui;
         end
         
