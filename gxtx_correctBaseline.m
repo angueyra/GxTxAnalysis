@@ -1,10 +1,10 @@
-classdef gxtx_refineBaseline<hekaGUI
+classdef gxtx_correctBaseline<hekaGUI
     properties
     end
     
     methods
         % Constructor (gui objects and initial plotting)
-        function hGUI=gxtx_refineBaseline(hekadat,params,fign) 
+        function hGUI=gxtx_correctBaseline(hekadat,params,fign) 
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
           params=checkStructField(params,'nbins',400);

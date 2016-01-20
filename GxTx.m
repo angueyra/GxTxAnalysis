@@ -1,11 +1,14 @@
 %% ANALYSIS OF KV2.1 SINGLE CHANNEL DATA
 % Flow
-% 1) hekadat=HEKAdat('2015_06_23_Juan'): load data from Patchmaster into HEKAdat class
-% 2) gxtx_tagBlanks(hekadata,p,10):  scroll through data and identify blanks and bad traces
-% 3) gxtx_tagOpenings(hekadata,p,10): after baseline subtraction find 'ooo' and 'coc' epochs
-% 4) gxtx_refinaBaseline((hekadata,p,10): use closed period to re-correct baseline in single epochs
-% 5) gxtx_refineBlanks(hekadata,p,10): use local correction for blanks (flanking blanks) when capacitance drifts
-% 6) gxtx_firHist(hekadata,p,10): fits amplitude histogram with 2 gaussians and idealizes data
+%  1) hekadat=HEKAdat('2015_06_23_Juan') --> load data from Patchmaster into HEKAdat class
+%  2) gxtx_tagBlanks(hekadata,p,10) -->  scroll through data and identify blanks and bad traces
+%  3) gxtx_tagOpenings(hekadata,p,10) --> after baseline subtraction find 'ooo' and 'coc' epochs
+%  4) hekadat.HEKAguessBaseline(); --> uses 'ccc' to correct for slow drifts
+%  5) gxtx_correctBaseline((hekadata,p,10) --> use closed period to re-correct baseline in single epochs preloading guess
+%           After Lock&Save all data histogram will be calculated
+%  6) hekadat.HEKAsUpdate(); --> if changes are made to tags, updates baseline subtraction and correction
+%  6) gxtx_refineBlanks(hekadata,p,10) --> use local correction for blanks (flanking blanks) when capacitance drifts
+%  7) gxtx_firHist(hekadata,p,10) --> fits amplitude histogram with 2 gaussians and idealizes data
 
 %% Data loading
 % Patchmaster mat file exports
@@ -190,4 +193,16 @@ plot(hx,fy,'r-','LineWidth',2)
 hold off
 xlim([0 50])
 
+%% Trying to update sFields in tag changes
+strfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+
+uwaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+uwaveNames=hekadat.waveNames(uwaves);
+utags=hekadat.tags(uwaves);
+ucccmean=hekadat.HEKAtagmean('ccc');
+
+umatch=NaN(size(uwaveNames));
+for i=1:size(uwaveNames)
+        umatch(i)=find(cellfun(strfindfx(uwaveNames{i}),hekadat.swaveNames));
+end
 

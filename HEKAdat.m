@@ -186,14 +186,36 @@ classdef HEKAdat < handle
             % works by finding difference between sWaveNames (saved) and
             % uWaveNames (updated)
             if isempty(hekadat.sdata)
-                tst=hekadat.HEKAstairsprotocol();
-                uWaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
-                uwaveNames=hekadat.waveNames(selWaves);
-                utags=hekadat.tags(selWaves);
+                error('Nothing to update. Run hekadat.HEKAinitialsubtraction first\n')
+            else
+                strfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
                 
-                ucccmean=hekadat.HEKAtagmean('ccc');
-%                 hekadat.sdata=hekadat.sdata(???);
-%                 hekadat.sBaseline=hekadat.sBaseline(???);
+                uwaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+                uwaveNames=hekadat.waveNames(uwaves);
+                utags=hekadat.tags(uwaves);
+
+                umatch=NaN(size(uwaveNames));
+                uBaseline=NaN(size(uwaveNames));
+                for i=1:size(uwaveNames)
+                    umatch(i)=find(cellfun(strfindfx(uwaveNames{i}),hekadat.swaveNames));
+                    if ~isnan(umatch(i))
+                        % epochs that are still ccc ooo or coc remain,
+                        % epochs that got swapped to bad, zzz or untagged will not match
+                        uBaseline(i)=hekadat.sBaseline(umatch(i));
+                    else
+                        %new epoch was added. Can still run HEKAguessBaseline to adjust these epochs
+                        uBaseline(i)=0;
+                    end
+                end
+
+                tst=hekadat.HEKAstairsprotocol();
+                hekadat.swaveNames=uwaveNames;
+                hekadat.stags=utags;
+                cccmean=hekadat.HEKAtagmean('ccc');
+                hekadat.sdata=hekadat.data(uwaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hekadat.swaveNames,1),1);
+                hekadat.sBaseline=uBaseline;
+                fprintf('Check results then HEKAsave\n')
+
             end
         end
         
