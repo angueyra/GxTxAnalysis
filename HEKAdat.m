@@ -145,6 +145,59 @@ classdef HEKAdat < handle
             end
         end
         
+        function HEKAguessBaseline(hekadat)
+            % trying to guess baseline subtraction for already
+            % ccc-subtracted date from ccc themselves
+            if isempty(hekadat.sBaseline)
+                error('First run hekadat.HEKAinitialsubtraction();')
+            else
+                fprintf('Only replacing empty values in sBaseline...')
+                Flanks_ind=NaN(size(hekadat.sBaseline,1),2);
+                guessBaseline=NaN(size(hekadat.sBaseline,1),1);
+                
+                cccs=hekadat.HEKAstagfind('ccc')';
+                
+                currL=find(cccs,1,'first');
+                currR=find(cccs,1,'first');
+                
+                Flanks_ind(1:currL,1)=currL;
+                Flanks_ind(1:currL,2)=currR;
+                
+                for i=currL+1:length(cccs)
+                    if cccs(i)
+                        currL=currR;
+                        currR=i;
+                    end
+                    Flanks_ind(i,1)=currL;
+                    Flanks_ind(i,2)=currR;
+                    
+                    guessBaseline(i)=(mean(hekadat.sdata(currL,floor(end/2):end))+mean(hekadat.sdata(currR,floor(end/2):end)))/2;
+                end
+                hekadat.sBaseline(hekadat.sBaseline==0)=guessBaseline(hekadat.sBaseline==0);
+                hekadat.HEKAsave;
+                fprintf('...Done!\n')
+            end
+        end
+        
+        
+        function HEKAsUpdate(hekadat)
+            % use if went back to change tags because discovered errors
+            % after baseline subtraction and correction
+            % works by finding difference between sWaveNames (saved) and
+            % uWaveNames (updated)
+            if isempty(hekadat.sdata)
+                tst=hekadat.HEKAstairsprotocol();
+                uWaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+                uwaveNames=hekadat.waveNames(selWaves);
+                utags=hekadat.tags(selWaves);
+                
+                ucccmean=hekadat.HEKAtagmean('ccc');
+%                 hekadat.sdata=hekadat.sdata(???);
+%                 hekadat.sBaseline=hekadat.sBaseline(???);
+            end
+        end
+        
+        
         function blData=HEKAbldata(hekadat,varargin)
             %baseline corrected data
             if isempty(hekadat.sBaseline)

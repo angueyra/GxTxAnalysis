@@ -191,37 +191,3 @@ hold off
 xlim([0 50])
 
 
-
-
-
-
-
-
-%%
-
-
-%%
-
-
-%% Guessing baseline subtraction using flanking blanks
-
-Flanks_ind=NaN(size(hekadat.sBaseline,1),2);
-
-cccs=hekadat.HEKAstagfind('ccc')';
-
-currL=find(cccs,1,'first');
-currR=find(cccs,1,'first');
-
-Flanks_ind(1:currL,1)=currL;
-Flanks_ind(1:currL,2)=currR;
-
-for i=currL+1:length(cccs)
-    if cccs(i)
-        currL=currR;
-        currR=i;
-    end
-    Flanks_ind(i,1)=currL;
-    Flanks_ind(i,2)=currR;
-end
-
-
