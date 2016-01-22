@@ -1,35 +1,33 @@
 classdef gxtx_refineBlanks<hekaGUI
-    % uses 1 or 2 flanking ccc epochs to subtract remaining capacitive transient
-    % from all hekadat.sdata
     properties
     end
     
     methods
         % Constructor (gui objects and initial plotting)
-        function hGUI=gxtx_refineBlanks(hekadat,params,fign)
-            if hekadat.baselinecorrectionFlag
-                warning('This function has already been run and results saved')
-            end
+        function hGUI=gxtx_refineBlanks(hekadat,params,fign) 
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
           params=checkStructField(params,'nbins',200);
-          params=checkStructField(params,'tlim',0.025);
-          tlimi=find(hekadat.stAxis>=params.tlim,1,'first');
+          params=checkStructField(params,'tcorrlim',0.015);
+          tcorrlimi=find(hekadat.tAxis>=params.tcorrlim,1,'first');
           hGUI@hekaGUI(hekadat,params,fign);
           
-          Rows=size(hekadat.swaveNames,1);
+          % only plot ccc, coc and ooo
+          selWaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
+          selWavesi=find(selWaves==1);
+          Rows=size(hekadat.waveNames(selWaves),1);
           colors=pmkmp(Rows,'CubicL');
           tcolors=round(colors./1.2.*255);
           
           RowNames=cell(size(Rows));
           for i=1:Rows
-              RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.swaveNames{i});
+              RowNames{i}=sprintf('<html><font color=rgb(%d,%d,%d)>%s</font></html>',tcolors(i,1),tcolors(i,2),tcolors(i,3),hekadat.waveNames{selWavesi(i)});
           end
           
           % info Table
           Selected=false(Rows,2);         
           Selected(params.PlotNow,end)=true;
-          infoData=[hGUI.hekadat.stags num2cell(Selected)];
+          infoData=[hGUI.hekadat.tags(selWaves) num2cell(Selected)];
           
           tableinput=struct;
           tableinput.Position=[0.01, .005, 0.185, .985];
@@ -60,8 +58,9 @@ classdef gxtx_refineBlanks<hekaGUI
           hGUI.lockButton(lockBt);
           
           %find current wave
+          tst=hGUI.hekadat.HEKAstairsprotocol();
           currWave=hGUI.getRowNamebyIndex(hGUI,params.PlotNow);
-          currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
+          currWavei=hGUI.hekadat.HEKAnamefind(currWave);
           cccmean=hGUI.hekadat.HEKAtagmean('ccc');
           
           pleft=.235;
@@ -78,40 +77,39 @@ classdef gxtx_refineBlanks<hekaGUI
           hGUI.makePlot(plotCurr);
           hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
-          
 
           %zero line
-          lH=line(hGUI.hekadat.stAxis,zeros(size(hGUI.hekadat.sdata(currWavei,:))),'Parent',hGUI.figData.plotCurr);
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),zeros(size(hGUI.hekadat.data(currWavei,tst.sti:tst.endi))),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','zeroLine')
           
           %correction limit line
-          lH=line([hGUI.hekadat.stAxis(tlimi) hGUI.hekadat.stAxis(tlimi)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
+          lH=line([hGUI.hekadat.tAxis(tcorrlimi) hGUI.hekadat.tAxis(tcorrlimi)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','zeroLine')
           
           % current trace
-          lH=line(hGUI.hekadat.stAxis,hGUI.hekadat.sdata(currWavei,:)-hekadat.sBaseline(currWavei),'Parent',hGUI.figData.plotCurr);
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),hGUI.hekadat.data(currWavei,tst.sti:tst.endi)-cccmean(tst.sti:tst.endi),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           
           % nearest blank
-          lH=line(hGUI.hekadat.stAxis,hGUI.hekadat.sdata(currWavei,:)-hekadat.sBaseline(currWavei),'Parent',hGUI.figData.plotCurr);
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),hGUI.hekadat.data(currWavei,tst.sti:tst.endi)-cccmean(tst.sti:tst.endi),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','nearestBlank')
           
           % corrected trace
-          lH=line(hGUI.hekadat.stAxis,NaN(size(hGUI.hekadat.sdata(currWavei,:))),'Parent',hGUI.figData.plotCurr);
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),NaN(size(hGUI.hekadat.data(currWavei,tst.sti:tst.endi))),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','+','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','correctedTrace')
           
           
-          currtag=text(0.09,-1.8,hGUI.hekadat.stags(currWavei),'Parent',hGUI.figData.plotCurr);
-          set(currtag,'tag','currtag','FontSize',24)                  
-                    
+          currtag=text((hGUI.hekadat.tAxis(tst.deltai))*.9,1.8,hGUI.hekadat.tags(currWavei),'Parent',hGUI.figData.plotCurr);
+          set(currtag,'tag','currtag','FontSize',24)
+          
           % Local Subtraction
           plotSub=struct('Position',[pleft ptop2 pwidth pheight],'tag','plotSub');
-          plotSub.XLim=[0 hekadat.stAxis(end)];
+          plotSub.XLim=[0 tst.delta];
 %           plotSub.XLim=[0 0.01];
           plotSub.YLim=[-1 3];
           hGUI.makePlot(plotSub);
@@ -119,20 +117,14 @@ classdef gxtx_refineBlanks<hekaGUI
           hGUI.labely(hGUI.figData.plotSub,'i (pA)');
           
           % refined trace
-          lH=line(hGUI.hekadat.stAxis,NaN(size(hGUI.hekadat.sdata(currWavei,:))),'Parent',hGUI.figData.plotSub);
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),NaN(size(hGUI.hekadat.data(currWavei,tst.sti:tst.endi))),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','subTrace')
           
           %zero line
-          lH=line(hGUI.hekadat.stAxis,zeros(size(hGUI.hekadat.sdata(currWavei,:))),'Parent',hGUI.figData.plotSub);
+          lH=line(hGUI.hekadat.tAxis(1:tst.deltai),zeros(size(hGUI.hekadat.data(currWavei,tst.sti:tst.endi))),'Parent',hGUI.figData.plotSub);
           set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','zeroLineSub')
-          
-          
-          %correction limit line
-          lH=line([hGUI.hekadat.stAxis(tlimi) hGUI.hekadat.stAxis(tlimi)],plotSub.YLim,'Parent',hGUI.figData.plotSub);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLine')
           
           hleft=.735;
           hwidth=.17;
@@ -140,7 +132,7 @@ classdef gxtx_refineBlanks<hekaGUI
           % Data and blank histograms
           plotHist=struct('Position',[hleft ptop hwidth pheight],'tag','plotHist');
           plotHist.YAxisLocation='right';
-          plotHist.XLim=[0 0.1];
+          plotHist.XLim=[0 0.3];
           plotHist.YLim=plotCurr.YLim;
           hGUI.makePlot(plotHist);
           
@@ -161,13 +153,15 @@ classdef gxtx_refineBlanks<hekaGUI
           % Locally-subtracted histogram
           plotHist2=struct('Position',[hleft ptop2 hwidth pheight],'tag','plotHist2');
           plotHist2.YAxisLocation='right';
-          plotHist2.XLim=[0 0.1];
+          plotHist2.XLim=[0 0.3];
           plotHist2.YLim=plotSub.YLim;
           hGUI.makePlot(plotHist2);
          
           % All data histogram
-          if ~isempty(hekadat.histx)
-              lH=line(hekadat.stairy,hekadat.stairx,'Parent',hGUI.figData.plotHist2);
+          if ~isempty(hekadat.sdata)
+              alldata=reshape(hekadat.sdata,1,numel(hekadat.sdata));
+              [allHistX,allHistY]=hGUI.calculateHist(alldata,params.nbins,-.5,2);
+              lH=line(allHistY,allHistX,'Parent',hGUI.figData.plotHist2);
               set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
               set(lH,'DisplayName','subHistAll')
           end
@@ -183,9 +177,9 @@ classdef gxtx_refineBlanks<hekaGUI
           set(lH,'DisplayName','subHist')
 
           hGUI.updatePlots();
-%           if params.LockNow
-%               hGUI.lockButtonCall();
-%           end          
+          if params.LockNow
+              hGUI.lockButtonCall();
+          end          
         end
         
         function updatePlots(hGUI,~,~)
@@ -196,11 +190,21 @@ classdef gxtx_refineBlanks<hekaGUI
             
             % current wave
             currWave=hGUI.getRowName;
-            currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
+            currWavei=hGUI.hekadat.HEKAnamefind(currWave);
 
             % find flanking ccc (left and right)
             tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
-
+%             if PlotNow==1 % no left
+%                 cccLi=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'first');
+%                 cccRi=PlotNow+find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(PlotNow+1:end)),1,'first');
+%             elseif PlotNow==size(Selected,1) % no right
+%                 cccLi=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(1:PlotNow)),1,'last');
+%                 cccRi=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
+%             else
+%                 cccLi=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(1:PlotNow)),1,'last');
+%                 cccRi=PlotNow+find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(PlotNow+1:end)),1,'first');
+%             end
+            
             stags=Selected(:,1);
             firstL=find(cellfun(tagfindfx('ccc'),stags),1,'first');
             if PlotNow<=firstL % no left
@@ -216,9 +220,9 @@ classdef gxtx_refineBlanks<hekaGUI
             
             
             cccLWave=hGUI.getRowNamebyIndex(hGUI,cccLi);
-            cccLWavei=hGUI.hekadat.HEKAsnamefind(cccLWave);
+            cccLWavei=hGUI.hekadat.HEKAnamefind(cccLWave);
             cccRWave=hGUI.getRowNamebyIndex(hGUI,cccRi);
-            cccRWavei=hGUI.hekadat.HEKAsnamefind(cccRWave);
+            cccRWavei=hGUI.hekadat.HEKAnamefind(cccRWave);
             
             % update table
             cccP=find(cell2mat(Selected(:,2)));
@@ -231,24 +235,23 @@ classdef gxtx_refineBlanks<hekaGUI
             colors=pmkmp(Rows,'CubicL');
             
             cccmean=hGUI.hekadat.HEKAtagmean('ccc');
+            tst=hGUI.hekadat.HEKAstairsprotocol();
             % current trace
-            currentTrace=hGUI.hekadat.sdata(currWavei,:)-hGUI.hekadat.sBaseline(currWavei);
+            currentTrace=hGUI.hekadat.data(currWavei,tst.sti:tst.endi)-(cccmean(tst.sti:tst.endi));
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
             % flanking ccc
-            nearestLBlank=hGUI.hekadat.sdata(cccLWavei,:)-hGUI.hekadat.sBaseline(cccLWavei);
-            nearestRBlank=hGUI.hekadat.sdata(cccRWavei,:)-hGUI.hekadat.sBaseline(cccRWavei);
-            nearestBlank=((nearestLBlank+nearestRBlank)./2);
-%             nearestBlank=((nearestLBlank+nearestRBlank)./2)-(cccmean(tst.sti:tst.endi));
+            nearestLBlank=hGUI.hekadat.data(cccLWavei,tst.sti:tst.endi);
+            nearestRBlank=hGUI.hekadat.data(cccRWavei,tst.sti:tst.endi);
+            nearestBlank=((nearestLBlank+nearestRBlank)./2)-(cccmean(tst.sti:tst.endi));
             lHNow=findobj('DisplayName','nearestBlank');
             set(lHNow,'YData',nearestBlank,'Color',whithen(colors(PlotNow,:),.5))
             
             % subtract nose and mean of flanking blanks
-            tlimi=find(hGUI.hekadat.stAxis<=hGUI.params.tlim,1,'last');
+            tlim=find(hGUI.hekadat.tAxis<=hGUI.params.tcorrlim,1,'last');
             subTrace=currentTrace;
-            subTrace(1:tlimi)=subTrace(1:tlimi)-nearestBlank(1:tlimi);
-            subTrace(tlimi+1:end)=subTrace(tlimi+1:end)-mean(nearestBlank(2000:end),2);
-%             subTrace(tlim+1:end)=subTrace(tlim+1:end)-mean(nearestBlank(2000:end),2);
+            subTrace(1:tlim)=subTrace(1:tlim)-nearestBlank(1:tlim);
+            subTrace(tlim+1:end)=subTrace(tlim+1:end)-mean(nearestBlank(2000:end),2);
             
             lHNow=findobj('DisplayName','subTrace');
             set(lHNow,'YData',subTrace,'Color',colors(PlotNow,:))
@@ -257,7 +260,7 @@ classdef gxtx_refineBlanks<hekaGUI
             set(lHNow,'YData',subTrace,'Color',colors(PlotNow,:)/2)
             
             currtag=findobj('tag','currtag');
-            set(currtag,'String',hGUI.hekadat.stags(currWavei));
+            set(currtag,'String',hGUI.hekadat.tags(currWavei));
             set(hGUI.figData.infoTable,'Data',Selected)
             
             % calculate histograms and reset xlims
@@ -276,47 +279,43 @@ classdef gxtx_refineBlanks<hekaGUI
             maxlim=max([max(currHistY) max(cccHistY)]);
             set(hGUI.figData.plotHist,'XLim',[0 maxlim*1.05])
             set(hGUI.figData.plotHist2,'XLim',[0 max(subHistY)*1.05])
-            
-            hGUI.refocusTable(PlotNow);
         end
         
         function lockButtonCall(hGUI,~,~)
             hGUI.disableGui;
-            if hGUI.hekadat.baselinecorrectionFlag
-                warning('Correction already saved\n')
-            else    
-                tlimi=find(hGUI.hekadat.stAxis>=hGUI.params.tlim,1,'first');
-                
-                tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
-                cccFirst=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'first');
-                cccLi=NaN(size(hGUI.hekadat.swaveNames,1),1);
-                cccLi(1:cccFirst)=cccFirst;
-                for i=cccFirst+1:size(hGUI.hekadat.swaveNames,1)
-                    cccLi(i)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(1:i)),1,'last');
-                end
-                cccRi=NaN(size(hGUI.hekadat.swaveNames,1),1);
-                for i=1:size(hGUI.hekadat.swaveNames,1)-1
-                    cccRi(i)=i+find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(i+1:end)),1,'first');
-                end
-                cccRi(end)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
-                
-                sdata=hGUI.hekadat.HEKAbldata; %including baseline subtraction
-                submat=zeros(size(hGUI.hekadat.sdata));
-                submat(:,1:tlimi)=(sdata(cccLi,1:tlimi)+sdata(cccRi,1:tlimi))./2;
-                hGUI.hekadat.sdata=sdata-submat; %makes baseline subtraction and capacitive transient removal permanent
-                
-                % recalculating all data histogram
-                alldata=reshape(hGUI.hekadat.sdata,1,numel(hGUI.hekadat.sdata));
-                [hGUI.hekadat.stairx,hGUI.hekadat.stairy]=hGUI.calculateHist(alldata,hGUI.params.nbins,-1,2);
-                deltax=(hGUI.hekadat.stairx(2)-hGUI.hekadat.stairx(1))/2;
-                hGUI.hekadat.histx=hGUI.hekadat.stairx(1:2:end)+deltax;
-                hGUI.hekadat.histy=hGUI.hekadat.stairy(1:2:end);
-                
-                hGUI.hekadat.stCorrection=hGUI.params.tlim;
-                hGUI.hekadat.changeBLCFlag(1);
-                hGUI.hekadat.HEKAsave();
-                fprintf('sdata should be ready for idealization: go to gxtx_fitHist to determine threshold\n')
+            tst=hGUI.hekadat.HEKAstairsprotocol();
+            tlim=find(hGUI.hekadat.tAxis<=hGUI.params.tcorrlim,1,'last');
+%             % parsing by tags. May not correspond to waves in table unless reloaded
+%             selWaves=logical(hGUI.hekadat.HEKAtagfind('ccc')+hGUI.hekadat.HEKAtagfind('ooo')+hGUI.hekadat.HEKAtagfind('coc'));
+%             
+%             
+%             hGUI.hekadat.swaveNames=hGUI.hekadat.waveNames(selWaves);
+%             hGUI.hekadat.stags=hGUI.hekadat.tags(selWaves);
+%             hGUI.hekadat.stAxis=hGUI.hekadat.tAxis(1:tst.deltai);
+%             
+%             cccmean=hGUI.hekadat.HEKAtagmean('ccc');
+%             sdata=hGUI.hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hGUI.hekadat.swaveNames,1),1);
+
+            error ('Need corrections here')
+            
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+            cccLi=NaN(size(hGUI.hekadat.swaveNames,1),1);
+            cccLi(1)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'first');
+            for i=2:size(hGUI.hekadat.swaveNames,1)
+                cccLi(i)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(1:i)),1,'last');
             end
+            cccRi=NaN(size(hGUI.hekadat.swaveNames,1),1);
+            for i=1:size(hGUI.hekadat.swaveNames,1)-1
+                cccRi(i)=i+find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(i+1:end)),1,'first');
+            end
+            cccRi(end)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
+            
+            submat=zeros(size(sdata));
+            submat(:,1:tlim)=(sdata(cccLi,1:tlim)+sdata(cccRi,1:tlim))./2;
+            hGUI.hekadat.sdata=sdata-submat;
+            
+            
+            hGUI.hekadat.HEKAsave();
             hGUI.enableGui;
         end
         

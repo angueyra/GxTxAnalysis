@@ -74,11 +74,9 @@ classdef gxtx_tagOpenings<hekaGUI
             colors=pmkmp(size(hGUI.hekadat.waveNames,1),'CubicL');
             
             cccmean=hGUI.hekadat.HEKAtagmean('ccc');
-            
             %current trace
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',hGUI.hekadat.data(PlotNow,:)-cccmean,'Color',colors(PlotNow,:))
-            
             % move current trace to top of all traces
             curt=findobj('DisplayName',hGUI.hekadat.waveNames{PlotNow});
             if PlotNow==1
@@ -94,6 +92,8 @@ classdef gxtx_tagOpenings<hekaGUI
             set(currtag,'String',hGUI.hekadat.tags(PlotNow));
             curri=findobj('tag','currIndex');
             set(curri,'String',num2str(PlotNow));
+            
+            hGUI.refocusTable(PlotNow);
         end
         
         function updateTable(hGUI,~,eventdata)

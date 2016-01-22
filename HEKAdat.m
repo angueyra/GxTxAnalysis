@@ -20,12 +20,13 @@ classdef HEKAdat < handle
 %               ooc %inactivation?
 %               oco %weird one
 
-        % curated data
+        % subtracted data + baseline correction + capacitive transient removal
         sdata
         stAxis
         swaveNames
         stags
         sBaseline
+        stCorrection
         % distributions
         histx
         histy
@@ -51,6 +52,7 @@ classdef HEKAdat < handle
     
     properties (SetAccess = private)
         initalparseFlag = 0;
+        baselinecorrectionFlag=0;
     end
     
     methods
@@ -85,6 +87,14 @@ classdef HEKAdat < handle
             end
             hekadat.initalparseFlag=1;
             hekadat.tags=cell(size(hekadat.waveNames));
+        end
+        
+        function changeBLCFlag(hekadat,flagvalue)
+            if flagvalue==1||flagvalue==0||flagvalue==true||flagvalue==false
+                hekadat.baselinecorrectionFlag=logical(flagvalue);
+            else
+                error('Unsupported flagvalue')
+            end
         end
         
         function hekadat=HEKAsave(hekadat)
@@ -143,6 +153,11 @@ classdef HEKAdat < handle
                 hekadat.sdata=hekadat.data(selWaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hekadat.swaveNames,1),1);
                 hekadat.sBaseline=zeros(size(hekadat.sdata,1),1);
             end
+            if hekadat.baselinecorrectionFlag
+                warning('HEKAinitialsubtraction has overwritten baseline subtraction, correction and cap. transient removal\n')
+                warning('Rerun HEKAguessBaseline, gxtx_correctBaseline and gxtx_refineBlanks before continuing with idealization\n')
+            end
+            hekadat.baselinecorrectionFlag=0;
         end
         
         function HEKAguessBaseline(hekadat)
@@ -188,6 +203,7 @@ classdef HEKAdat < handle
             if isempty(hekadat.sdata)
                 error('Nothing to update. Run hekadat.HEKAinitialsubtraction first\n')
             else
+                snumber=size(hekadat.swaveNames,1);
                 strfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
                 
                 uwaves=logical(hekadat.HEKAtagfind('ccc')+hekadat.HEKAtagfind('ooo')+hekadat.HEKAtagfind('coc'));
@@ -196,6 +212,7 @@ classdef HEKAdat < handle
 
                 umatch=NaN(size(uwaveNames));
                 uBaseline=NaN(size(uwaveNames));
+                warnflag=0;
                 for i=1:size(uwaveNames)
                     umatch(i)=find(cellfun(strfindfx(uwaveNames{i}),hekadat.swaveNames));
                     if ~isnan(umatch(i))
@@ -203,19 +220,22 @@ classdef HEKAdat < handle
                         % epochs that got swapped to bad, zzz or untagged will not match
                         uBaseline(i)=hekadat.sBaseline(umatch(i));
                     else
+                        warnflag=1;
                         %new epoch was added. Can still run HEKAguessBaseline to adjust these epochs
                         uBaseline(i)=0;
                     end
                 end
-
                 tst=hekadat.HEKAstairsprotocol();
                 hekadat.swaveNames=uwaveNames;
                 hekadat.stags=utags;
                 cccmean=hekadat.HEKAtagmean('ccc');
                 hekadat.sdata=hekadat.data(uwaves,tst.sti:tst.endi)-repmat(cccmean(tst.sti:tst.endi),size(hekadat.swaveNames,1),1);
                 hekadat.sBaseline=uBaseline;
+                fprintf('%g epochs were removed from pool\n',snumber-size(utags,1))
                 fprintf('Check results then HEKAsave\n')
-
+                if warnflag
+                    fprintf('New epochs were added (n=%g). Repeat baseline correction\n',sum(isnan(umatch)))
+                end
             end
         end
         
@@ -325,6 +345,8 @@ classdef HEKAdat < handle
         function idata=HEKAidealize(data,hath)
             idata=zeros(size(data));
             idata(data>hath)=1;
+            % removing events that occur in the 1st ms after voltage step
+            idata(1:20)=0;
         end
         
         function [hx,hy,sx,sy]=HEKAhist(wave,nbins,edgemin,edgemax)

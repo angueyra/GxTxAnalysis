@@ -4,7 +4,10 @@ classdef gxtx_correctBaseline<hekaGUI
     
     methods
         % Constructor (gui objects and initial plotting)
-        function hGUI=gxtx_correctBaseline(hekadat,params,fign) 
+        function hGUI=gxtx_correctBaseline(hekadat,params,fign)
+            if hekadat.baselinecorrectionFlag
+                error('Baseline subtraction has already been corrected and included in sdata')
+            end
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
           params=checkStructField(params,'nbins',400);
@@ -173,7 +176,7 @@ classdef gxtx_correctBaseline<hekaGUI
           plotHist2=struct('Position',[hleft ptop2 hwidth pheight-.11],'tag','plotHist2');
           plotHist2.YAxisLocation='right';
           plotHist2.XLim=[0 0.3];
-          plotHist2.YLim=plotCurr.YLim;
+          plotHist2.YLim=plotSub.YLim;
           hGUI.makePlot(plotHist2);
           hGUI.labelx(hGUI.figData.plotHist2,'Freq');
           
@@ -212,26 +215,19 @@ classdef gxtx_correctBaseline<hekaGUI
             Selected=get(hGUI.figData.infoTable,'Data');
             PlotNow=find(cell2mat(Selected(:,end)));
             hGUI.params.PlotNow=PlotNow;
-            
+            Rows=size(Selected,1);
+            colors=pmkmp(Rows,'CubicL');
             % current wave
             currWave=hGUI.getRowName;
             currWavei=hGUI.hekadat.HEKAsnamefind(currWave);
-            
-            Rows=size(Selected,1);
-            colors=pmkmp(Rows,'CubicL');
-            
             % current trace
             currentTrace=hGUI.hekadat.sdata(currWavei,:);
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
-            
-            
-            
             % current histograms
             [currHistX,currHistY]=hGUI.calculateHist(currentTrace,hGUI.params.nbins,-1,2);
             hHNow=findobj('DisplayName','currHist');
             set(hHNow,'XData',currHistY,'YData',currHistX,'Color',colors(PlotNow,:))
-            
             % after baseline correction
             baseline=Selected{PlotNow,2};
             lHNow=findobj('DisplayName','subWave');
@@ -243,6 +239,8 @@ classdef gxtx_correctBaseline<hekaGUI
             
             curri=findobj('tag','currIndex');
             set(curri,'String',num2str(PlotNow));
+            
+            hGUI.refocusTable(PlotNow);
         end
         
         function lockButtonCall(hGUI,~,~)

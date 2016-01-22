@@ -48,7 +48,7 @@ classdef genericGUI < handle
             tableinput=checkStructField(tableinput,'ColumnEditable',true(1,3));
             tableinput=checkStructField(tableinput,'CellEditCallback',@hGUI.updateTable);
             tableinput=checkStructField(tableinput,'Data',false(3,3));
-            tableinput=checkStructField(tableinput,'headerWidth',20);
+            tableinput=checkStructField(tableinput,'headerWidth',25);
               
             hGUI.figData.infoTable = uitable('Parent', tableinput.Parent, ...
                 'Data', tableinput.Data, ...
@@ -111,6 +111,14 @@ classdef genericGUI < handle
             hGUI.disableGui;
             hGUI.enableGui;
         end
+        
+        function refocusTable(hGUI,focusindex)
+           jTable=findjobj(findobj('tag','infoTable'));
+           jScrollPanel = jTable.getComponent(0);
+           scrollEnd=jScrollPanel.getViewSize.height;
+           jscrollNow=java.awt.Point(0,(focusindex-5)*scrollEnd/size(get(hGUI.figData.infoTable,'RowName'),1));
+           jScrollPanel.setViewPosition(jscrollNow);
+       end
         
         function defaultCall(hGUI,~,~)
             hGUI.disableGui;

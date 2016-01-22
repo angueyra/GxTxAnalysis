@@ -109,6 +109,8 @@ classdef gxtx_tagBlanks<hekaGUI
             
             curri=findobj('tag','currIndex');
             set(curri,'String',num2str(PlotNow));
+            
+            hGUI.refocusTable(PlotNow);
         end
         
         function updateTable(hGUI,~,eventdata)
@@ -129,6 +131,7 @@ classdef gxtx_tagBlanks<hekaGUI
            
            updatePlots(hGUI);
            hGUI.enableGui;
+           
         end
        
         function nextButtonCall(hGUI,~,~)

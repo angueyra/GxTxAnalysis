@@ -32,7 +32,7 @@ classdef gxtx_fitHist<hekaGUI
           tableinput.Data=infoData;
           tableinput.ColumnName={'tag','bline','P'};
           tableinput.RowName=RowNames;
-          tableinput.headerWidth=63;
+          tableinput.headerWidth=72;
           hGUI.infoTable(tableinput);
           
           bw=.065;
@@ -116,7 +116,7 @@ classdef gxtx_fitHist<hekaGUI
           set(lH,'DisplayName','oLine')
           %hath line
           lH=line([NaN NaN],[0 1],'Parent',hGUI.figData.plotHist);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
+          set(lH,'LineStyle','--','Marker','none','LineWidth',2,'MarkerSize',5,'Color',[.75 .75 .75])
           set(lH,'DisplayName','hathLine')
           
           % corrected Hist
@@ -215,29 +215,25 @@ classdef gxtx_fitHist<hekaGUI
             Selected=get(hGUI.figData.infoTable,'Data');
             PlotNow=find(cell2mat(Selected(:,end)));
             hGUI.params.PlotNow=PlotNow;
-            
+            Rows=size(Selected,1);
+            colors=pmkmp(Rows,'CubicL');
             % current wave
             currWaveName=hGUI.getRowName;
             currWavei=hGUI.hekadat.HEKAsnamefind(currWaveName);
-            
-            Rows=size(Selected,1);
-            colors=pmkmp(Rows,'CubicL');
-            
             % current trace (baseline corrected)
-            currWave=hGUI.hekadat.HEKAbldata(currWavei);
+            currWave=hGUI.hekadat.sdata(currWavei,:);
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currWave,'Color',colors(PlotNow,:))
-            
+            %idealized wave
             iWave=hGUI.hekadat.HEKAidealize(currWave,hGUI.params.hath).*hGUI.params.hist_o(1);
             lHNow=findobj('DisplayName','iWave');
             set(lHNow,'YData',iWave,'Color',[.4 .4 .4])%whithen(colors(PlotNow,:),0.5))
-            
             % current histograms
             [currHistX,currHistY]=hGUI.calculateHist(currWave,hGUI.params.nbins,-1,2);
             hHNow=findobj('DisplayName','currHist');
             set(hHNow,'XData',currHistX,'YData',currHistY,'Color',colors(PlotNow,:))
             
-
+            hGUI.refocusTable(PlotNow);
         end
         
         function fittingCall(hGUI,~,~)
@@ -413,20 +409,19 @@ classdef gxtx_fitHist<hekaGUI
             hGUI.disableGui;
             lH=findobj('DisplayName','currWave');
             if strcmpi(get(lH,'Marker'),'none')
-                set(lH,'Marker','.','MarkerSize',8)
+                set(lH,'Marker','.','MarkerSize',8);
             else
-                set(lH,'Marker','none')
+                set(lH,'Marker','none');
             end
-            get(lH,'Marker')
             hGUI.enableGui;
         end
         function ilStyleCall(hGUI,~,~)
             hGUI.disableGui;
             lH=findobj('DisplayName','iWave');
             if strcmpi(get(lH,'Marker'),'none')
-                set(lH,'Marker','.','MarkerSize',8)
+                set(lH,'Marker','.','MarkerSize',8);
             else
-                set(lH,'Marker','none')
+                set(lH,'Marker','none');
             end
             hGUI.enableGui;
         end

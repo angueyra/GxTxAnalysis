@@ -23,14 +23,14 @@ classdef hekaGUI < genericGUI
            Plotted=find(cell2mat(Selected(:,end)));
            Previous=Plotted(Plotted~=eventdata.Indices(1));
            Plotted=Plotted(Plotted==eventdata.Indices(1));
-           
            Selected{Previous,end}=false;
            Selected{Plotted,end}=true;
            set(hGUI.figData.infoTable,'Data',Selected)
-           
            updatePlots(hGUI);
            hGUI.enableGui;
+           hGUI.refocusTable(Plotted)
        end
+       
        % Object creation
        function makePlot(hGUI,plotstruct,varargin)
            if nargin < 2
@@ -252,6 +252,5 @@ classdef hekaGUI < genericGUI
        function labely(plothandle,ylabel)
           set(get(plothandle,'YLabel'),'string',ylabel) 
        end
-       
    end
 end
