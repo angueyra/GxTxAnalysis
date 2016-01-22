@@ -1,18 +1,20 @@
 %% ANALYSIS OF KV2.1 SINGLE CHANNEL DATA
 % Flow
 %  1) hekadat=HEKAdat('2015_06_23_Juan') --> load data from Patchmaster into HEKAdat class
-%  2) gxtx_tagBlanks(hekadata,p,10) -->  scroll through data and identify blanks and bad traces
-%  3) gxtx_tagOpenings(hekadata,p,10) --> after baseline subtraction find 'ooo' and 'coc' epochs
+%  2) gxtx_tagBlanks(hekadat,p,10) -->  scroll through data and identify blanks and bad traces
+%  3) gxtx_tagOpenings(hekadat,p,10) --> after baseline subtraction find 'ooo' and 'coc' epochs
 %  4) hekadat.HEKAguessBaseline(); --> uses 'ccc' to correct for slow drifts
-%  5) gxtx_correctBaseline((hekadata,p,10) --> use closed period to re-correct baseline in single epochs preloading guess
+%  5) gxtx_correctBaseline((hekadat,p,10) --> use closed period to re-correct baseline in single epochs preloading guess
 %           After Lock&Save all data histogram will be calculated
 %  6) hekadat.HEKAsUpdate(); --> if changes are made to tags, updates baseline subtraction and correction
-%  6) gxtx_refineBlanks(hekadata,p,10) --> use local correction for blanks (flanking blanks) when capacitance drifts
-%  7) gxtx_fitHist(hekadata,p,10) --> fits amplitude histogram with 2 gaussians and idealizes data
+%  6) gxtx_refineBlanks(hekadat,p,10) --> use local correction for blanks (flanking blanks) when capacitance drifts
+%  7) gxtx_fitHist(hekadat,p,10) --> fits amplitude histogram with 2 gaussians and idealizes data
 %           Due to some issues during baseline correction, will assume
 %           that channel is closed for the first 20 points of trace (~0.925ms)
-%  8) --> compiles event list
-%           Events that are 1 sample point (<0.05 ms) will be rejected
+%  8) iAnalysis=hekadat.iAnalyze --> compiles event list into a new object
+%  9) gxtx_iAnalysisPlots(iA,p,10) --> allows to define thresholds between notx and gxtx for analysis
+%           Fits open and closed dwell log histograms and cumulative
+%           distributions of first latencies
 
 %% Data loading
 % Patchmaster mat file exports
@@ -45,6 +47,10 @@ clear; clear classes; clc;hekadat=HEKAdat('2015_06_23_Juan');hGUI=gxtx_tagBlanks
 %%
 hekadat=HEKAdat('2015_06_23_Juan');
 [odt,cdt]=hekadat.HEKAdwelltimes;
+%%
+odt=iA.odt;
+cdt=iA.cdt;
+
 %% openDwellTimes log-binned histogram and fitting
 nbins=80;
 ologmin=-1;
@@ -54,7 +60,8 @@ ologmax=2.2;
 
 logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
 logbinexp=@(q,x)sqrt( (10.^x) .* (  logexp(q,x)  ) );
-og=[10 1];
+% og=[10 1];
+og=[20 log10(10)];
 ogy_log=logbinexp(og,ohx_log);
 
 ofc_log=nlinfit(ohx_log,ohy_log,logbinexp,og);
@@ -237,6 +244,33 @@ set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color','r')
 
 lH=line(nwaves,cumsum(ccc)./(nwaves),'Parent',f3);
 set(lH,'Marker','.','LineStyle','none','LineWidth',1,'Color',[.5 .5 .5])
+
+
+
+%% Plotting first latencies for 'no toxin yet' vs. 'poisoned' epochs
+ooo=struct;
+ooo.Start=1;
+ooo.End=100;
+ooo.Lats=iA.firstlats(ooo.Start:ooo.End);
+ooo.Lats=sort(ooo.Lats(~isnan(ooo.Lats)));
+ooo.pLats=[0:1/length(ooo.Lats):1-1/length(ooo.Lats)]';
+
+ccc=struct;
+ccc.Start=400;
+ccc.End=1200;
+ccc.Lats=iA.firstlats(ccc.Start:ccc.End);
+ccc.Lats=sort(ccc.Lats(~isnan(ccc.Lats)));
+ccc.pLats=[0:1/length(ccc.Lats):1-1/length(ccc.Lats)]';
+
+f4=getfigH(4);
+
+
+lH=line(ooo.Lats,ooo.pLats,'Parent',f4);
+set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color','b')
+
+lH=line(ccc.Lats,ccc.pLats,'Parent',f4);
+set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color','r')
+
 
 
 

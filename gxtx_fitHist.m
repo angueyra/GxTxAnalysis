@@ -296,7 +296,7 @@ classdef gxtx_fitHist<hekaGUI
             hGUI.hekadat.itAxis=hGUI.hekadat.stAxis;
             hGUI.hekadat.itags=hGUI.hekadat.stags;
             hGUI.hekadat.iwaveNames=hGUI.hekadat.swaveNames;
-            hGUI.hekadat.idata=hGUI.hekadat.HEKAidealize(hGUI.hekadat.HEKAbldata,hGUI.hekadat.hath);
+            hGUI.hekadat.idata=hGUI.hekadat.HEKAidealize(hGUI.hekadat.sdata,hGUI.hekadat.hath);
             
             hGUI.hekadat.HEKAsave();
             hGUI.enableGui;

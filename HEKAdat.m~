@@ -1,4 +1,6 @@
 classdef HEKAdat < handle
+    % with classdef HEKAdat<handle, all modificaitons of hekadat objects immediately apply to it
+    % it no longer works as a workspace variable
     properties
         % raw data
         data
@@ -252,23 +254,49 @@ classdef HEKAdat < handle
             end
         end
         
-        function iA=HEKAiAnalysis(hekadat)
+        function iA=HEKAianalyze(hekadat)
             %analyze idealized waves
             if isempty(hekadat.idata)
                 error('Idealize data first\n')
             end
-            iA=iAnalysisObj(hekadat);
+            iA=struct;
+            iA.firstlatsi=hekadat.HEKAfirstlatsi;
+            iA.firstlats=hekadat.HEKAfirstlats; %in ms
+            iA.cumfirstlats=sort(iA.firstlats)./length(iA.firstlats); %in ms
+            [iA.odt,iA.cdt]=hekadat.HEKAdwelltimes; %in ms
         end
         
-
+        function firstlats=HEKAfirstlats(hekadat)
+            %first latencies
+            firstlats=NaN(size(hekadat.idata,1),1);
+            for i=1:size(hekadat.idata,1)
+                if ~isempty(find(hekadat.idata(i,:),1,'first'))
+                    firstlats(i)=hekadat.itAxis(find(hekadat.idata(i,:),1,'first'))*1e3;
+                end
+            end
+        end
+        
+        function firstlatsi=HEKAfirstlatsi(hekadat)
+            %first latencies indices
+            firstlatsi=NaN(size(hekadat.idata,1),1);
+            for i=1:size(hekadat.idata,1)
+                if ~isempty(find(hekadat.idata(i,:),1,'first'))
+                    firstlatsi(i)=find(hekadat.idata(i,:),1,'first');
+                end
+            end
+        end
         
         function [odt,cdt]=HEKAdwelltimes(hekadat)
-            odt=[];
-            cdt=[];
-            for i=1:size(hekadat.idata,1)
-                [curr_odt,curr_cdt]=HEKAdwelltime_single(hekadat,i);
-                odt=[odt curr_odt];
-                cdt=[cdt curr_cdt];
+            if isempty(hekadat.idata)
+                error('Please idealize data first\n')
+            else
+                odt=[];
+                cdt=[];
+                for i=1:size(hekadat.idata,1)
+                    [curr_odt,curr_cdt]=HEKAdwelltime_single(hekadat,i);
+                    odt=[odt curr_odt];
+                    cdt=[cdt curr_cdt];
+                end
             end
         end
         
