@@ -44,6 +44,7 @@ classdef hekaGUI < genericGUI
            % plot properties
            plotstruct.Parent=hGUI.figData.panel;
            plotstruct=checkStructField(plotstruct,'Position',[.27 .55 .60 .43]);
+           plotstruct=checkStructField(plotstruct,'Font Size',12);
            hGUI.figData.(plotstruct.tag)=axes(plotstruct);
        end
        
@@ -246,11 +247,11 @@ classdef hekaGUI < genericGUI
    
    methods (Static=true)
        function labelx(plothandle,xlabel)
-          set(get(plothandle,'XLabel'),'string',xlabel) 
+          set(get(plothandle,'XLabel'),'string',xlabel,'fontsize',12) 
        end
        
        function labely(plothandle,ylabel)
-          set(get(plothandle,'YLabel'),'string',ylabel) 
+          set(get(plothandle,'YLabel'),'string',ylabel,'fontsize',12) 
        end
    end
 end
