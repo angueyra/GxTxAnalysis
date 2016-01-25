@@ -310,9 +310,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
         
         function lockButtonCall(hGUI,~,~)
             hGUI.disableGui;
-            hGUI.iA.notx=hGUI.params.notx;
             hGUI.iA.gxtx=hGUI.params.gxtx;
-            hGUI.iA.IAOsave;
             hGUI.enableGui;
         end
         

@@ -11,10 +11,43 @@ classdef iAnalysisObj < handle
         flati       % index to first opening (first latency) in idealized data
         odt         % open dwell times organized in cell array in ms
         cdt         % closed dwell times organized in cell array in ms
+        % NO TOXIN
+        % analysis restrictions
+        notx_start
+        notx_end
+        % sorted first latencies
+        notx_flat
+        % open dwell times histogram and fit
+        notx_odt_histx
+        notx_odt_histy
+        notx_odt_loghistfx
+        notx_odt_fitc
+        notx_odt_fit
+        % closed dwell times histogram and fit
+        notx_cdt_histx
+        notx_cdt_histy
+        notx_cdt_loghistfx
+        notx_cdt_fitc
+        notx_cdt_fit
         
-        notx
-        gxtx
-        
+        %GX TX
+        % analysis restrictions
+        gxtx_start
+        gxtx_end
+        % sorted first latencies
+        gxtx_flat
+        % open dwell times histogram and fit
+        gxtx_odt_histx
+        gxtx_odt_histy
+        gxtx_odt_loghistfx
+        gxtx_odt_fitc
+        gxtx_odt_fit
+        % closed dwell times histogram and fit
+        gxtx_cdt_histx
+        gxtx_cdt_histy
+        gxtx_cdt_loghistfx
+        gxtx_cdt_fitc
+        gxtx_cdt_fit
         % path
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/';
         dirFile
@@ -40,8 +73,6 @@ classdef iAnalysisObj < handle
             iA.flati=NaN(size(iA.itags));
             iA.odt=cell(size(iA.itags,1),1);
             iA.cdt=cell(size(iA.itags,1),1);
-            iA.notx=iASubObj;
-            iA.gxtx=iASubObj;
             % run calculations
             fprintf('Starting dwell time calculations\n')
             iA.CALCflats;
@@ -127,6 +158,27 @@ classdef iAnalysisObj < handle
                     odt=(ci-oi)*dt*1e3; %in ms
                     cdt=(oi(2:end)-ci(1:end-1))*dt*1e3; %in ms
                 end
+            end
+        end
+        
+        function [hx,hy,sx,sy]=IAOhist(wave,nbins,edgemin,edgemax)
+            bins=linspace(edgemin,edgemax,nbins);
+            hy=histc(wave,bins);
+            d=diff(bins)/2;
+            hx= [bins(1:end-1)+d, bins(end)];
+            if nargout>2 && nargout==4
+                [sx,sy]=stairs(bins,hy);
+            end
+        end
+        
+        function [hx_log,hy_log,sx_log,sy_log]=IAOloghist(wave,nbins,edgemin,edgemax)
+            wave_log=log10(wave);
+            logbins=linspace(edgemin,edgemax,nbins);
+            d=diff(logbins)/2;
+            hx_log= [logbins(1:end-1)+d, logbins(end)];                   
+            hy_log=sqrt(histc(wave_log,logbins));                      
+            if nargout>2 && nargout==4
+                [sx_log,sy_log]=stairs(logbins,hy_log);
             end
         end
     end
