@@ -65,7 +65,7 @@ classdef gxtx_tagBlanks<hekaGUI
           % blanks mean
           lH=line(hGUI.hekadat.tAxis-tnil,NaN(size(hGUI.hekadat.data(params.PlotNow,:))),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.5 .5 .5])
-          set(lH,'DisplayName','blankMean')
+          set(lH,'DisplayName','cccMean')
           
           % current trace
           lH=line(hGUI.hekadat.tAxis-tnil,hGUI.hekadat.data(params.PlotNow,:),'Parent',hGUI.figData.plotCurr);
@@ -91,7 +91,7 @@ classdef gxtx_tagBlanks<hekaGUI
             colors=pmkmp(size(hGUI.hekadat.waveNames,1),'CubicL');
             
             % blank mean
-            lHMean=findobj('DisplayName','blankMean');
+            lHMean=findobj('DisplayName','cccMean');
             set(lHMean,'YData',hGUI.hekadat.HEKAtagmean('ccc'));
             
             %current trace

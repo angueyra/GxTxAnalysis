@@ -88,7 +88,7 @@ classdef gxtx_refineBlanks<hekaGUI
           %correction limit line
           lH=line([hGUI.hekadat.stAxis(tlimi) hGUI.hekadat.stAxis(tlimi)],plotCurr.YLim,'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.75 .75 .75])
-          set(lH,'DisplayName','zeroLine')
+          set(lH,'DisplayName','correctionLine')
           
           % current trace
           lH=line(hGUI.hekadat.stAxis,hGUI.hekadat.sdata(currWavei,:)-hekadat.sBaseline(currWavei),'Parent',hGUI.figData.plotCurr);
@@ -103,7 +103,7 @@ classdef gxtx_refineBlanks<hekaGUI
           % corrected trace
           lH=line(hGUI.hekadat.stAxis,NaN(size(hGUI.hekadat.sdata(currWavei,:))),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','+','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
-          set(lH,'DisplayName','correctedTrace')
+          set(lH,'DisplayName','correctedWave')
           
           
           currtag=text(0.09,-1.8,hGUI.hekadat.stags(currWavei),'Parent',hGUI.figData.plotCurr);
@@ -253,7 +253,7 @@ classdef gxtx_refineBlanks<hekaGUI
             lHNow=findobj('DisplayName','subTrace');
             set(lHNow,'YData',subTrace,'Color',colors(PlotNow,:))
             
-            lHNow=findobj('DisplayName','correctedTrace');
+            lHNow=findobj('DisplayName','correctedWave');
             set(lHNow,'YData',subTrace,'Color',colors(PlotNow,:)/2)
             
             currtag=findobj('tag','currtag');
