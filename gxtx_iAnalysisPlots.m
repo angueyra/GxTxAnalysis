@@ -10,7 +10,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             params=checkStructField(params,'gxtx_start',1);
             params=checkStructField(params,'gxtx_end',iA.n);
             
-            params=checkStructField(params,'nbins',100);
+            params=checkStructField(params,'nbins',140);
             params=checkStructField(params,'omin',-1);
             params=checkStructField(params,'omax',2.5);
             params=checkStructField(params,'cmin',-1);

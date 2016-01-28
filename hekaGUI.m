@@ -44,7 +44,7 @@ classdef hekaGUI < genericGUI
            % plot properties
            plotstruct.Parent=hGUI.figData.panel;
            plotstruct=checkStructField(plotstruct,'Position',[.27 .55 .60 .43]);
-           plotstruct=checkStructField(plotstruct,'Font Size',12);
+           plotstruct=checkStructField(plotstruct,'FontSize',12);
            hGUI.figData.(plotstruct.tag)=axes(plotstruct);
        end
        

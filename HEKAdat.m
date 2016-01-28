@@ -139,6 +139,10 @@ classdef HEKAdat < handle
             t_stairs.deltai=find(hekadat.tAxis<=t_stairs.delta,1,'last');
         end
         
+        function hekadat=HEKAstairs(hekadat)
+            stairstim=load('StairsStim.mat');
+            hekadat.stim=stairstim.stairs;
+        end
         
         function HEKAinitialsubtraction(hekadat)
             if isempty(hekadat.sdata)

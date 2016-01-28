@@ -10,6 +10,9 @@ classdef gxtx_tagBlanks<hekaGUI
           Rows=size(hekadat.waveNames,1);
           colors=pmkmp(Rows,'CubicL');
           
+          tnil=hGUI.hekadat.HEKAstairsprotocol;
+          tnil=tnil.st;
+          
           % info Table
           Selected=false(Rows,1);         
           Selected(params.PlotNow,end)=true;
@@ -38,7 +41,7 @@ classdef gxtx_tagBlanks<hekaGUI
           
           % plots
           plotAll=struct('Position',[.255 .08 .60 .43],'tag','plotAll');
-          plotAll.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)];
+          plotAll.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)]-tnil;
           plotAll.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
           plotAll.YLim=[-5 10];
           hGUI.makePlot(plotAll);
@@ -46,13 +49,13 @@ classdef gxtx_tagBlanks<hekaGUI
           hGUI.labely(hGUI.figData.plotAll,'i (pA)');
           
           for i=1:Rows
-              lH=line(hGUI.hekadat.tAxis,hGUI.hekadat.data(i,:),'Parent',hGUI.figData.plotAll);
+              lH=line(hGUI.hekadat.tAxis-tnil,hGUI.hekadat.data(i,:),'Parent',hGUI.figData.plotAll);
               set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',whithen(colors(i,:),.6))
               set(lH,'DisplayName',hGUI.hekadat.waveNames{i})
           end
           
           plotCurr=struct('Position',[.255 .555 .60 .43],'tag','plotCurr');
-          plotCurr.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)];
+          plotCurr.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)]-tnil;
           plotCurr.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
           plotCurr.YLim=[-5 10];
           hGUI.makePlot(plotCurr);
@@ -60,24 +63,26 @@ classdef gxtx_tagBlanks<hekaGUI
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
           
           % blanks mean
-          lH=line(hGUI.hekadat.tAxis,NaN(size(hGUI.hekadat.data(params.PlotNow,:))),'Parent',hGUI.figData.plotCurr);
+          lH=line(hGUI.hekadat.tAxis-tnil,NaN(size(hGUI.hekadat.data(params.PlotNow,:))),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.5 .5 .5])
           set(lH,'DisplayName','blankMean')
           
           % current trace
-          lH=line(hGUI.hekadat.tAxis,hGUI.hekadat.data(params.PlotNow,:),'Parent',hGUI.figData.plotCurr);
+          lH=line(hGUI.hekadat.tAxis-tnil,hGUI.hekadat.data(params.PlotNow,:),'Parent',hGUI.figData.plotCurr);
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           
           % tag label
 %           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
-          currTag=text((hGUI.hekadat.tAxis(end))*.9,8,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currTag=text((hGUI.hekadat.tAxis(end)-tnil)*.9,8,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
           set(currTag,'tag','currTag','FontSize',24)
           
           % index label
 %           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
-          currIndex=text(0.01,8,num2str(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currIndex=text(0.01-tnil,8,num2str(params.PlotNow),'Parent',hGUI.figData.plotCurr);
           set(currIndex,'tag','currIndex','FontSize',24)
+          
+          hGUI.updatePlots();
         end
         
         function updatePlots(hGUI,~,~)
