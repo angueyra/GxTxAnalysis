@@ -277,7 +277,9 @@ classdef gxtx_fitHist<hekaGUI
             set(lHNow,'YData',[c_coeffs(1)+o_coeffs(1) c_coeffs(1)+o_coeffs(1)]/2)
             uistack(findobj('DisplayName','hathLine2'),'bottom')
             
-            fprintf('i_c = %g \ni_o = %g\n',c_coeffs(1),o_coeffs(1))
+            fprintf('sigma_c = %g \ti_c = %g\n',c_coeffs(2),c_coeffs(1))
+            fprintf('sigma_o = %g \ti_o = %g\n',o_coeffs(2),o_coeffs(1))
+            fprintf('Delta(i) = %g\n',o_coeffs(1)-c_coeffs(1))
             % save current coeffs
             hGUI.params.histfx=gauss;
             hGUI.params.hist_c=c_coeffs;

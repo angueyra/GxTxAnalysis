@@ -91,11 +91,11 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             % coc cum prob
             cocH=line(nwaves,cumsum(coc)./(nwaves),'Parent',hGUI.figData.plotEvolution);
             set(cocH,'Marker','.','LineStyle','-','LineWidth',1,'Color','r')
-            set(cocH,'DisplayName','ooo')
+            set(cocH,'DisplayName','coc')
             % ccc cum prob
             cccH=line(nwaves,cumsum(ccc)./(nwaves),'Parent',hGUI.figData.plotEvolution);
             set(cccH,'Marker','.','LineStyle','none','LineWidth',1,'Color',[.5 .5 .5])
-            set(cccH,'DisplayName','ooo')
+            set(cccH,'DisplayName','ccc')
             
             % State evolution (as cumulative counts)
             plotEvolution2=struct('Position',[pleft 0.05 pwidth pheight],'tag','plotEvolution2');
@@ -121,11 +121,11 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             % coc cum prob
             cocH=line(nwaves,cumsum(coc)./(iA.n),'Parent',hGUI.figData.plotEvolution2);
             set(cocH,'Marker','.','LineStyle','-','LineWidth',1,'Color','r')
-            set(cocH,'DisplayName','ooo')
+            set(cocH,'DisplayName','coc')
             % ccc cum prob
             cccH=line(nwaves,cumsum(ccc)./(iA.n),'Parent',hGUI.figData.plotEvolution2);
             set(cccH,'Marker','.','LineStyle','none','LineWidth',1,'Color',[.5 .5 .5])
-            set(cccH,'DisplayName','ooo')
+            set(cccH,'DisplayName','ccc')
             
             pwidth2=.5;
             pheight2=.27;
