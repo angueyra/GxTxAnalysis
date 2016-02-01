@@ -231,24 +231,35 @@ classdef gxtx_refineBlanks<hekaGUI
             colors=pmkmp(Rows,'CubicL');
             
             cccmean=hGUI.hekadat.HEKAtagmean('ccc');
-            % current trace
-            currentTrace=hGUI.hekadat.sdata(currWavei,:)-hGUI.hekadat.sBaseline(currWavei);
+            if ~hGUI.hekadat.baselinecorrectionFlag
+                % current trace
+                currentTrace=hGUI.hekadat.sdata(currWavei,:)-hGUI.hekadat.sBaseline(currWavei);
+                lHNow=findobj('DisplayName','currWave');
+                set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
+                % flanking ccc
+                nearestLBlank=hGUI.hekadat.sdata(cccLWavei,:)-hGUI.hekadat.sBaseline(cccLWavei);
+                nearestRBlank=hGUI.hekadat.sdata(cccRWavei,:)-hGUI.hekadat.sBaseline(cccRWavei);
+                nearestBlank=((nearestLBlank+nearestRBlank)./2);
+                lHNow=findobj('DisplayName','nearestBlank');
+                set(lHNow,'YData',nearestBlank,'Color',whithen(colors(PlotNow,:),.5))
+            else
+                  % current trace
+            currentTrace=hGUI.hekadat.sdata(currWavei,:);%-hGUI.hekadat.sBaseline(currWavei);
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))
             % flanking ccc
-            nearestLBlank=hGUI.hekadat.sdata(cccLWavei,:)-hGUI.hekadat.sBaseline(cccLWavei);
-            nearestRBlank=hGUI.hekadat.sdata(cccRWavei,:)-hGUI.hekadat.sBaseline(cccRWavei);
+            nearestLBlank=hGUI.hekadat.sdata(cccLWavei,:);%-hGUI.hekadat.sBaseline(cccLWavei);
+            nearestRBlank=hGUI.hekadat.sdata(cccRWavei,:);%-hGUI.hekadat.sBaseline(cccRWavei);
             nearestBlank=((nearestLBlank+nearestRBlank)./2);
-%             nearestBlank=((nearestLBlank+nearestRBlank)./2)-(cccmean(tst.sti:tst.endi));
             lHNow=findobj('DisplayName','nearestBlank');
             set(lHNow,'YData',nearestBlank,'Color',whithen(colors(PlotNow,:),.5))
+            end
             
             % subtract nose and mean of flanking blanks
             tlimi=find(hGUI.hekadat.stAxis<=hGUI.params.tlim,1,'last');
             subTrace=currentTrace;
             subTrace(1:tlimi)=subTrace(1:tlimi)-nearestBlank(1:tlimi);
             subTrace(tlimi+1:end)=subTrace(tlimi+1:end)-mean(nearestBlank(2000:end),2);
-%             subTrace(tlim+1:end)=subTrace(tlim+1:end)-mean(nearestBlank(2000:end),2);
             
             lHNow=findobj('DisplayName','subTrace');
             set(lHNow,'YData',subTrace,'Color',colors(PlotNow,:))

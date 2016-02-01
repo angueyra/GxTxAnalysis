@@ -140,7 +140,7 @@ classdef HEKAdat < handle
         end
         
         function hekadat=HEKAstairs(hekadat)
-            stairstim=load('StairsStim.mat');
+            stairstim=load('/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/StairsStim.mat');
             hekadat.stim=stairstim.stairs;
         end
         
