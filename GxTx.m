@@ -20,7 +20,7 @@
 % Patchmaster mat file exports
 clear; clear classes; clc;
 hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
-% hekadat=HEKAdat('2011_06_29_E5GxTx'); %GxTx cell
+% hekadat=HEKAdat('2011_06_29_E5GxTx');i %GxTx cell
 
 % quickly scroll through blanks and bad data
 % subtract blank average
