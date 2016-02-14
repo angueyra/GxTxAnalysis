@@ -58,7 +58,17 @@ makeAxisStruct(hGUI.figData.plotEvolution2,'gNoTxiA_Evo2','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotFlats,'gNoTxiA_Flats','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotOdt,'gNoTxiA_Odt','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotCdt,'gNoTxiA_Cdt','GxTx/PoCNSci');
-
+%% Ensemble average
+f1=getfigH(1);
+ens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+% ens_mean(1:)=0;
+lH=line(hekadat.stAxis,ens_mean,'Parent',f1);
+set(lH,'Color','k','DisplayName','notx_ensmean')
+xlim([0 .5])
+ylim([0 1])
+xlabel('Time (ms)')
+ylabel('i (pA)')
+makeAxisStruct(f1,'hNoTxEnsMean','GxTx/PoCNSci');
 %%
 %%
 %%
@@ -105,12 +115,26 @@ hGUI=gxtx_fitHist(hekadat,p,10);
 hGUI=gxtx_iAnalysisPlots(iA,[],10);
 %run fits
 %%
-makeAxisStruct(hGUI.figData.plotEvolution,'gxgNoTxiA_Evo','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotEvolution2,'gxgNoTxiA_Evo2','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotFlats,'gxgNoTxiA_Flats','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotOdt,'gxgNoTxiA_Odt','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotCdt,'gxgNoTxiA_Cdt','GxTx/PoCNSci');
+makeAxisStruct(hGUI.figData.plotEvolution,'gxgGxTxiA_Evo','GxTx/PoCNSci');
+makeAxisStruct(hGUI.figData.plotEvolution2,'gxgGxTxiA_Evo2','GxTx/PoCNSci');
+makeAxisStruct(hGUI.figData.plotFlats,'gxgGxTxiA_Flats','GxTx/PoCNSci');
+makeAxisStruct(hGUI.figData.plotOdt,'gxgGxTxiA_Odt','GxTx/PoCNSci');
+makeAxisStruct(hGUI.figData.plotCdt,'gxgGxTxiA_Cdt','GxTx/PoCNSci');
 
+%% Ensemble average
+f1=getfigH(1);
+oooens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+lH=line(hekadat.stAxis,oooens_mean,'Parent',f1);
+set(lH,'Color','k','DisplayName','ooo_ensmean')
 
+cocens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('coc'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+lH=line(hekadat.stAxis,cocens_mean,'Parent',f1);
+set(lH,'Color','r','DisplayName','coc_ensmean')
+
+xlim([0 .5])
+ylim([0 1])
+xlabel('Time (ms)')
+ylabel('i (pA)')
+makeAxisStruct(f1,'gxhGxTxEnsMean','GxTx/PoCNSci');
 
 end

@@ -129,6 +129,14 @@ classdef HEKAdat < handle
             tagmean=mean(hekadat.data(hekadat.HEKAtagfind(tag),:));
         end
         
+        function tagmean=HEKAstagmean(hekadat,tag)
+            tagmean=mean(hekadat.sdata(hekadat.HEKAstagfind(tag),:));
+        end
+        
+        function tagmean=HEKAitagmean(hekadat,tag)
+            tagmean=mean(hekadat.idata(hekadat.HEKAitagfind(tag),:));
+        end
+        
         function t_stairs=HEKAstairsprotocol(hekadat)
             t_stairs=struct;
             t_stairs.st=0.22;

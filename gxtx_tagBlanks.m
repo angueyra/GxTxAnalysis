@@ -107,7 +107,7 @@ classdef gxtx_tagBlanks<hekaGUI
             else
                 set(curt,'Color',[0,0,0],'LineWidth',1)
             end
-            uistack(curt,'top')
+%             uistack(curt,'top')
             
             currtag=findobj('tag','currTag');
             set(currtag,'String',hGUI.hekadat.tags(PlotNow));
@@ -115,7 +115,7 @@ classdef gxtx_tagBlanks<hekaGUI
             curri=findobj('tag','currIndex');
             set(curri,'String',num2str(PlotNow));
             
-            hGUI.refocusTable(PlotNow);
+%             hGUI.refocusTable(PlotNow);
         end
         
         function updateTable(hGUI,~,eventdata)
