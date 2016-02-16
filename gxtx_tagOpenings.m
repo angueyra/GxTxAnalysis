@@ -68,6 +68,14 @@ classdef gxtx_tagOpenings<hekaGUI
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           
+          lH=line([-.12 -.12],[-2 3],'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.5 .5 .5])
+          set(lH,'DisplayName','VStim')
+          
+          lH=line([-.03 -.03],[-2 3],'Parent',hGUI.figData.plotCurr);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[.5 .5 .5])
+          set(lH,'DisplayName','VStim2')
+          
           hGUI.updatePlots();
         end
         

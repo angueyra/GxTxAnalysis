@@ -19,7 +19,7 @@
 %% Data loading
 % Patchmaster mat file exports
 clear; clear classes; clc;
-hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
+% hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
 % hekadat=HEKAdat('2011_06_29_E5GxTx');i %GxTx cell
 
 hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX 
@@ -32,7 +32,7 @@ hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX
 %%
 hGUI=gxtx_tagBlanks(hekadat,[],10);
 %%
-gxtx_tagOpenings(hekadat,[],10);
+hGUI=gxtx_tagOpenings(hekadat,[],10);
 %% Idealization of ooo and coc traces only
 
 cccmean=hekadat.HEKAtagmean('ccc');
