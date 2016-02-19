@@ -60,7 +60,8 @@ makeAxisStruct(hGUI.figData.plotOdt,'gNoTxiA_Odt','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotCdt,'gNoTxiA_Cdt','GxTx/PoCNSci');
 %% Ensemble average
 f1=getfigH(1);
-ens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+% ens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+ens_mean=mean(hekadat.idata(hekadat.HEKAstagfind('ooo'),:));
 % ens_mean(1:)=0;
 lH=line(hekadat.stAxis,ens_mean,'Parent',f1);
 set(lH,'Color','k','DisplayName','notx_ensmean')
@@ -77,10 +78,12 @@ makeAxisStruct(f1,'hNoTxEnsMean','GxTx/PoCNSci');
 % Patchmaster mat file exports
 clear; clear classes; clc;
 hekadat=HEKAdat('2011_06_29_E5GxTx'); %Control cell
+% corrfactor=1.2383/1.094;
+% hekadat.sdata=hekadat.sdata./corrfactor;
 load('/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/2011_06_29_E5GxTx_iA.mat');
 %% Already corrected data examples
 GxTxExamples={...
-%     'e_5_51_5';...
+    'e_5_51_5';...
 %     'e_5_54_8';...
 %     'e_5_56_5';...
 %     'e_5_57_8';...
@@ -91,17 +94,17 @@ GxTxExamples={...
 %     'e_5_55_10';...
 %     'e_5_56_2';...
 %     'e_5_56_3';...
-    'e_5_49_2';...
-    'e_5_49_3';...
-    'e_5_49_8';...
+%     'e_5_49_2';...
+%     'e_5_49_3';...
+%     'e_5_49_8';...
     };
 p=struct('PlotNow',[]);
 for i=1:length(GxTxExamples)
     %Subtracted, nose corrected, clipped data + Histogram
     p.PlotNow=hekadat.HEKAsnamefind(GxTxExamples(i));
     hGUI=gxtx_refineBlanks(hekadat,p,10);
-    makeAxisStruct(hGUI.figData.plotSub,sprintf('dGxTxSub%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
-    makeAxisStruct(hGUI.figData.plotHist2,sprintf('eGxTxHist%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
+%     makeAxisStruct(hGUI.figData.plotSub,sprintf('dGxTxSub%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
+%     makeAxisStruct(hGUI.figData.plotHist2,sprintf('eGxTxHist%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
 end
 %% Fitted all data histogram
 p.PlotNow=hekadat.HEKAsnamefind('e_5_49_1');
@@ -120,14 +123,30 @@ makeAxisStruct(hGUI.figData.plotEvolution2,'gxgGxTxiA_Evo2','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotFlats,'gxgGxTxiA_Flats','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotOdt,'gxgGxTxiA_Odt','GxTx/PoCNSci');
 makeAxisStruct(hGUI.figData.plotCdt,'gxgGxTxiA_Cdt','GxTx/PoCNSci');
+%% Recreating linear histogram
+figure(1);clf;f1=gca;
+set(get(f1,'xlabel'),'string','Time (s)')
+set(get(f1,'ylabel'),'string','i (pA)')
+bw=10.^iA.notx.ohx;
+plot(10.^iA.notx.ohx,(iA.notx.ohy)./[diff(bw);bw(end)],'.-')
+
+% lH=line(hekadat.tAxis(1:length(osingle)),osingle,'Parent',f1);
+% set(lH,'Marker','none','LineStyle','-','LineWidth',1,'Color',[0 0 0])
+% set(lH,'DisplayName','wci')
+
+
+
+
 
 %% Ensemble average
 f1=getfigH(1);
-oooens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+% oooens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+oooens_mean=mean(hekadat.idata(hekadat.HEKAstagfind('ooo'),:));
 lH=line(hekadat.stAxis,oooens_mean,'Parent',f1);
 set(lH,'Color','k','DisplayName','ooo_ensmean')
 
-cocens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('coc'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+% cocens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('coc'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
+cocens_mean=mean(hekadat.idata(hekadat.HEKAstagfind('coc'),:));
 lH=line(hekadat.stAxis,cocens_mean,'Parent',f1);
 set(lH,'Color','r','DisplayName','coc_ensmean')
 

@@ -19,10 +19,10 @@
 %% Data loading
 % Patchmaster mat file exports
 clear; clear classes; clc;
-% hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
+hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
 % hekadat=HEKAdat('2011_06_29_E5GxTx');i %GxTx cell
 
-hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX 
+% hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX 
 % tagged 'ccc' until trace #100
 
 

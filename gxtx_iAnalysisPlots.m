@@ -11,9 +11,9 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             params=checkStructField(params,'gxtx_end',iA.n);
             
             params=checkStructField(params,'nbins',140);
-            params=checkStructField(params,'omin',-1);
+            params=checkStructField(params,'omin',-.5);
             params=checkStructField(params,'omax',2.5);
-            params=checkStructField(params,'cmin',-1);
+            params=checkStructField(params,'cmin',-.5);
             params=checkStructField(params,'cmax',3);
 
             hGUI@iAnalysisGUI(iA,params,fign);
@@ -188,12 +188,33 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             set(lH,'DisplayName','notx_cdtfit')
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_cdtfits1')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_cdtfits2')
+            
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
             set(lH,'DisplayName','gxtx_cdt')
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([1,0,0],.5))
             set(lH,'DisplayName','gxtx_cdtfit')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_cdtfits1')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_cdtfits2')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_cdtfits3')
             
             hGUI.updatePlots();
         end
@@ -301,10 +322,34 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             notxoH=findobj('DisplayName','notx_cdtfit');
             set(notxoH,'XData',hGUI.params.notx.chx,'YData',hGUI.params.notx.cfit)
             
+            notx_cfits1=sqrt( (10.^hGUI.params.notx.chx) .* hGUI.params.notx.logexp(hGUI.params.notx.ccoeffs(1:2),hGUI.params.notx.chx));
+            notxoH=findobj('DisplayName','notx_cdtfits1');
+            set(notxoH,'XData',hGUI.params.gxtx.chx,'YData',notx_cfits1)
+            
+            notx_cfits2=sqrt( (10.^hGUI.params.notx.chx) .* hGUI.params.notx.logexp(hGUI.params.notx.ccoeffs(3:4),hGUI.params.notx.chx));
+            notxoH=findobj('DisplayName','notx_cdtfits2');
+            set(notxoH,'XData',hGUI.params.notx.chx,'YData',notx_cfits2)
+            
+            
+            
             fprintf('GX TOXIN\n')
-            hGUI.params.gxtx.IAOchistfit([]);
+%             hGUI.params.gxtx.IAOchistfit([]);  % double exponential
+            hGUI.params.gxtx.IAOchistfit3([]); % triple exponential
             gxtxoH=findobj('DisplayName','gxtx_cdtfit');
             set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',hGUI.params.gxtx.cfit)
+            
+            gxtx_cfits1=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(hGUI.params.gxtx.ccoeffs(1:2),hGUI.params.gxtx.chx));
+            gxtxoH=findobj('DisplayName','gxtx_cdtfits1');
+            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits1)
+            
+            gxtx_cfits2=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(hGUI.params.gxtx.ccoeffs(3:4),hGUI.params.gxtx.chx));
+            gxtxoH=findobj('DisplayName','gxtx_cdtfits2');
+            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits2)
+            
+            gxtx_cfits3=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(hGUI.params.gxtx.ccoeffs(5:6),hGUI.params.gxtx.chx));
+            gxtxoH=findobj('DisplayName','gxtx_cdtfits3');
+            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits3)
+            
             hGUI.enableGui;
         end
         

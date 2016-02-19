@@ -94,7 +94,7 @@ classdef iASubObj < handle
                 cguess=varargin{1};
             end
             if isempty(cguess)
-                cguess=[10 -0.1 4 0.9];
+                cguess=[ 10 -0.1 4 0.9];
             end
             logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
             dblogbinexp=@(q,x)sqrt( (10.^x) .* (  logexp([q(1) q(2)],x) + logexp([q(3) q(4)],x)  ) );
@@ -110,8 +110,34 @@ classdef iASubObj < handle
             fprintf('     alpha1 = %g\t   alpha2 = %g ms\n\n',round((iASO.ccoeffs(1))*1000)/1000,round((iASO.ccoeffs(3))*1000)/1000)
             fprintf('-----------------------------------------\n')
         end
+        
+        function iASO=IAOchistfit3(iASO,varargin)
+            if nargin==2
+                cguess=varargin{1};
+            end
+            if isempty(cguess)
+                cguess=[13 1 9 1.5 4 2.1];
+                
+            end
+            logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
+            tlogbinexp=@(q,x)sqrt( (10.^x) .* (  logexp([q(1) q(2)],x) + logexp([q(3) q(4)],x) + logexp([q(5) q(6)],x)  ) );
+            
+            iASO.ccoeffs=nlinfit(iASO.chx,iASO.chy,tlogbinexp,cguess);
+            iASO.cfit=tlogbinexp(iASO.ccoeffs,iASO.chx);
+            iASO.cfx=tlogbinexp;
+            iASO.cfxname='tlogbinexp';
+            fprintf('_________________________________________\n')
+            fprintf('Fit of closed dwell times:\n')
+            fprintf('   First exponential\tSecond exponential\n')
+            fprintf('     tau1 = %g ms\t   tau2 = %g ms\t   tau3 = %g ms\n',round(10^(iASO.ccoeffs(2))*1000)/1000,round(10^(iASO.ccoeffs(4))*1000)/1000,round(10^(iASO.ccoeffs(6))*1000)/1000)
+            fprintf('     alpha1 = %g\t   alpha2 = %g \t   alpha3 = %g \n\n',round((iASO.ccoeffs(1))*1000)/1000,round((iASO.ccoeffs(3))*1000)/1000,round((iASO.ccoeffs(5))*1000)/1000)
+            fprintf('-----------------------------------------\n')
+        end
     end
     
     methods (Static=true)
+        function y=logexp(q,x)
+            y=(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
+        end
     end
 end
