@@ -4,7 +4,8 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
     
     methods
         % Constructor (gui objects and initial plotting)
-        function hGUI=gxtx_iAnalysisPlots(iA,params,fign) 
+        function hGUI=gxtx_iAnalysisPlots(iA,params,fign)
+            params=checkStructField(params,'norm',0);
             params=checkStructField(params,'notx_start',1);
             params=checkStructField(params,'notx_end',iA.n);
             params=checkStructField(params,'gxtx_start',1);
@@ -134,7 +135,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             % First latencies (as cumulative counts)
             plotFlats=struct('Position',[pleft+pwidth+.1 ptop2 .95-pwidth2 pheight2],'tag','plotFlats');
             plotFlats.YLim=[0 1.05];
-%             plotFlats.XLim=[1 iA.n];
+            plotFlats.XLim=[1 max(hGUI.iA.flat)*1.1];
             hGUI.makePlot(plotFlats);
             hGUI.labelx(hGUI.figData.plotFlats,'Time to first opening (ms)');
             hGUI.labely(hGUI.figData.plotFlats,'Cum. Prob.');
@@ -146,6 +147,14 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotFlats);
             set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color','r')
             set(lH,'DisplayName','gxtx_flat')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotFlats);
+            set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color',whithen([0 0 1],0.5))
+            set(lH,'DisplayName','notx_imean')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotFlats);
+            set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color',whithen([1 0 0],0.5))
+            set(lH,'DisplayName','gxtx_imean')
             
             % Open dwell times log hist
             plotOdt=struct('Position',[pleft+pwidth+.1 ptop2-pheight2-.05 .95-pwidth2 pheight2],'tag','plotOdt');
@@ -164,12 +173,28 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             set(lH,'DisplayName','notx_odtfit')
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_otauh')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_otauv')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','r')
             set(lH,'DisplayName','gxtx_odt')
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([1,0,0],.5))
             set(lH,'DisplayName','gxtx_odtfit')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_otauh')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_otauv')
             
             % Closed dwell times log hist
             plotCdt=struct('Position',[pleft+pwidth+.1 ptop2-pheight2*2-.1 .95-pwidth2 pheight2],'tag','plotCdt');
@@ -194,6 +219,23 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([0,0,1],.5))
             set(lH,'DisplayName','notx_cdtfits2')
+                        
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_ctauh1')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_ctauv1')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_ctauh2')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([0,0,1],.5))
+            set(lH,'DisplayName','notx_ctauv2')
+            
             
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
@@ -215,6 +257,31 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',whithen([1,0,0],.5))
             set(lH,'DisplayName','gxtx_cdtfits3')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_ctauh1')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_ctauv1')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_ctauh2')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_ctauv2')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_ctauh3')
+            
+            lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
+            set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',whithen([1,0,0],.5))
+            set(lH,'DisplayName','gxtx_ctauv3')
+            
             
             hGUI.updatePlots();
         end
@@ -278,6 +345,8 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             % first latencies
             notxflH=findobj('DisplayName','notx_flat');
             set(notxflH,'XData',notx.flat,'YData',notx.flatp)
+%             notxflH=findobj('DisplayName','notx_imean');
+%             set(notxflH,'XData',hGUI.iA.itAxis*1000,'YData',mean(hGUI.iA.idata(hGUI.iA.IAOtagfind('ooo'),:)))
             % open dwell times
             notxoH=findobj('DisplayName','notx_odt');
             set(notxoH,'XData',notx.osx,'YData',notx.osy)
@@ -288,6 +357,11 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             % first latencies
             gxtxflH=findobj('DisplayName','gxtx_flat');
             set(gxtxflH,'XData',gxtx.flat,'YData',gxtx.flatp)
+%             keyboard
+%             gxaverage=mean(hGUI.iA.idata(hGUI.iA.IAOtagfind('coc'),:));
+%             gxaverage=gxaverage./(1.1.*mean(gxaverage(round(length(gxaverage)/4):end)));
+%             gxtxflH=findobj('DisplayName','gxtx_imean');
+%             set(gxtxflH,'XData',hGUI.iA.itAxis*1000,'YData',gxaverage)
             % open dwell times
             gxtxoH=findobj('DisplayName','gxtx_odt');
             set(gxtxoH,'XData',gxtx.osx,'YData',gxtx.osy)
@@ -305,13 +379,58 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             hGUI.disableGui;
             fprintf('NO TOXIN\n')
             hGUI.params.notx.IAOohistfit([]);
-            notxoH=findobj('DisplayName','notx_odtfit');
-            set(notxoH,'XData',hGUI.params.notx.ohx,'YData',hGUI.params.notx.ofit)
+            nooc=hGUI.params.notx.ocoeffs;
             
+            if ~hGUI.params.norm
+                notxoH=findobj('DisplayName','notx_odtfit');
+                set(notxoH,'XData',hGUI.params.notx.ohx,'YData',hGUI.params.notx.ofit)
+                
+                tauH=findobj('DisplayName','notx_otauh');
+                set(tauH,'XData',[-.5 nooc(2)],'YData',[nooc(1) nooc(1)])
+                
+                tauH=findobj('DisplayName','notx_otauv');
+                set(tauH,'XData',[nooc(2) nooc(2)],'YData',[0 nooc(1)])
+            else
+                notxoH=findobj('DisplayName','notx_odtfit');
+                set(notxoH,'XData',hGUI.params.notx.ohx,'YData',hGUI.params.notx.ofit./nooc(1))
+                
+                tauH=findobj('DisplayName','notx_otauh');
+                set(tauH,'XData',[-.5 nooc(2)],'YData',[nooc(1) nooc(1)]./nooc(1))
+                
+                tauH=findobj('DisplayName','notx_otauv');
+                set(tauH,'XData',[nooc(2) nooc(2)],'YData',[0 nooc(1)]./nooc(1))
+                % open dwell times
+                notxoH=findobj('DisplayName','notx_odt');
+                set(notxoH,'XData',hGUI.params.notx.osx,'YData',hGUI.params.notx.osy./nooc(1))
+                
+            end
             fprintf('GX TOXIN\n')
             hGUI.params.gxtx.IAOohistfit([]);
-            gxtxoH=findobj('DisplayName','gxtx_odtfit');
-            set(gxtxoH,'XData',hGUI.params.gxtx.ohx,'YData',hGUI.params.gxtx.ofit)
+            gxoc=hGUI.params.gxtx.ocoeffs;
+            
+            if ~hGUI.params.norm
+                gxtxoH=findobj('DisplayName','gxtx_odtfit');
+                set(gxtxoH,'XData',hGUI.params.gxtx.ohx,'YData',hGUI.params.gxtx.ofit)
+                
+                tauH=findobj('DisplayName','gxtx_otauh');
+                set(tauH,'XData',[-.5 gxoc(2)],'YData',[gxoc(1) gxoc(1)])
+                
+                tauH=findobj('DisplayName','gxtx_otauv');
+                set(tauH,'XData',[gxoc(2) gxoc(2)],'YData',[0 gxoc(1)])
+            else
+                gxtxoH=findobj('DisplayName','gxtx_odtfit');
+                set(gxtxoH,'XData',hGUI.params.gxtx.ohx,'YData',hGUI.params.gxtx.ofit./gxoc(1))
+                
+                tauH=findobj('DisplayName','gxtx_otauh');
+                set(tauH,'XData',[-.5 gxoc(2)],'YData',[gxoc(1) gxoc(1)]./gxoc(1))
+                
+                tauH=findobj('DisplayName','gxtx_otauv');
+                set(tauH,'XData',[gxoc(2) gxoc(2)],'YData',[0 gxoc(1)]./gxoc(1))
+                % normalized open dwell times
+                gxtxoH=findobj('DisplayName','gxtx_odt');
+                set(gxtxoH,'XData',hGUI.params.gxtx.osx,'YData',hGUI.params.gxtx.osy./gxoc(1))
+            end
+            
             hGUI.enableGui;
         end
         
@@ -319,36 +438,121 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             hGUI.disableGui;
             fprintf('NO TOXIN\n')
             hGUI.params.notx.IAOchistfit([]);
-            notxoH=findobj('DisplayName','notx_cdtfit');
-            set(notxoH,'XData',hGUI.params.notx.chx,'YData',hGUI.params.notx.cfit)
+            nocc=hGUI.params.notx.ccoeffs;
+            notx_cfits1=sqrt( (10.^hGUI.params.notx.chx) .* hGUI.params.notx.logexp(nocc(1:2),hGUI.params.notx.chx));
+            notx_cfits2=sqrt( (10.^hGUI.params.notx.chx) .* hGUI.params.notx.logexp(nocc(3:4),hGUI.params.notx.chx));
             
-            notx_cfits1=sqrt( (10.^hGUI.params.notx.chx) .* hGUI.params.notx.logexp(hGUI.params.notx.ccoeffs(1:2),hGUI.params.notx.chx));
-            notxoH=findobj('DisplayName','notx_cdtfits1');
-            set(notxoH,'XData',hGUI.params.gxtx.chx,'YData',notx_cfits1)
-            
-            notx_cfits2=sqrt( (10.^hGUI.params.notx.chx) .* hGUI.params.notx.logexp(hGUI.params.notx.ccoeffs(3:4),hGUI.params.notx.chx));
-            notxoH=findobj('DisplayName','notx_cdtfits2');
-            set(notxoH,'XData',hGUI.params.notx.chx,'YData',notx_cfits2)
-            
-            
+            if ~hGUI.params.norm
+                notxoH=findobj('DisplayName','notx_cdtfit');
+                set(notxoH,'XData',hGUI.params.notx.chx,'YData',hGUI.params.notx.cfit)
+                
+                notxoH=findobj('DisplayName','notx_cdtfits1');
+                set(notxoH,'XData',hGUI.params.notx.chx,'YData',notx_cfits1)
+                
+                notxoH=findobj('DisplayName','notx_cdtfits2');
+                set(notxoH,'XData',hGUI.params.notx.chx,'YData',notx_cfits2)
+                
+                tauH=findobj('DisplayName','notx_ctauh1');
+                set(tauH,'XData',[-.5  nocc(2)],'YData',[nocc(1) nocc(1)])
+                tauH=findobj('DisplayName','notx_ctauv1');
+                set(tauH,'XData',[ nocc(2)  nocc(2)],'YData',[0 nocc(1)])
+                
+                tauH=findobj('DisplayName','notx_ctauh2');
+                set(tauH,'XData',[-.5 nocc(4)],'YData',[nocc(3) nocc(3)])
+                tauH=findobj('DisplayName','notx_ctauv2');
+                set(tauH,'XData',[nocc(4) nocc(4)],'YData',[0 nocc(3)])
+            else
+                notxoH=findobj('DisplayName','notx_cdtfit');
+                set(notxoH,'XData',hGUI.params.notx.chx,'YData',hGUI.params.notx.cfit./nocc(1))
+                
+                notxoH=findobj('DisplayName','notx_cdtfits1');
+                set(notxoH,'XData',hGUI.params.notx.chx,'YData',notx_cfits1./nocc(1))
+                
+                notxoH=findobj('DisplayName','notx_cdtfits2');
+                set(notxoH,'XData',hGUI.params.notx.chx,'YData',notx_cfits2./nocc(1))
+                
+                tauH=findobj('DisplayName','notx_ctauh1');
+                set(tauH,'XData',[-.5  nocc(2)],'YData',[nocc(1) nocc(1)]./nocc(1))
+                tauH=findobj('DisplayName','notx_ctauv1');
+                set(tauH,'XData',[ nocc(2)  nocc(2)],'YData',[0 nocc(1)]./nocc(1))
+                
+                tauH=findobj('DisplayName','notx_ctauh2');
+                set(tauH,'XData',[-.5 nocc(4)],'YData',[nocc(3) nocc(3)]./nocc(1))
+                tauH=findobj('DisplayName','notx_ctauv2');
+                set(tauH,'XData',[nocc(4) nocc(4)],'YData',[0 nocc(3)]./nocc(1))
+                % normalized closed dwell times
+                notxoH=findobj('DisplayName','notx_cdt');
+                set(notxoH,'XData',hGUI.params.notx.csx,'YData',hGUI.params.notx.csy./nocc(1))
+            end
             
             fprintf('GX TOXIN\n')
 %             hGUI.params.gxtx.IAOchistfit([]);  % double exponential
             hGUI.params.gxtx.IAOchistfit3([]); % triple exponential
-            gxtxoH=findobj('DisplayName','gxtx_cdtfit');
-            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',hGUI.params.gxtx.cfit)
+            gxcc=hGUI.params.gxtx.ccoeffs;
+            gxtx_cfits1=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(gxcc(1:2),hGUI.params.gxtx.chx));
+            gxtx_cfits2=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(gxcc(3:4),hGUI.params.gxtx.chx));
+            gxtx_cfits3=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(gxcc(5:6),hGUI.params.gxtx.chx));
             
-            gxtx_cfits1=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(hGUI.params.gxtx.ccoeffs(1:2),hGUI.params.gxtx.chx));
-            gxtxoH=findobj('DisplayName','gxtx_cdtfits1');
-            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits1)
             
-            gxtx_cfits2=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(hGUI.params.gxtx.ccoeffs(3:4),hGUI.params.gxtx.chx));
-            gxtxoH=findobj('DisplayName','gxtx_cdtfits2');
-            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits2)
-            
-            gxtx_cfits3=sqrt( (10.^hGUI.params.gxtx.chx) .* hGUI.params.gxtx.logexp(hGUI.params.gxtx.ccoeffs(5:6),hGUI.params.gxtx.chx));
-            gxtxoH=findobj('DisplayName','gxtx_cdtfits3');
-            set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits3)
+            if ~hGUI.params.norm
+                gxtxoH=findobj('DisplayName','gxtx_cdtfit');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',hGUI.params.gxtx.cfit)
+                
+                gxtxoH=findobj('DisplayName','gxtx_cdtfits1');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits1)
+                
+                gxtxoH=findobj('DisplayName','gxtx_cdtfits2');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits2)
+                
+                gxtxoH=findobj('DisplayName','gxtx_cdtfits3');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits3)
+                
+                tauH=findobj('DisplayName','gxtx_ctauh1');
+                set(tauH,'XData',[-.5  gxcc(2)],'YData',[gxcc(1) gxcc(1)])
+                tauH=findobj('DisplayName','gxtx_ctauv1');
+                set(tauH,'XData',[ gxcc(2)  gxcc(2)],'YData',[0 gxcc(1)])
+                
+                tauH=findobj('DisplayName','gxtx_ctauh2');
+                set(tauH,'XData',[-.5 gxcc(4)],'YData',[gxcc(3) gxcc(3)])
+                tauH=findobj('DisplayName','gxtx_ctauv2');
+                set(tauH,'XData',[gxcc(4) gxcc(4)],'YData',[0 gxcc(3)])
+                
+                tauH=findobj('DisplayName','gxtx_ctauh3');
+                set(tauH,'XData',[-.5 gxcc(6)],'YData',[gxcc(5) gxcc(5)])
+                tauH=findobj('DisplayName','gxtx_ctauv3');
+                set(tauH,'XData',[gxcc(6) gxcc(6)],'YData',[0 gxcc(5)])
+            else
+                gxtxoH=findobj('DisplayName','gxtx_cdtfit');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',hGUI.params.gxtx.cfit./gxcc(1))
+                
+                gxtxoH=findobj('DisplayName','gxtx_cdtfits1');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits1./gxcc(1))
+                
+                gxtxoH=findobj('DisplayName','gxtx_cdtfits2');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits2./gxcc(1))
+                
+                gxtxoH=findobj('DisplayName','gxtx_cdtfits3');
+                set(gxtxoH,'XData',hGUI.params.gxtx.chx,'YData',gxtx_cfits3./gxcc(1))
+                
+                tauH=findobj('DisplayName','gxtx_ctauh1');
+                set(tauH,'XData',[-.5  gxcc(2)],'YData',[gxcc(1) gxcc(1)]./gxcc(1))
+                tauH=findobj('DisplayName','gxtx_ctauv1');
+                set(tauH,'XData',[ gxcc(2)  gxcc(2)],'YData',[0 gxcc(1)]./gxcc(1))
+                
+                tauH=findobj('DisplayName','gxtx_ctauh2');
+                set(tauH,'XData',[-.5 gxcc(4)],'YData',[gxcc(3) gxcc(3)]./gxcc(1))
+                tauH=findobj('DisplayName','gxtx_ctauv2');
+                set(tauH,'XData',[gxcc(4) gxcc(4)],'YData',[0 gxcc(3)]./gxcc(1))
+                
+                tauH=findobj('DisplayName','gxtx_ctauh3');
+                set(tauH,'XData',[-.5 gxcc(6)],'YData',[gxcc(5) gxcc(5)]./gxcc(1))
+                tauH=findobj('DisplayName','gxtx_ctauv3');
+                set(tauH,'XData',[gxcc(6) gxcc(6)],'YData',[0 gxcc(5)]./gxcc(1))
+                % normalized closed dwell times
+                gxtxoH=findobj('DisplayName','gxtx_cdt');
+                set(gxtxoH,'XData',hGUI.params.gxtx.csx,'YData',hGUI.params.gxtx.csy./gxcc(1))
+            end
+
             
             hGUI.enableGui;
         end

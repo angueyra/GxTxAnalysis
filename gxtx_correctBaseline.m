@@ -6,7 +6,7 @@ classdef gxtx_correctBaseline<hekaGUI
         % Constructor (gui objects and initial plotting)
         function hGUI=gxtx_correctBaseline(hekadat,params,fign)
             if hekadat.baselinecorrectionFlag
-                error('Baseline subtraction has already been corrected and included in sdata')
+%                 error('Baseline subtraction has already been corrected and included in sdata')
             end
           params=checkStructField(params,'PlotNow',1);
           params=checkStructField(params,'LockNow',0);
