@@ -192,7 +192,9 @@ classdef genericGUI < handle
         function nowSel = getMenuValue(hGUI,source,~)
             options = get(source,'String');
             nowValue = get(source,'Value');
+            htmlpattern='<[^>]*>';
             nowSel = char(options(nowValue));
+            nowSel = regexprep(nowSel,htmlpattern,'');
         end
     end
     
