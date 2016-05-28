@@ -20,13 +20,26 @@ classdef genericGUI < handle
             set(hGUI.figH,'WindowStyle','normal');
             set(hGUI.figH,'Position',[250 450 1111 800]);            
             delete(get(hGUI.figH, 'Children')); %delete every ui object whithin figure
-            set(hGUI.figH,'UserData',hGUI);            
+            set(hGUI.figH,'UserData',hGUI);
+            set(hGUI.figH,'KeyPressFcn',@hGUI.detectKey);
+            
             % set the base panel for ui interactions
             hGUI.figData.panel = uipanel('Parent', hGUI.figH, ...
                 'Units', 'normalized', ...
                 'UserData',[], ...
                 'Position', [.0001 .0001 .9999 .9999],...
                 'tag','panel');
+        end
+        
+        
+        function keyPress = detectKey(hGUI, ~, handles)
+            % determine the key that was pressed
+            keyPress = handles.Key;
+            if strcmp(keyPress,'rightarrow')&&~isempty(hGUI.figData.nextButton)
+                hGUI.nextButtonCall;
+            elseif strcmp(keyPress,'leftarrow')&&~isempty(hGUI.figData.prevButton)
+                hGUI.prevButtonCall;
+            end
         end
         
         function infoTable(hGUI,tableinput)

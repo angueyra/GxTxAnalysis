@@ -43,7 +43,7 @@ classdef gxtx_tagBlanks<hekaGUI
           plotAll=struct('Position',[.255 .08 .60 .43],'tag','plotAll');
           plotAll.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)]-tnil;
           plotAll.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
-          plotAll.YLim=[-5 10];
+          plotAll.YLim=[-10 15];
           hGUI.makePlot(plotAll);
           hGUI.labelx(hGUI.figData.plotAll,'Time (s)');
           hGUI.labely(hGUI.figData.plotAll,'i (pA)');
@@ -57,7 +57,7 @@ classdef gxtx_tagBlanks<hekaGUI
           plotCurr=struct('Position',[.255 .555 .60 .43],'tag','plotCurr');
           plotCurr.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)]-tnil;
           plotCurr.YLim=[min(min(hGUI.hekadat.data)) max(max(hGUI.hekadat.data))];
-          plotCurr.YLim=[-5 10];
+          plotCurr.YLim=[-10 15];
           hGUI.makePlot(plotCurr);
           hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
@@ -79,10 +79,31 @@ classdef gxtx_tagBlanks<hekaGUI
           
           % index label
 %           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
-          currIndex=text(0.01-tnil,8,num2str(params.PlotNow),'Parent',hGUI.figData.plotCurr);
+          currStr=sprintf('%g',params.PlotNow);
+          currIndex=text(0.01-tnil,8,currStr,'Parent',hGUI.figData.plotCurr);
           set(currIndex,'tag','currIndex','FontSize',24)
           
+          totStr=sprintf('   of\n%g',size(hGUI.hekadat.data,1));
+          totIndex=text(0.01-tnil,6,totStr,'Parent',hGUI.figData.plotCurr);
+          set(totIndex,'tag','totStr','FontSize',10)
+          
           hGUI.updatePlots();
+        end
+        
+        function keyPress = detectKey(hGUI, ~, handles)
+            % determine the key that was pressed
+            keyPress = handles.Key;
+            if strcmp(keyPress,'rightarrow')&&~isempty(hGUI.figData.nextButton)
+                hGUI.nextButtonCall;
+            elseif strcmp(keyPress,'leftarrow')&&~isempty(hGUI.figData.prevButton)
+                hGUI.prevButtonCall;
+            elseif strcmp(keyPress,'c')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.cccButton)
+            elseif strcmp(keyPress,'b')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.badButton)
+            elseif strcmp(keyPress,'u')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.untagButton)
+            end
         end
         
         function updatePlots(hGUI,~,~)

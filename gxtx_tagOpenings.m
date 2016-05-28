@@ -50,6 +50,7 @@ classdef gxtx_tagOpenings<hekaGUI
           plotCurr=struct('Position',[.255 .555 .60 .43],'tag','plotCurr');
           plotCurr.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)]-tnil;
           plotCurr.YLim=[min(min(hGUI.hekadat.data-repmat(cccmean,Rows,1))) max(max(hGUI.hekadat.data-repmat(cccmean,Rows,1)))];
+          plotCurr.YLim=[-15 15];
           hGUI.makePlot(plotCurr);
           hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');

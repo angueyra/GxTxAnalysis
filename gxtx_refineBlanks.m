@@ -243,7 +243,7 @@ classdef gxtx_refineBlanks<hekaGUI
                 lHNow=findobj('DisplayName','nearestBlank');
                 set(lHNow,'YData',nearestBlank,'Color',whithen(colors(PlotNow,:),.5))
             else
-                  % current trace
+            % current trace
             currentTrace=hGUI.hekadat.sdata(currWavei,:);%-hGUI.hekadat.sBaseline(currWavei);
             lHNow=findobj('DisplayName','currWave');
             set(lHNow,'YData',currentTrace,'Color',colors(PlotNow,:))

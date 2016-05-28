@@ -19,8 +19,18 @@
 %% Data loading
 % Patchmaster mat file exports
 clear; clear classes; clc;
-hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
-% hekadat=HEKAdat('2011_06_29_E5GxTx');i %GxTx cell
+% Control cells:
+% hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
+
+%GxTx cells:
+% hekadat=HEKAdat('2011_06_29_E5GxTx'); %GxTx cell
+hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');%GxTx cell
+p=struct;
+%mid-analysis here. Not many blanks and unclear if GxTx bound or not. Some
+%hiccups with code too.
+% hekadat=HEKAdat('2011_06_29_E4GxTx'); %Seems like several cells recorded in single experiment. GxTx cell: cropping 1-152. only 1 blank
+
+
 
 % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX 
 % tagged 'ccc' until trace #100
@@ -30,18 +40,24 @@ hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
 % subtract blank average
 % put blanks and bad data in separate struct and save them
 %%
-hGUI=gxtx_tagBlanks(hekadat,[],10);
-%%
-hGUI=gxtx_tagOpenings(hekadat,[],10);
-%% Idealization of ooo and coc traces only
 
-cccmean=hekadat.HEKAtagmean('ccc');
-plot(hekadat.tAxis,hekadat.data(8,:)-cccmean,'.');
-xlim([0.22 0.72])
+hGUI=gxtx_tagBlanks(hekadat,p,10);
+%%
+hGUI=gxtx_tagOpenings(hekadat,p,10);
+%%
+% % hekadat.HEKAinitialsubtraction;hekadat.HEKAsave;
+
+%% Idealization of ooo and coc traces only
+% 
+% cccmean=hekadat.HEKAtagmean('ccc');
+% plot(hekadat.tAxis,hekadat.data(8,:)-cccmean,'.');
+% xlim([0.22 0.72])
 %%
 p=struct;
 p.LockNow=0;
 gxtx_refineBlanks(hekadat,p,10);
+%%
+
 %%
 gxtx_idealizeTraces(hekadat,[],10);
 
