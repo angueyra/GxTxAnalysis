@@ -50,7 +50,7 @@ classdef gxtx_tagOpenings<hekaGUI
           plotCurr=struct('Position',[.255 .555 .60 .43],'tag','plotCurr');
           plotCurr.XLim=[min(hGUI.hekadat.tAxis) max(hGUI.hekadat.tAxis)]-tnil;
           plotCurr.YLim=[min(min(hGUI.hekadat.data-repmat(cccmean,Rows,1))) max(max(hGUI.hekadat.data-repmat(cccmean,Rows,1)))];
-          plotCurr.YLim=[-15 15];
+          plotCurr.YLim=[-2 2];
           hGUI.makePlot(plotCurr);
           hGUI.labelx(hGUI.figData.plotCurr,'Time (s)');
           hGUI.labely(hGUI.figData.plotCurr,'i (pA)');
@@ -106,6 +106,28 @@ classdef gxtx_tagOpenings<hekaGUI
             set(curri,'String',num2str(PlotNow));
             
             hGUI.refocusTable(PlotNow);
+        end
+        
+        function keyPress = detectKey(hGUI, ~, handles)
+            % determine the key that was pressed
+            keyPress = handles.Key;
+            if strcmp(keyPress,'rightarrow')&&~isempty(hGUI.figData.nextButton)
+                hGUI.nextButtonCall;
+            elseif strcmp(keyPress,'leftarrow')&&~isempty(hGUI.figData.prevButton)
+                hGUI.prevButtonCall;
+            elseif strcmp(keyPress,'c')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.cccButton)
+            elseif strcmp(keyPress,'b')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.badButton)
+            elseif strcmp(keyPress,'u')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.untagButton)
+            elseif strcmp(keyPress,'o')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.oooButton)
+            elseif strcmp(keyPress,'z')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.zzzButton)
+            elseif strcmp(keyPress,'q')&&~isempty(hGUI.figData.prevButton)
+                hGUI.tagButtonCall(hGUI.figData.cocButton)
+            end
         end
         
         function updateTable(hGUI,~,eventdata)

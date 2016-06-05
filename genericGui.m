@@ -136,6 +136,28 @@ classdef genericGUI < handle
            hGUI.figData.(sliderName) = uicontrol(sldstruct.Parent,'Style','slider','Units','normalized',sldstruct);
         end
         
+        function createButton(hGUI,buttonstruct)
+            if nargin < 2
+                buttonstruct=struct;
+                buttonstruct.tag='Button';
+                
+            else
+                buttonstruct=checkStructField(buttonstruct,'tag','Button');
+            end
+            % if same exists, delete it
+            delete(findobj('tag',buttonstruct.tag))
+            % button definition
+            buttonstruct.Parent=hGUI.figH;
+            buttonstruct=checkStructField(buttonstruct,'Callback',@hGUI.defaultCall);
+            buttonstruct=checkStructField(buttonstruct,'Position',[.895 .01 0.10 .10]);
+            buttonstruct=checkStructField(buttonstruct,'Style','pushbutton');
+            buttonstruct=checkStructField(buttonstruct,'String',sprintf('%s',buttonstruct.tag));
+            buttonstruct=checkStructField(buttonstruct,'FontSize',10);
+            buttonstruct=checkStructField(buttonstruct,'UserData',[]);
+            %create button
+            buttonName=sprintf('%s',buttonstruct.tag);
+            hGUI.figData.(buttonName) = uicontrol(buttonstruct.Parent,'Units','normalized',buttonstruct);
+        end
         
         function createDropdown(hGUI,ddownstruct)
            if nargin < 2
