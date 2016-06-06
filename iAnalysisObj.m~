@@ -25,11 +25,9 @@ classdef iAnalysisObj < handle
     
     methods
         function iA=iAnalysisObj(hekadat)
-            iA.dirFile=sprintf('%s_iA',hekadat.dirFile);
-            if exist(sprintf('%s%s.mat',iA.dirSave,iA.dirFile),'file')==2
-                temp_iA=load(sprintf('%s%s',iA.dirSave,iA.dirFile));
-                iA=temp_iA.iA;
-                fprintf('Loaded saved version\n')
+            if exist(sprintf('%s%s.mat',iA.dirData,sprtinf('%shekadat.dirFile),'file')==2
+                hekadat.dirFile=dirFile;
+                hekadat=HEKAparse(hekadat);
             else
                 if ~isa(hekadat,'HEKAdat')
                     error('initial parsing/loading requires a HEKAdat object as input')

@@ -203,10 +203,11 @@ classdef gxtx_refineBlanks<hekaGUI
 
             stags=Selected(:,1);
             firstL=find(cellfun(tagfindfx('ccc'),stags),1,'first');
+            lastR=find(cellfun(tagfindfx('ccc'),stags),1,'last');
             if PlotNow<=firstL % no left
                 cccLi=find(cellfun(tagfindfx('ccc'),stags),1,'first');
                 cccRi=PlotNow+find(cellfun(tagfindfx('ccc'),stags(PlotNow+1:end)),1,'first');
-            elseif PlotNow==size(Selected,1) % no right
+            elseif PlotNow>=lastR%size(Selected,1) % no right
                 cccLi=find(cellfun(tagfindfx('ccc'),stags(1:PlotNow)),1,'last');
                 cccRi=find(cellfun(tagfindfx('ccc'),stags),1,'last');
             else
@@ -305,12 +306,16 @@ classdef gxtx_refineBlanks<hekaGUI
                 for i=cccFirst+1:size(hGUI.hekadat.swaveNames,1)
                     cccLi(i)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(1:i)),1,'last');
                 end
+                cccLast=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
+                
                 cccRi=NaN(size(hGUI.hekadat.swaveNames,1),1);
-                for i=1:size(hGUI.hekadat.swaveNames,1)-1
+                
+                for i=1:cccLast-1
                     cccRi(i)=i+find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags(i+1:end)),1,'first');
                 end
-                cccRi(end)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
-                
+                for i=cccLast:size(hGUI.hekadat.swaveNames,1)
+                    cccRi(i)=find(cellfun(tagfindfx('ccc'),hGUI.hekadat.stags),1,'last');
+                end
                 sdata=hGUI.hekadat.HEKAbldata; %including baseline subtraction
                 submat=zeros(size(hGUI.hekadat.sdata));
                 submat(:,1:tlimi)=(sdata(cccLi,1:tlimi)+sdata(cccRi,1:tlimi))./2;

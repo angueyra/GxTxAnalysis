@@ -239,7 +239,7 @@ classdef gxtx_fitHist<hekaGUI
         function fittingCall(hGUI,~,~)
             hGUI.disableGui;
             tg=1.1/2; %threshold guess
-%             tg=1.4/2; %threshold guess
+            tg=1.1/2; %threshold guess
             tg_ind=find(hGUI.hekadat.histx<tg,1,'last');
             c_peak=max(hGUI.hekadat.histy(1:tg_ind));
             c_i=find(hGUI.hekadat.histy==c_peak);
@@ -255,7 +255,7 @@ classdef gxtx_fitHist<hekaGUI
             c_coeffs=nlinfit(hGUI.hekadat.histx(c_hw1:c_hw2),hGUI.hekadat.histy(c_hw1:c_hw2),gauss,c0);
             disp(c_coeffs)
             
-            o0=[hGUI.hekadat.histx(o_i) 0.1 o_peak];
+            o0=[1.1 0.1 o_peak];
             o_coeffs=nlinfit(hGUI.hekadat.histx(o_hw1:o_hw2),hGUI.hekadat.histy(o_hw1:o_hw2),gauss,o0);
             
             lHNow=findobj('DisplayName','cFit');

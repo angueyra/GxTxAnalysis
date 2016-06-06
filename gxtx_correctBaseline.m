@@ -284,7 +284,7 @@ classdef gxtx_correctBaseline<hekaGUI
             baseline=mean(currentTrace(lValue:rValue));
             Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
             set(hGUI.figData.infoTable,'Data',Selected)
-            hGUI.nextButtonCall();
+            hGUI.updatePlots();
             hGUI.enableGui;
         end
         

@@ -340,19 +340,14 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
         function updatePlots(hGUI,~,~)
             hGUI.disableGui;
             
+            keyboard
             if isempty(hGUI.iA.notx)&&isempty(hGUI.iA.gxtx)
                 %first time running this
                 [notx,gxtx]=calculateHISTs(hGUI);
-                hGUI.params.notx=notx;
-                hGUI.params.gxtx=gxtx;
             else
-                %already saved version
+                %already sa
                 notx=hGUI.iA.notx;
                 gxtx=hGUI.iA.gxtx;
-                hGUI.params.notx=notx;
-                hGUI.params.gxtx=gxtx;
-                hGUI.odtfitPlot;
-                hGUI.cdtfitPlot;
             end
             % NO TOXIN
             % first latencies
@@ -380,6 +375,9 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             % closed dwell times
             gxtxoH=findobj('DisplayName','gxtx_cdt');
             set(gxtxoH,'XData',gxtx.csx,'YData',gxtx.csy)
+            
+            hGUI.params.notx=notx;
+            hGUI.params.gxtx=gxtx;
             
             hGUI.enableGui;
         end

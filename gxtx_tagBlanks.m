@@ -72,6 +72,11 @@ classdef gxtx_tagBlanks<hekaGUI
           set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           
+          % current trace in overlay
+          lH=line(hGUI.hekadat.tAxis-tnil,hGUI.hekadat.data(params.PlotNow,:),'Parent',hGUI.figData.plotAll);
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',[0 0 0])
+          set(lH,'DisplayName','currWaveOv')
+          
           % tag label
 %           currTag=text((hGUI.hekadat.tAxis(end))*.9,max(max(hGUI.hekadat.data))*.9,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
           currTag=text((hGUI.hekadat.tAxis(end)-tnil)*.9,8,hGUI.hekadat.tags(params.PlotNow),'Parent',hGUI.figData.plotCurr);
@@ -120,7 +125,9 @@ classdef gxtx_tagBlanks<hekaGUI
             set(lHNow,'YData',hGUI.hekadat.data(PlotNow,:),'Color',colors(PlotNow,:))
             
             % move current trace to top of all traces
-            curt=findobj('DisplayName',hGUI.hekadat.waveNames{PlotNow});
+%             curt=findobj('DisplayName',hGUI.hekadat.waveNames{PlotNow});
+            curt=findobj('DisplayName','currWaveOv');
+            set(curt,'YData',hGUI.hekadat.data(PlotNow,:))
             if PlotNow==1
                 set(curt,'Color',[0,.7,0],'LineWidth',1)
             elseif PlotNow==size(hGUI.hekadat.waveNames,1)

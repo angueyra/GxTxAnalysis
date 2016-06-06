@@ -126,21 +126,27 @@ classdef HEKAdat < handle
         end
         
         function tagmean=HEKAtagmean(hekadat,tag)
-            tagmean=mean(hekadat.data(hekadat.HEKAtagfind(tag),:));
+            tagmean=mean(hekadat.data(hekadat.HEKAtagfind(tag),:),1);
         end
         
         function tagmean=HEKAstagmean(hekadat,tag)
-            tagmean=mean(hekadat.sdata(hekadat.HEKAstagfind(tag),:));
+            tagmean=mean(hekadat.sdata(hekadat.HEKAstagfind(tag),:),1);
         end
         
         function tagmean=HEKAitagmean(hekadat,tag)
-            tagmean=mean(hekadat.idata(hekadat.HEKAitagfind(tag),:));
+            tagmean=mean(hekadat.idata(hekadat.HEKAitagfind(tag),:),1);
         end
         
         function t_stairs=HEKAstairsprotocol(hekadat)
             t_stairs=struct;
             t_stairs.st=0.22;
-            t_stairs.end=0.72;
+            if strcmp(hekadat.dirFile,'2011_06_22_E1_Stair200_02')
+                t_stairs.end=0.42;
+            elseif strcmp(hekadat.dirFile,'2011_06_23_E4GxTx_Stair200')
+                t_stairs.end=0.42;
+            else
+                t_stairs.end=0.72;
+            end
             t_stairs.delta=t_stairs.end-t_stairs.st;
             t_stairs.sti=find(hekadat.tAxis<=t_stairs.st,1,'last');
             t_stairs.endi=find(hekadat.tAxis<=t_stairs.end,1,'last');
