@@ -22,6 +22,7 @@ clear; clear classes; clc;
 % Control cells:
 % hekadat=HEKAdat('2011_06_22_E1_Stair200_02'); %Control cell but 200ms
 % hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
+hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
 % hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
 % hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
 % hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
@@ -37,13 +38,12 @@ clear; clear classes; clc;
 
 % hekadat=HEKAdat('2011_06_29_E4GxTx'); % In this cell conductance changes between ooo and coc.
 %Also not a lot of ccc and not big shift in first latencies. Is it Kv2.1?
-hekadat=HEKAdat('2011_06_29_E5GxTx'); %
+% hekadat=HEKAdat('2011_06_29_E5GxTx'); % Probably example cell
 
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
+% hekadat=HEKAdat('FILENAMEHERE'); %
+% hekadat=HEKAdat('FILENAMEHERE'); %
+% hekadat=HEKAdat('FILENAMEHERE'); %
+% hekadat=HEKAdat('FILENAMEHERE'); %
 
 
 

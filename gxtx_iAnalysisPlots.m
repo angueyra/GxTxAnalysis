@@ -340,7 +340,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
         function updatePlots(hGUI,~,~)
             hGUI.disableGui;
             
-            if isempty(hGUI.iA.notx)&&isempty(hGUI.iA.gxtx)
+            if isempty(hGUI.iA.notx.ocoeffs)&&isempty(hGUI.iA.gxtx.ocoeffs)
                 %first time running this
                 [notx,gxtx]=calculateHISTs(hGUI);
                 hGUI.params.notx=notx;
