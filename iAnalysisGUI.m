@@ -252,5 +252,13 @@ classdef iAnalysisGUI < genericGUI
        function labely(plothandle,ylabel)
           set(get(plothandle,'YLabel'),'string',ylabel) 
        end
+       
+       function labelxlatex(plothandle,xlabel)
+          set(get(plothandle,'XLabel'),'string',xlabel,'interpreter','latex','fontsize',14) 
+       end
+       
+       function labelylatex(plothandle,ylabel)
+          set(get(plothandle,'YLabel'),'string',ylabel,'interpreter','latex','fontsize',14) 
+       end
    end
 end

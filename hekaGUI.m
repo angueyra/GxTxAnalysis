@@ -253,5 +253,13 @@ classdef hekaGUI < genericGUI
        function labely(plothandle,ylabel)
           set(get(plothandle,'YLabel'),'string',ylabel,'fontsize',12) 
        end
+       
+       function labelxlatex(plothandle,xlabel)
+          set(get(plothandle,'XLabel'),'string',xlabel,'interpreter','latex') 
+       end
+       
+       function labelylatex(plothandle,ylabel)
+          set(get(plothandle,'YLabel'),'string',ylabel,'interpreter','latex') 
+       end
    end
 end

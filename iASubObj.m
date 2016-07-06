@@ -122,7 +122,16 @@ classdef iASubObj < handle
             logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
             tlogbinexp=@(q,x)sqrt( (10.^x) .* (  logexp([q(1) q(2)],x) + logexp([q(3) q(4)],x) + logexp([q(5) q(6)],x)  ) );
             
-            iASO.ccoeffs=nlinfit(iASO.chx,iASO.chy,tlogbinexp,cguess);
+            try
+                iASO.ccoeffs=nlinfit(iASO.chx,iASO.chy,tlogbinexp,cguess);
+            catch ME
+                if strcmp(ME.identifier,'stats:nlinfit:NonFiniteFunOutput')
+                    iASO.ccoeffs=(cguess./cguess)*1e-3;
+                    fprintf('ERROR: nlinfit failed, all coeffs will be 1e-3\n')
+                end
+            end
+            
+            
             iASO.cfit=tlogbinexp(iASO.ccoeffs,iASO.chx);
             iASO.cfx=tlogbinexp;
             iASO.cfxname='tlogbinexp';

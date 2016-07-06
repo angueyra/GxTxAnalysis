@@ -74,6 +74,9 @@ classdef HEKAdat < handle
         
         function hekadat=HEKAparse(hekadat)
             HEKAexport=load(sprintf('%s/%s.mat',hekadat.dirData,hekadat.dirFile));
+            if strcmpi(sprintf('%s/%s.mat',hekadat.dirData,hekadat.dirFile),'/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabExports//2011_06_24_E4GxTx_Stair500.mat')
+                HEKAexport=HEKAexport.HEKAexport;
+            end
             fnames=fieldnames(HEKAexport);
             
             hekadat.waveNames=regexprep(regexprep(fnames,'Trace','e'),'_1$','');

@@ -162,7 +162,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             %           plotOdt.XLim=[1 iA.n];
             hGUI.makePlot(plotOdt);
             hGUI.labelx(hGUI.figData.plotOdt,'Open dwell time (ms)');
-            hGUI.labely(hGUI.figData.plotOdt,'sqrt(log(n))');
+            hGUI.labelylatex(hGUI.figData.plotOdt,'$\sqrt(log(n))$');
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','b')
@@ -202,7 +202,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             %           plotCdt.XLim=[1 iA.n];
             hGUI.makePlot(plotCdt);
             hGUI.labelx(hGUI.figData.plotCdt,'Closed dwell time (ms)');
-            hGUI.labely(hGUI.figData.plotCdt,'sqrt(log(n))');
+            hGUI.labelylatex(hGUI.figData.plotCdt,'$\sqrt(log(n))$');
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','b')
@@ -351,8 +351,12 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
                 gxtx=hGUI.iA.gxtx;
                 hGUI.params.notx=notx;
                 hGUI.params.gxtx=gxtx;
+                try
                 hGUI.odtfitPlot;
+                end
+                try
                 hGUI.cdtfitPlot;
+                end
             end
             % NO TOXIN
             % first latencies
@@ -457,7 +461,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             hGUI.params.notx.IAOchistfit([]);
             
             fprintf('GX TOXIN\n')
-%             hGUI.params.gxtx.IAOchistfit([]);  % double exponential
+            % hGUI.params.gxtx.IAOchistfit([]);  % double exponential
             hGUI.params.gxtx.IAOchistfit3([]); % triple exponential
             hGUI.cdtfitPlot;
             hGUI.enableGui;

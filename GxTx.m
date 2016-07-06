@@ -15,14 +15,28 @@
 %  9) gxtx_iAnalysisPlots(iA,p,10) --> allows to define thresholds between notx and gxtx for analysis
 %           Fits open and closed dwell log histograms and cumulative
 %           distributions of first latencies
-
+%% Open all relevant code
+edit gxtx_tagBlanks.m
+edit gxtx_tagOpenings.m
+edit gxtx_refineBlanks.m
+edit gxtx_correctBaseline.m
+edit gxtx_fitHist.m
+edit gxtx_iAnalysisPlots.m
+edit genericGUI.m
+edit hekaGUI.m
+edit iAnalysisGUI.m
+edit iAnalysisGUI.m
+edit HEKAdat.m
+edit iAnalysisObj.m
+edit iASubObj.m
+%%
 %% Data loading
 % Patchmaster mat file exports
 clear; clear classes; clc;
 % Control cells:
 % hekadat=HEKAdat('2011_06_22_E1_Stair200_02'); %Control cell but 200ms
 % hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
-hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
+% hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
 % hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
 % hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
 % hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
@@ -32,9 +46,9 @@ hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again.
 %GxTx cells:
 % hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');% Did not return to -100mV betwen steps.
 % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair200'); % 200 ms and no TTX
-% hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %Recorded 200ms steps before and no TTX
+% hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
 
-% hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500'); % Couldn't parse. Review in PMaster
+hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500'); % Couldn't parse. Review in PMaster
 
 % hekadat=HEKAdat('2011_06_29_E4GxTx'); % In this cell conductance changes between ooo and coc.
 %Also not a lot of ccc and not big shift in first latencies. Is it Kv2.1?
@@ -63,8 +77,10 @@ p=struct;
 % subtract blank average
 % put blanks and bad data in separate struct and save them
 %% find blanks (or ccc) and clearly bad sweeps
+p.PlotNow=1;
 hGUI=gxtx_tagBlanks(hekadat,p,10);
 %% find ooo and coc (and the other ones)
+p.PlotNow=1011;
 hGUI=gxtx_tagOpenings(hekadat,p,10);
 %% subtract mean from ccc sweeps, then correct for drift using ccc sweeps and save
 hekadat.HEKAinitialsubtraction;
@@ -89,7 +105,31 @@ hGUI=gxtx_iAnalysisPlots(iA,p,10);
 
 
 
-
+% % %%
+% % Flanks_ind=NaN(size(hekadat.sBaseline,1),2);
+% % guessBaseline=NaN(size(hekadat.sBaseline,1),1);
+% % 
+% % cccs=hekadat.HEKAstagfind('ccc')';
+% % 
+% % currL=find(cccs,1,'first');
+% % currR=find(cccs,1,'first');
+% % 
+% % Flanks_ind(1:currL,1)=currL;
+% % Flanks_ind(1:currL,2)=currR;
+% % 
+% % for i=currL+1:length(cccs)
+% %     if cccs(i)
+% %         currL=currR;
+% %         currR=i;
+% %     end
+% %     Flanks_ind(i,1)=currL;
+% %     Flanks_ind(i,2)=currR;
+% %     
+% %     guessBaseline(i)=(mean(hekadat.sdata(currL,floor(end/2):end))+mean(hekadat.sdata(currR,floor(end/2):end)))/2;
+% % end
+% % hekadat.sBaseline(hekadat.sBaseline==0)=guessBaseline(hekadat.sBaseline==0);
+% % hekadat.HEKAsave;
+% % fprintf('...Done!\n')
 
 
 

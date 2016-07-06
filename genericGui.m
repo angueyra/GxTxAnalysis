@@ -34,7 +34,7 @@ classdef genericGUI < handle
         
         function keyPress = detectKey(hGUI, ~, handles)
             % determine the key that was pressed
-            keyPress = handles.Key;
+            keyPress = handles.Key
             if strcmp(keyPress,'rightarrow')&&~isempty(hGUI.figData.nextButton)
                 hGUI.nextButtonCall;
             elseif strcmp(keyPress,'leftarrow')&&~isempty(hGUI.figData.prevButton)
@@ -248,11 +248,11 @@ classdef genericGUI < handle
         end
         function disableGui
             set(findobj('-property','Enable'),'Enable','off')
-            drawnow
+%             drawnow
         end
         function enableGui
             set(findobj('-property','Enable'),'Enable','on')
-            drawnow
+%             drawnow
         end
     end
 end
