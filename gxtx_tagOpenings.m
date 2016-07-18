@@ -131,7 +131,7 @@ classdef gxtx_tagOpenings<hekaGUI
         end
         
         function updateTable(hGUI,~,eventdata)
-           hGUI.disableGui;
+%            hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Plotted=find(cell2mat(Selected(:,end)));
            Previous=Plotted(Plotted~=eventdata.Indices(1));
@@ -147,11 +147,11 @@ classdef gxtx_tagOpenings<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            
            updatePlots(hGUI);
-           hGUI.enableGui;
+%            hGUI.enableGui;
         end
        
         function nextButtonCall(hGUI,~,~)
-           hGUI.disableGui;
+%            hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Current=find(cell2mat(Selected(:,end)));
            PlotNext=Current+1;
@@ -167,11 +167,11 @@ classdef gxtx_tagOpenings<hekaGUI
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Current});
            set(curt,'Color',colors(Current,:),'LineWidth',1)
            hGUI.updatePlots();
-           hGUI.enableGui;
+%            hGUI.enableGui;
        end
        
        function prevButtonCall(hGUI,~,~)
-           hGUI.disableGui;
+%            hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Previous=find(cell2mat(Selected(:,end)));
            PlotNext=Previous-1;
@@ -187,7 +187,7 @@ classdef gxtx_tagOpenings<hekaGUI
            curt=findobj('DisplayName',hGUI.hekadat.waveNames{Previous});
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            hGUI.updatePlots();
-           hGUI.enableGui;
+%            hGUI.enableGui;
        end
     end
     

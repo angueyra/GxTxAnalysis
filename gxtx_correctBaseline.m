@@ -266,7 +266,7 @@ classdef gxtx_correctBaseline<hekaGUI
         end
         
         function baselineCall(hGUI,~,~)
-            hGUI.disableGui;
+%             hGUI.disableGui;
             Selected=get(hGUI.figData.infoTable,'Data');
             PlotNow=find(cell2mat(Selected(:,end)));
             % take care of sliders
@@ -285,11 +285,11 @@ classdef gxtx_correctBaseline<hekaGUI
             Selected{PlotNow,2}=baseline; %#ok<*FNDSB>
             set(hGUI.figData.infoTable,'Data',Selected)
             hGUI.updatePlots();
-            hGUI.enableGui;
+%             hGUI.enableGui;
         end
         
         function lSlideCall(hGUI,~,~)
-            hGUI.disableGui;
+%             hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
             lTime=hGUI.hekadat.stAxis(ceil(lValue));
@@ -299,11 +299,11 @@ classdef gxtx_correctBaseline<hekaGUI
             set(lH,'XData',[lTime lTime])
             rH=findobj('DisplayName','rightLine');
             set(rH,'XData',[rTime rTime])
-            hGUI.enableGui;
+%             hGUI.enableGui;
         end
         
         function zoomCall(hGUI,~,~)
-            hGUI.disableGui;
+%             hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Value');
             rValue=get(hGUI.figData.rightSlider,'Value');
             if lValue<rValue
@@ -320,31 +320,27 @@ classdef gxtx_correctBaseline<hekaGUI
                 set(rH,'XData',[rTime rTime])
             end
             set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
-            
-            hGUI.enableGui;
+%             hGUI.enableGui;
         end
         
         function unzoomCall(hGUI,~,~)
-            hGUI.disableGui;
-            
+%             hGUI.disableGui;
             lValue=get(hGUI.figData.leftSlider,'Min');
             lTime=hGUI.hekadat.stAxis(ceil(lValue));
             set(hGUI.figData.leftSlider,'Value',lValue);
-            
             rValue=get(hGUI.figData.rightSlider,'Max');
             rTime=hGUI.hekadat.stAxis(floor(rValue));
             set(hGUI.figData.rightSlider,'Value',rValue);
-            
             lH=findobj('DisplayName','leftLine');
             set(lH,'XData',[lTime lTime])
             rH=findobj('DisplayName','rightLine');
             set(rH,'XData',[rTime rTime])
             set(hGUI.figData.plotCurr,'XLim',[lTime rTime])
-            hGUI.enableGui;
+%             hGUI.enableGui;
         end
         
         function updateTable(hGUI,~,eventdata)
-           hGUI.disableGui;
+%            hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Plotted=find(cell2mat(Selected(:,end)));
            Previous=Plotted(Plotted~=eventdata.Indices(1));
@@ -360,11 +356,11 @@ classdef gxtx_correctBaseline<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            
            updatePlots(hGUI);
-           hGUI.enableGui;
+%            hGUI.enableGui;
         end
        
         function nextButtonCall(hGUI,~,~)
-           hGUI.disableGui;
+%            hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Current=find(cell2mat(Selected(:,end)));
            PlotNext=Current+1;
@@ -381,11 +377,11 @@ classdef gxtx_correctBaseline<hekaGUI
            set(curt,'Color',colors(Current,:),'LineWidth',1)
            hGUI.updatePlots();
            hGUI.unzoomCall();
-           hGUI.enableGui;
+%            hGUI.enableGui;
        end
        
        function prevButtonCall(hGUI,~,~)
-           hGUI.disableGui;
+%            hGUI.disableGui;
            Selected=get(hGUI.figData.infoTable,'Data');
            Previous=find(cell2mat(Selected(:,end)));
            PlotNext=Previous-1;
@@ -402,7 +398,7 @@ classdef gxtx_correctBaseline<hekaGUI
            set(curt,'Color',colors(Previous,:),'LineWidth',1)
            hGUI.updatePlots();
            hGUI.unzoomCall();
-           hGUI.enableGui;
+%            hGUI.enableGui;
        end
     end
     

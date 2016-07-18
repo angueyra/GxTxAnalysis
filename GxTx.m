@@ -48,7 +48,7 @@ clear; clear classes; clc;
 % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair200'); % 200 ms and no TTX
 % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
 
-hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500'); % Couldn't parse. Review in PMaster
+hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500'); % Single channel but a lot of bad data. Midway through analysis
 
 % hekadat=HEKAdat('2011_06_29_E4GxTx'); % In this cell conductance changes between ooo and coc.
 %Also not a lot of ccc and not big shift in first latencies. Is it Kv2.1?
@@ -80,13 +80,15 @@ p=struct;
 p.PlotNow=1;
 hGUI=gxtx_tagBlanks(hekadat,p,10);
 %% find ooo and coc (and the other ones)
-p.PlotNow=1011;
+p.PlotNow=1;
 hGUI=gxtx_tagOpenings(hekadat,p,10);
 %% subtract mean from ccc sweeps, then correct for drift using ccc sweeps and save
 hekadat.HEKAinitialsubtraction;
 hekadat.HEKAguessBaseline;
 hekadat.HEKAsave;
 %% manuelly recorrect baseline from closed periods
+% p.PlotNow=10;
+% in 5_40_8
 hGUI=gxtx_correctBaseline(hekadat,p,10);
 %% identify if subtractino of nose from flanking blanks is correct, then accept it (or don't)
 % binary choice

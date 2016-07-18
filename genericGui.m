@@ -34,7 +34,7 @@ classdef genericGUI < handle
         
         function keyPress = detectKey(hGUI, ~, handles)
             % determine the key that was pressed
-            keyPress = handles.Key
+            keyPress = handles.Key;
             if strcmp(keyPress,'rightarrow')&&~isempty(hGUI.figData.nextButton)
                 hGUI.nextButtonCall;
             elseif strcmp(keyPress,'leftarrow')&&~isempty(hGUI.figData.prevButton)
@@ -224,7 +224,7 @@ classdef genericGUI < handle
             end
         end
         
-        function nowSel = getMenuValue(hGUI,source,~)
+        function nowSel = getMenuValue(hGUI,source,~) %#ok<INUSL>
             options = get(source,'String');
             nowValue = get(source,'Value');
             htmlpattern='<[^>]*>';
