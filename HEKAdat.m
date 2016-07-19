@@ -45,7 +45,6 @@ classdef HEKAdat < handle
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/';
         dirFile
         
-        
     end
     
     properties (SetAccess = private)

@@ -8,3 +8,22 @@ Substates:
 		- same criterion for all cells
 		- again quantify frequency
 		- other junk that doesn't fit criteria -> delete traces if fairly rare
+		
+
+Retags:
+hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
+	5_40_8 	-> bad
+	5_55_6	-> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad

@@ -87,8 +87,8 @@ hekadat.HEKAinitialsubtraction;
 hekadat.HEKAguessBaseline;
 hekadat.HEKAsave;
 %% manuelly recorrect baseline from closed periods
-% p.PlotNow=10;
-% in 5_40_8
+p.PlotNow=716;
+% in 5_55_6
 hGUI=gxtx_correctBaseline(hekadat,p,10);
 %% identify if subtractino of nose from flanking blanks is correct, then accept it (or don't)
 % binary choice
