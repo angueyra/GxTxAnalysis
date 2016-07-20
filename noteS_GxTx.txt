@@ -14,6 +14,32 @@ Retags:
 hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
 	5_40_8 	-> bad
 	5_55_6	-> bad
+	5_82_1	-> coc
+	5_84_4 -> bad
+	5_102_5 -> bad
+	5_103_1 -> bad
+	5_106_2 -> bad
+	
+	Change in conductance. Clipped here: e5_110_10
+	(original, no baseline correction from here on: 2011_06_24_E4GxTx_Stair500unclipped.mat)
+	5_110_10 -> bad
+	5_111_1 -> bad
+	5_111_2 -> bad
+	5_111_4 -> bad
+	5_111_5 -> bad
+	5_111_6 -> bad
+	5_111_7 -> bad
+	5_111_8 -> bad
+	5_111_10 -> bad
+	5_112_5 -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
+	x_xx_xx -> bad
 	x_xx_xx -> bad
 	x_xx_xx -> bad
 	x_xx_xx -> bad
