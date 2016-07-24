@@ -149,6 +149,10 @@ classdef HEKAdat < handle
             else
                 t_stairs.end=0.72;
             end
+            if strcmp(hekadat.dirFile,'2011_06_17_E4_GxTx_Stairs75')
+                t_stairs.st=0.2001;
+                t_stairs.end=0.4001;
+            end
             t_stairs.delta=t_stairs.end-t_stairs.st;
             t_stairs.sti=find(hekadat.tAxis<=t_stairs.st,1,'last');
             t_stairs.endi=find(hekadat.tAxis<=t_stairs.end,1,'last');

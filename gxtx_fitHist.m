@@ -149,11 +149,11 @@ classdef gxtx_fitHist<hekaGUI
           
           % Current wave
           lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.HEKAbldata,2)),'Parent',hGUI.figData.plotSub);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',colors(params.PlotNow,:))
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',10,'Color',colors(params.PlotNow,:))
           set(lH,'DisplayName','currWave')
           % Idealied wave
           lH=line(hGUI.hekadat.stAxis,NaN(1,size(hGUI.hekadat.HEKAbldata,2)),'Parent',hGUI.figData.plotSub);
-          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',5,'Color',whithen(colors(params.PlotNow,:),0.5))
+          set(lH,'LineStyle','-','Marker','none','LineWidth',1,'MarkerSize',10,'Color',whithen(colors(params.PlotNow,:),0.5))
           set(lH,'DisplayName','iWave')
           
           % Wave Sliders
@@ -412,7 +412,7 @@ classdef gxtx_fitHist<hekaGUI
             hGUI.disableGui;
             lH=findobj('DisplayName','currWave');
             if strcmpi(get(lH,'Marker'),'none')
-                set(lH,'Marker','.','MarkerSize',8);
+                set(lH,'Marker','.','MarkerSize',20);
             else
                 set(lH,'Marker','none');
             end
@@ -422,7 +422,7 @@ classdef gxtx_fitHist<hekaGUI
             hGUI.disableGui;
             lH=findobj('DisplayName','iWave');
             if strcmpi(get(lH,'Marker'),'none')
-                set(lH,'Marker','.','MarkerSize',8);
+                set(lH,'Marker','.','MarkerSize',22);
             else
                 set(lH,'Marker','none');
             end

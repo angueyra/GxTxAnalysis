@@ -10,46 +10,49 @@ Substates:
 		- other junk that doesn't fit criteria -> delete traces if fairly rare
 		
 
-Retags:
+Extra long closed times:
+	- Seems like we are losing a lot of closed dwell times because stairs were too short.
+	- One opton would be to fliplr data and d similar analysis with last latency as for first latency.
+
+hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
+	Retags:
+		4_65_13 -> bad
+		4_65_14	-> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		x_xx_xx -> bad
+		
+		
 hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
-	5_40_8 	-> bad
-	5_55_6	-> bad
-	5_82_1	-> coc
-	5_84_4 -> bad
-	5_102_5 -> bad
-	5_103_1 -> bad
-	5_106_2 -> bad
+	Retags:
 	
-	Change in conductance. Clipped here: e5_110_10
-	(original, no baseline correction from here on: 2011_06_24_E4GxTx_Stair500unclipped.mat)
-	5_110_10 -> bad
-	5_111_1 -> bad
-	5_111_2 -> bad
-	5_111_4 -> bad
-	5_111_5 -> bad
-	5_111_6 -> bad
-	5_111_7 -> bad
-	5_111_8 -> bad
-	5_111_10 -> bad
-	5_112_5 -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
-	x_xx_xx -> bad
+		Change in conductance. Clipped here: e5_110_10
+		(original, no baseline correction from here on: 2011_06_24_E4GxTx_Stair500unclipped.mat)
+		5_110_10 -> bad
+		5_111_1 -> bad
+		5_111_2 -> bad
+		5_111_4 -> bad
+		5_111_5 -> bad
+		5_111_6 -> bad
+		5_111_7 -> bad
+		5_111_8 -> bad
+		5_111_10 -> bad
+		5_112_5 -> bad
+		

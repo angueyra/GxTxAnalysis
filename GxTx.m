@@ -32,47 +32,45 @@ edit iASubObj.m
 %%
 %% Data loading
 % Patchmaster mat file exports
+% Need to find multichannels and isolate traces with singles if possibleq
+
 clear; clear classes; clc;
 % Control cells:
 % hekadat=HEKAdat('2011_06_22_E1_Stair200_02'); %Control cell but 200ms
 % hekadat=HEKAdat('2015_06_23_Juan'); %Control cell
 % hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
-% hekadat=HEKAdat('FILENAMEHERE'); %GxTx cell
+
 
 %GxTx cells:
-% hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');% Did not return to -100mV betwen steps.
+% OK data but inconsistent stimulus with rest
+% hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');
+% Did not return to -100mV betwen steps.
+
+% Good data here. Very consistent with 2011_06_29_E5GxTx
 % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair200'); % 200 ms and no TTX
 % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
 
-hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500'); % Single channel but a lot of bad data. Midway through analysis
+% Blah cell
+% hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
+% A lot of bad data (intrusive little friend).
+% Conductance steadily decreases throughout recording. 
+% Not such clear differences in closed dwell times. Especially, not huge rise in 3rd
+% exponential component. First latency shift is really clear.
 
-% hekadat=HEKAdat('2011_06_29_E4GxTx'); % In this cell conductance changes between ooo and coc.
-%Also not a lot of ccc and not big shift in first latencies. Is it Kv2.1?
-% hekadat=HEKAdat('2011_06_29_E5GxTx'); % Probably example cell
+% Is it Kv2.1?
+% hekadat=HEKAdat('2011_06_29_E4GxTx');
+% In this cell conductance changes between ooo and coc.
+% Also not a lot of ccc and not big shift in first latencies. 
 
-% hekadat=HEKAdat('FILENAMEHERE'); %
-% hekadat=HEKAdat('FILENAMEHERE'); %
-% hekadat=HEKAdat('FILENAMEHERE'); %
-% hekadat=HEKAdat('FILENAMEHERE'); %
-
+% Example cell (finished analysis)
+% hekadat=HEKAdat('2011_06_29_E5GxTx');
 
 
 
 p=struct;
-%mid-analysis here. Not many blanks and unclear if GxTx bound or not. Some
-%hiccups with code too.
-% hekadat=HEKAdat('2011_06_29_E4GxTx'); %Seems like several cells recorded in single experiment. GxTx cell: cropping 1-152. only 1 blank
 
 
-
-% hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX 
-% tagged 'ccc' until trace #100
-
-
+% INSTRUCTIONS
 % quickly scroll through blanks and bad data
 % subtract blank average
 % put blanks and bad data in separate struct and save them
@@ -87,8 +85,8 @@ hekadat.HEKAinitialsubtraction;
 hekadat.HEKAguessBaseline;
 hekadat.HEKAsave;
 %% manuelly recorrect baseline from closed periods
-p.PlotNow=716;
-% in 5_55_6
+p.PlotNow=1;
+% in ----
 hGUI=gxtx_correctBaseline(hekadat,p,10);
 %% identify if subtractino of nose from flanking blanks is correct, then accept it (or don't)
 % binary choice
@@ -97,7 +95,7 @@ hGUI=gxtx_refineBlanks(hekadat,p,10);
 hGUI=gxtx_fitHist(hekadat,p,10);
 %% calculate dwell times
 iA=hekadat.HEKAiAnalysis;
-% iA.HEKAsave;
+% iA.IAOsave;
 %%
 hGUI=gxtx_iAnalysisPlots(iA,p,10);
 

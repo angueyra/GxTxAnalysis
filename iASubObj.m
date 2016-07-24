@@ -117,7 +117,7 @@ classdef iASubObj < handle
             end
             if isempty(cguess)
                 cguess=[13 1 9 1.5 4 2.1];
-                
+                cguess=[13 .25 9 1 4 1.8];
             end
             logexp=@(q,x)(q(1)^2 .* exp(  (1-( 10.^x ./ 10^q(2) ))) ./ (10^q(2)));
             tlogbinexp=@(q,x)sqrt( (10.^x) .* (  logexp([q(1) q(2)],x) + logexp([q(3) q(4)],x) + logexp([q(5) q(6)],x)  ) );
