@@ -335,6 +335,14 @@ classdef HEKAdat < handle
                 end
             end
         end
+        
+        function [hx,hy,sx,sy]=HEKAhistbytag(hekadat,tag,nbins,edgemin,edgemax)
+            histdata=hekadat.sdata(hekadat.HEKAstagfind(tag),:);
+            histdata=reshape(histdata,1,numel(histdata));
+            [hx,hy,sx,sy]=hekadat.HEKAhist(histdata,nbins,edgemin,edgemax);
+            hy=hy/numel(histdata);
+            sy=sy/numel(histdata);
+        end
     end
     
     methods (Static=true)

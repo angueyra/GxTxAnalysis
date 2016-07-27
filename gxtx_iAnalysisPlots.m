@@ -156,6 +156,7 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             set(lH,'Marker','.','LineStyle','-','LineWidth',1,'Color',whithen([1 0 0],0.5))
             set(lH,'DisplayName','gxtx_imean')
             
+            xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
             % Open dwell times log hist
             plotOdt=struct('Position',[pleft+pwidth+.1 ptop2-pheight2-.05 .95-pwidth2 pheight2],'tag','plotOdt');
             %           plotOdt.YLim=[0 1.05];
@@ -163,6 +164,8 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             hGUI.makePlot(plotOdt);
             hGUI.labelx(hGUI.figData.plotOdt,'Open dwell time (ms)');
             hGUI.labelylatex(hGUI.figData.plotOdt,'$\sqrt(log(n))$');
+            set(hGUI.figData.plotOdt,'xtick',log10(xt))
+            set(hGUI.figData.plotOdt,'xticklabel',xt)
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotOdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','b')
@@ -203,6 +206,8 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
             hGUI.makePlot(plotCdt);
             hGUI.labelx(hGUI.figData.plotCdt,'Closed dwell time (ms)');
             hGUI.labelylatex(hGUI.figData.plotCdt,'$\sqrt(log(n))$');
+            set(hGUI.figData.plotCdt,'xtick',log10(xt))
+            set(hGUI.figData.plotCdt,'xticklabel',xt)
             
             lH=line(NaN,NaN,'Parent',hGUI.figData.plotCdt);
             set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color','b')
@@ -352,10 +357,10 @@ classdef gxtx_iAnalysisPlots<iAnalysisGUI
                 hGUI.params.notx=notx;
                 hGUI.params.gxtx=gxtx;
                 try
-                hGUI.odtfitPlot;
+                    hGUI.odtfitPlot;
                 end
                 try
-                hGUI.cdtfitPlot;
+                    hGUI.cdtfitPlot;
                 end
             end
             % NO TOXIN
