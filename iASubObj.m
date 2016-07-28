@@ -41,6 +41,8 @@ classdef iASubObj < handle
         function iASO=iASubObj()
         end
         
+        
+        
         function iASO=IAOunmixflats(iASO)
             iASO.flat=sort(iASO.flat(~isnan(iASO.flat)));
             iASO.flatp=(0:1/length(iASO.flat):1-1/length(iASO.flat))';
@@ -141,6 +143,12 @@ classdef iASubObj < handle
             fprintf('     tau1 = %g ms\t   tau2 = %g ms\t   tau3 = %g ms\n',round(10^(iASO.ccoeffs(2))*1000)/1000,round(10^(iASO.ccoeffs(4))*1000)/1000,round(10^(iASO.ccoeffs(6))*1000)/1000)
             fprintf('     alpha1 = %g\t   alpha2 = %g \t   alpha3 = %g \n\n',round((iASO.ccoeffs(1))*1000)/1000,round((iASO.ccoeffs(3))*1000)/1000,round((iASO.ccoeffs(5))*1000)/1000)
             fprintf('-----------------------------------------\n')
+        end
+        
+        function halfflat = flathalf(iASO)
+           if ~isempty(iASO.flat)
+               halfflat=iASO.flat(find(iASO.flatp>=0.5,1,'first'));
+           end
         end
     end
     

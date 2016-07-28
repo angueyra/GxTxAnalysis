@@ -62,22 +62,28 @@ n.ccc=sum(hekadat.HEKAstagfind('ccc'));
 % plt.ooosi=find(cumsum(hekadat.HEKAstagfind('ooo'))>=floor(rand(1)*n.ooo),1,'first');
 % plt.cocsi=find(cumsum(hekadat.HEKAstagfind('coc'))>=floor(rand(1)*n.coc),1,'first');
 % fixed
-if strcmpi(hekadat.dirFile,'2011_06_29_E5GxTx')
-    fixi=[.70 .50 .60 .91 .80];
+if strcmpi(hekadat.dirFile,'2011_06_29_E5GxTx') %GxTx
+    fixio=[.70 .50 .60 .91 .80];
+    fixic=[.70 .50 .60 .91 .80];
+elseif strcmpi(hekadat.dirFile,'2015_06_23_Juan') %Control
+    fixio=[.20 .50 .60 .70 .30];
+    fixic=[.1 1];
 else
-    fixi=[.25 .90 .50 .65 .80];
+    fixio=[.25 .90 .50 .65 .80];
+    fixic=[.25 .90 .50 .65 .80];
 end
 
-for i=1:length(fixi)
-    plt.ooosi(i)=find(cumsum(hekadat.HEKAstagfind('ooo'))>=floor(n.ooo*fixi(i)),1,'first');
-    plt.cocsi(i)=find(cumsum(hekadat.HEKAstagfind('coc'))>=floor(n.coc*fixi(i)),1,'first');
+for i=1:length(fixio)
+    plt.ooosi(i)=find(cumsum(hekadat.HEKAstagfind('ooo'))>=floor(n.ooo*fixio(i)),1,'first');
+    
     
     plt.oooname{i}=hekadat.swaveNames{plt.ooosi(i)};
     plt.oooi(i)=hekadat.HEKAnamefind(plt.oooname(i));
-    
+end
+for i=1:length(fixic)
+    plt.cocsi(i)=find(cumsum(hekadat.HEKAstagfind('coc'))>=floor(n.coc*fixic(i)),1,'first');
     plt.cocname{i}=hekadat.swaveNames{plt.cocsi(i)};
     plt.coci(i)=hekadat.HEKAnamefind(plt.cocname(i));
-    
 end
 
 f2=getfigH(2);
@@ -102,12 +108,13 @@ f5=getfigH(5);
 set(get(f5,'xlabel'),'string','Time (s)')
 set(get(f5,'ylabel'),'string','i (pA)')
 
-for i=1:length(fixi)
+for i=1:length(fixio)
     lH=line(hekadat.stAxis,hekadat.sdata(plt.ooosi(i),:)-(2*(i-1)),'parent',f4);
     set(lH,'linewidth',1,'color',plt.k,'displayname',sprintf('notx_%g',i));
     lH=line(hekadat.stAxis,(hekadat.idata(plt.ooosi(i),:)*hekadat.hath*2)-(2*(i-1)),'parent',f4);
     set(lH,'linewidth',1,'color',plt.nocol,'displayname',sprintf('notx_i%g',i));
-    
+end
+for i=1:length(fixic)
     lH=line(hekadat.stAxis,hekadat.sdata(plt.cocsi(i),:)-(2*(i-1)),'parent',f5);
     set(lH,'linewidth',1,'color',plt.k,'displayname',sprintf('gxtx_%g',i));
     lH=line(hekadat.stAxis,(hekadat.idata(plt.cocsi(i),:)*hekadat.hath*2)-(2*(i-1)),'parent',f5);
@@ -131,7 +138,7 @@ lH=line(gxh.sx,gxh.sy,'parent',f6);
 set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx_hist');
 
 % lH=line([hekadat.hath hekadat.hath], [0 1.1*max([max(noh.hy) max(gxh.hy)])],'parent',f6);
-lH=line([hekadat.hath hekadat.hath], [0 .03],'parent',f6);
+lH=line([hekadat.hath hekadat.hath], [0 .05],'parent',f6);
 set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','hath');
 %% Bar graph for fraction of data according to states (closed/bound/unbound)
 f7=getfigH(7);
@@ -175,6 +182,21 @@ set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx');
 lH=line(iA.gxtx.flat,iA.gxtx.flatp,'parent',f9);
 set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx');
 
+f18=getfigH(18);
+set(get(f18,'ylabel'),'string','Median latency (ms)')
+set(f18,'xaxislocation','bottom')
+set(f18,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
+set(f18,'XLim',[0.5 2.5])
+
+lH=line(1,median(iA.notx.flat),'parent',f18);
+set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_midflat');
+
+lH=line(2,median(iA.gxtx.flat),'parent',f18);
+set(lH,'Marker','o','linewidth',1,'color',plt.gxcol,'displayname','gxtx_midflat');
+
+lH=line([1 2],[median(iA.notx.flat) median(iA.gxtx.flat)],'parent',f18);
+set(lH,'Marker','none','linewidth',1,'color',plt.g,'displayname','line_medianflat');
+
 %% Open dwell times
 f10=getfigH(10);
 set(get(f10,'xlabel'),'string','Open dwell times (ms)')
@@ -213,7 +235,7 @@ f12=getfigH(12);
 set(get(f12,'ylabel'),'string','Tau open (ms)')
 set(f12,'xaxislocation','bottom')
 set(f12,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
-set(f12,'XLim',[0.5 2.5],'YLim',[0 14])
+set(f12,'XLim',[0.5 2.5])%,'YLim',[0 14])
 
 lH=line(1,10^iA.notx.ocoeffs(2),'parent',f12);
 set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_tau');
@@ -263,7 +285,7 @@ gxtx_cfits2=sqrt( (10.^iA.gxtx.chx) .* iA.gxtx.logexp(iA.gxtx.ccoeffs(3:4),iA.gx
 gxtx_cfits3=sqrt( (10.^iA.gxtx.chx) .* iA.gxtx.logexp(iA.gxtx.ccoeffs(5:6),iA.gxtx.chx));
 
 f14=getfigH(14);
-set(get(f14,'xlabel'),'string','Open dwell time (ms)')
+set(get(f14,'xlabel'),'string','Closed dwell time (ms)')
 set(get(f14,'ylabel'),'string','sqrt(log(n))')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f14,'xtick',log10(xt))
@@ -365,3 +387,4 @@ makeAxisStruct(f14,'n_cdtgx',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
 makeAxisStruct(f15,'o_cdttau1',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
 makeAxisStruct(f16,'p_cdttau2',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
 makeAxisStruct(f17,'q_cdttau3',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
+makeAxisStruct(f18,'i2_midflat',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
