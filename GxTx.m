@@ -62,14 +62,17 @@ clear; clear classes; clc;
 % exponential component. First latency shift is really clear.
 
 % Is it Kv2.1? (finished analysis)
-hekadat=HEKAdat('2011_06_29_E4GxTx');
+% hekadat=HEKAdat('2011_06_29_E4GxTx');
 % In this cell conductance changes between ooo and coc.
 % Also not a lot of ccc and not big shift in first latencies. 
 
 % Example cell (finished analysis)
 % hekadat=HEKAdat('2011_06_29_E5GxTx');
 
-
+% % Multiple channels patch
+hekadat=HEKAdat('2011_06_20_E1GxTx_Stair200');
+% % Did not return to -100mV betwen steps and 200ms at +75mV.
+% Will label multichannel trials as bad
 
 p=struct;
 

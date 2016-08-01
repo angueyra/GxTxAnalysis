@@ -35,6 +35,11 @@ clear; clear classes; clc; close all;
 % % Example cell (finished analysis)
 % % hekadat=HEKAdat('2011_06_29_E5GxTx');
 
+%GxTx cells:
+% % Multiple channels patch
+hekadat=HEKAdat('2011_06_20_E1GxTx_Stair200');
+% % Did not return to -100mV betwen steps and 200ms at +75mV.
+
 p=struct;
 iA=hekadat.HEKAiAnalysis;
 plt.k=[0 0 0];

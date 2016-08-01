@@ -83,7 +83,12 @@ classdef HEKAdat < handle
             hekadat.dt=hekadat.tAxis(2)-hekadat.tAxis(1);
             hekadat.data=NaN(size(fnames,1),size(hekadat.tAxis,2));
             for i=1:size(fnames,1)
-                hekadat.data(i,:)=HEKAexport.(fnames{i})(:,2)*1e12; %transform into pA
+                if size(HEKAexport.(fnames{i})(:,2),1)==size(hekadat.tAxis,2)
+                    hekadat.data(i,:)=HEKAexport.(fnames{i})(:,2)*1e12; %transform into pA
+                elseif size(HEKAexport.(fnames{i})(:,2),1)<=size(hekadat.tAxis,2)
+                    fprintf('Inconsistent size: %s (%g of %g)\n',fnames{i},i,size(fnames,1))
+                    hekadat.data(i,1:size(HEKAexport.(fnames{i})(:,2),1))=HEKAexport.(fnames{i})(:,2)*1e12; %transform into pA
+                end
             end
             hekadat.initalparseFlag=1;
             hekadat.tags=cell(size(hekadat.waveNames));
@@ -165,6 +170,12 @@ classdef HEKAdat < handle
                 stairstim(hekadat.tAxis>=0.1&hekadat.tAxis<0.2)=0;
                 stairstim(hekadat.tAxis>=0.22&hekadat.tAxis<0.42)=+100;
                 stairstim(hekadat.tAxis>=0.44)=0;
+                hekadat.stim=stairstim;
+            elseif strcmpi(hekadat.dirFile,'2011_06_20_E1GxTx_Stair200')
+                stairstim=ones(size(hekadat.tAxis))*(-100);
+                stairstim(hekadat.tAxis>=0.1&hekadat.tAxis<0.2)=0;
+                stairstim(hekadat.tAxis>=0.20&hekadat.tAxis<0.40)=+100;
+                stairstim(hekadat.tAxis>=0.40)=0;
                 hekadat.stim=stairstim;
             elseif strcmpi(hekadat.dirFile,'2011_06_23_E4GxTx_Stair200')
                 stairstim=ones(size(hekadat.tAxis))*(-100);
