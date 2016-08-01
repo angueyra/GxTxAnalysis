@@ -42,7 +42,7 @@ clear; clear classes; clc;
 % hekadat=HEKAdat('2015_06_23_Juan');
 
 % Control cell (finished analysis)
-hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
+% hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
 
 
 %GxTx cells:
@@ -62,7 +62,7 @@ hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again.
 % exponential component. First latency shift is really clear.
 
 % Is it Kv2.1? (finished analysis)
-% hekadat=HEKAdat('2011_06_29_E4GxTx');
+hekadat=HEKAdat('2011_06_29_E4GxTx');
 % In this cell conductance changes between ooo and coc.
 % Also not a lot of ccc and not big shift in first latencies. 
 
@@ -99,7 +99,7 @@ hGUI=gxtx_refineBlanks(hekadat,p,10);
 hGUI=gxtx_fitHist(hekadat,p,10);
 %% calculate dwell times
 iA=hekadat.HEKAiAnalysis;
-% iA.IAOsave;
+iA.IAOsave;
 %%
 hGUI=gxtx_iAnalysisPlots(iA,p,10);
 

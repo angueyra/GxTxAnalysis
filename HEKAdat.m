@@ -160,8 +160,28 @@ classdef HEKAdat < handle
         end
         
         function hekadat=HEKAstairs(hekadat)
-            stairstim=load('/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/StairsStim.mat');
-            hekadat.stim=stairstim.stairs;
+            if strcmpi(hekadat.dirFile,'2011_06_22_E1_Stair200_02')
+                stairstim=ones(size(hekadat.tAxis))*(-100);
+                stairstim(hekadat.tAxis>=0.1&hekadat.tAxis<0.2)=0;
+                stairstim(hekadat.tAxis>=0.22&hekadat.tAxis<0.42)=+100;
+                stairstim(hekadat.tAxis>=0.44)=0;
+                hekadat.stim=stairstim;
+            elseif strcmpi(hekadat.dirFile,'2011_06_23_E4GxTx_Stair200')
+                stairstim=ones(size(hekadat.tAxis))*(-100);
+                stairstim(hekadat.tAxis>=0.1&hekadat.tAxis<0.2)=0;
+                stairstim(hekadat.tAxis>=0.22&hekadat.tAxis<0.42)=+100;
+                stairstim(hekadat.tAxis>=0.44)=0;
+                hekadat.stim=stairstim;
+            elseif strcmpi(hekadat.dirFile,'2011_06_17_E4_GxTx_Stairs75')
+                stairstim=ones(size(hekadat.tAxis))*(-100);
+                stairstim(hekadat.tAxis>=0.1&hekadat.tAxis<0.2)=0;
+                stairstim(hekadat.tAxis>=0.20&hekadat.tAxis<0.40)=+100;
+                stairstim(hekadat.tAxis>=0.40)=0;
+                hekadat.stim=stairstim;
+            else
+                stairstim=load('/Users/angueyraaristjm/Documents/DataGxTx/HEKAmatlabParsed/StairsStim.mat');
+                hekadat.stim=stairstim.stairs;
+            end
         end
         
         function HEKAinitialsubtraction(hekadat)

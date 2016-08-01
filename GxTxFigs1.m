@@ -1,39 +1,39 @@
 %% Figures for KV2.1 SINGLE CHANNEL DATA
 
 %% Load data
-clear; clear classes; clc;
-% Control cells (finished analysis)
-% hekadat=HEKAdat('2011_06_22_E1_Stair200_02'); %Control cell but 200ms
+clear; clear classes; clc; close all;
+% % Control cells (finished analysis)
+% % hekadat=HEKAdat('2011_06_22_E1_Stair200_02'); %Control cell but 200ms
 
-% Control cell (finished analysis)
-% hekadat=HEKAdat('2015_06_23_Juan');
+% % Control cell (finished analysis)
+% % hekadat=HEKAdat('2015_06_23_Juan');
 
-% Control cell (finished analysis)
-% hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
+% % Control cell (finished analysis)
+% % hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
 
 %GxTx cells:
-% OK data but inconsistent stimulus with rest. (finished analysis)
-% hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');
-% Did not return to -100mV betwen steps and 200ms at +75mV.
+% % OK data but inconsistent stimulus with rest. (finished analysis)
+% % hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');
+% % Did not return to -100mV betwen steps and 200ms at +75mV.
 
-% Good data here. Very consistent with 2011_06_29_E5GxTx. (finished analysis)
-% hekadat=HEKAdat('2011_06_23_E4GxTx_Stair200'); % 200 ms and no TTX
-% hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
+% % Good data here. Very consistent with 2011_06_29_E5GxTx. (finished analysis)
+% % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair200'); % 200 ms and no TTX
+% % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
 
-% Blah cell (finished analysis)
-% hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
-% A lot of bad data (intrusive little friend).
-% Conductance steadily decreases throughout recording. 
-% Not such clear differences in closed dwell times. Especially, not huge rise in 3rd
-% exponential component. First latency shift is really clear.
+% % Blah cell (finished analysis)
+% % hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
+% % A lot of bad data (intrusive little friend).
+% % Conductance steadily decreases throughout recording. 
+% % Not such clear differences in closed dwell times. Especially, not huge rise in 3rd
+% % exponential component. First latency shift is really clear.
 
-% Is it Kv2.1? (finished analysis)
-% hekadat=HEKAdat('2011_06_29_E4GxTx');
-% In this cell conductance changes between ooo and coc.
-% Also not a lot of ccc and not big shift in first latencies. 
+% % Is it Kv2.1? (finished analysis)
+% % hekadat=HEKAdat('2011_06_29_E4GxTx');
+% % In this cell conductance changes between ooo and coc.
+% % Also not a lot of ccc and not big shift in first latencies. 
 
-% Example cell (finished analysis)
-hekadat=HEKAdat('2011_06_29_E5GxTx');
+% % Example cell (finished analysis)
+% % hekadat=HEKAdat('2011_06_29_E5GxTx');
 
 p=struct;
 iA=hekadat.HEKAiAnalysis;
@@ -66,8 +66,27 @@ if strcmpi(hekadat.dirFile,'2011_06_29_E5GxTx') %GxTx
     fixio=[.70 .50 .60 .91 .80];
     fixic=[.70 .50 .60 .91 .80];
 elseif strcmpi(hekadat.dirFile,'2015_06_23_Juan') %Control
-    fixio=[.20 .50 .60 .70 .30];
+    fixio=[.25 .90 .50 .65 .80];
     fixic=[.1 1];
+elseif strcmpi(hekadat.dirFile,'2011_06_22_E1_Stair200_02') %Control
+    fixio=[.20 .50 .60 .70 .30];
+    fixic=[1];
+elseif strcmpi(hekadat.dirFile,'2011_06_30_E2_Stair500') %Control
+    fixio=[.25 .90 .75 .60 .30];
+    fixic=[.17 .334 .50 .67 1];
+elseif strcmpi(hekadat.dirFile,'2011_06_23_E4GxTx_Stair200') %GxTx
+    fixio=[.25 .90 .50 .65 .80];
+    fixic=[.30 .40 .55 .65 .80];
+elseif strcmpi(hekadat.dirFile,'2011_06_17_E4_GxTx_Stairs75') %GxTx
+    fixio=[.55 .25 .15 .65 .80];
+    fixic=[.18 .25 .50 .65 .55];
+elseif strcmpi(hekadat.dirFile,'2011_06_24_E4GxTx_Stair500') %GxTx
+    fixio=[.25 .90 .20 .65 .80];
+    fixic=[.70 .40 .50 .52 .90];
+elseif strcmpi(hekadat.dirFile,'2011_06_29_E4GxTx') %GxTx
+    fixio=[.60 .90 .50 .65 .80];
+    fixic=[.62 .90 .97 .85 .80];
+
 else
     fixio=[.25 .90 .50 .65 .80];
     fixic=[.25 .90 .50 .65 .80];
@@ -109,15 +128,17 @@ set(get(f5,'xlabel'),'string','Time (s)')
 set(get(f5,'ylabel'),'string','i (pA)')
 
 for i=1:length(fixio)
-    lH=line(hekadat.stAxis,hekadat.sdata(plt.ooosi(i),:)-(2*(i-1)),'parent',f4);
+    lH=line(hekadat.stAxis,hekadat.sdata(plt.ooosi(i),:)-(2.2*(i-1)),'parent',f4);
     set(lH,'linewidth',1,'color',plt.k,'displayname',sprintf('notx_%g',i));
-    lH=line(hekadat.stAxis,(hekadat.idata(plt.ooosi(i),:)*hekadat.hath*2)-(2*(i-1)),'parent',f4);
+    lH=line(hekadat.stAxis,(hekadat.idata(plt.ooosi(i),:)*hekadat.hath*2)-(2.2*(i-1)),'parent',f4);
     set(lH,'linewidth',1,'color',plt.nocol,'displayname',sprintf('notx_i%g',i));
 end
+
+% hekadat.idata(plt.cocsi(i),:)
 for i=1:length(fixic)
-    lH=line(hekadat.stAxis,hekadat.sdata(plt.cocsi(i),:)-(2*(i-1)),'parent',f5);
+    lH=line(hekadat.stAxis,hekadat.sdata(plt.cocsi(i),:)-(2.2*(i-1)),'parent',f5);
     set(lH,'linewidth',1,'color',plt.k,'displayname',sprintf('gxtx_%g',i));
-    lH=line(hekadat.stAxis,(hekadat.idata(plt.cocsi(i),:)*hekadat.hath*2)-(2*(i-1)),'parent',f5);
+    lH=line(hekadat.stAxis,(hekadat.idata(plt.cocsi(i),:)*hekadat.hath*2)-(2.2*(i-1)),'parent',f5);
     set(lH,'linewidth',1,'color',plt.gxcol,'displayname',sprintf('gxtx_i%g',i));
 end
 
