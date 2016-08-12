@@ -307,6 +307,24 @@ classdef HEKAdat < handle
             end
         end
         
+        function [cccLi,cccRi]=HEKAcccFlanks (hekadat,curri)
+           % find flanking ccc (left and right)
+            tagfindfx=@(tag)(@(taglist)(strcmp(tag,taglist)));
+
+            firstL=find(cellfun(tagfindfx('ccc'),hekadat.tags),1,'first');
+            lastR=find(cellfun(tagfindfx('ccc'),hekadat.tags),1,'last');
+            if curri<=firstL % no left
+                cccLi=find(cellfun(tagfindfx('ccc'),hekadat.tags),1,'first');
+                cccRi=curri+find(cellfun(tagfindfx('ccc'),hekadat.tags(curri+1:end)),1,'first');
+            elseif curri>=lastR%size(Selected,1) % no right
+                cccLi=find(cellfun(tagfindfx('ccc'),hekadat.tags(1:curri)),1,'last');
+                cccRi=find(cellfun(tagfindfx('ccc'),hekadat.tags),1,'last');
+            else
+                cccLi=find(cellfun(tagfindfx('ccc'),hekadat.tags(1:curri)),1,'last');
+                cccRi=curri+find(cellfun(tagfindfx('ccc'),hekadat.tags(curri+1:end)),1,'first');
+            end 
+        end
+        
         function iA=HEKAiAnalysis(hekadat)
             %analyze idealized waves
             if isempty(hekadat.idata)

@@ -2,138 +2,140 @@
 
 %% Load data
 clear; clear classes; clc; close all;
-% % Control cells (finished analysis)
-% % hekadat=HEKAdat('2011_06_22_E1_Stair200_02'); %Control cell but 200ms
-
 % % Control cell (finished analysis)
-% % hekadat=HEKAdat('2015_06_23_Juan');
-
-% % Control cell (finished analysis)
-% % hekadat=HEKAdat('2011_06_30_E2_Stair500'); % forgot TTX again. 
-
-
-% Control cell (finished analysis)
-% hekadat=HEKAdat('2016_06_17_E4_Control'); %
-
-% % Control cell (finished analysis but not sure it should be included)
-% hekadat=HEKAdat('2016_06_17_E5_Control'); % not a great patch
-
-
-%GxTx cells:
-% % OK data but inconsistent stimulus with rest. (finished analysis)
-% % hekadat=HEKAdat('2011_06_17_E4_GxTx_Stairs75');
-% % Did not return to -100mV betwen steps and 200ms at +75mV.
-
-% % Good data here. Very consistent with 2011_06_29_E5GxTx. (finished analysis)
-% % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair200'); % 200 ms and no TTX
-% % hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); % Recorded 200ms steps before and no TTX
-
-% % Blah cell (finished analysis)
-% % hekadat=HEKAdat('2011_06_24_E4GxTx_Stair500');
-% % A lot of bad data (intrusive little friend).
-% % Conductance steadily decreases throughout recording. 
-% % Not such clear differences in closed dwell times. Especially, not huge rise in 3rd
-% % exponential component. First latency shift is really clear.
-
-% % Is it Kv2.1? (finished analysis)
-% % hekadat=HEKAdat('2011_06_29_E4GxTx');
-% % In this cell conductance changes between ooo and coc.
-% % Also not a lot of ccc and not big shift in first latencies. 
-
+CtEx=HEKAdat('2015_06_23_Juan');
+CtiA=CtEx.HEKAiAnalysis;
 % % Example cell (finished analysis)
-% % hekadat=HEKAdat('2011_06_29_E5GxTx');
+GxEx=HEKAdat('2011_06_29_E5GxTx');
+GxiA=GxEx.HEKAiAnalysis;
 
-%GxTx cells:
-% % Multiple channels patch
-% hekadat=HEKAdat('2011_06_20_E1GxTx_Stair200');
-% % Did not return to -100mV betwen steps and 200ms at +75mV.
-
-p=struct;
-iA=hekadat.HEKAiAnalysis;
-plt.k=[0 0 0];
-plt.nocol=[0 0 1];
-plt.gxcol=[1 0 0]; 
-%%
-%% Stairs stimulus
-f1=getfigH(1);
-lH=line(hekadat.tAxis,hekadat.stim,'Parent',f1);
-set(lH,'linewidth',2,'color',plt.k,'displayname','stim');
-%% Raw data, subtracted/corrected data and idealized
 plt.k=[0 0 0];
 plt.g=whithen(plt.k,.5);
+plt.ctcol=[.3 .3 .3];
 plt.nocol=[0 0 1];
+plt.gxcol=[1 0 0];
 plt.nocolw=whithen(plt.nocol,.5);
-plt.gxcol=[1 0 0]; 
 plt.gxcolw=whithen(plt.gxcol,.5);
-
-n.all=size(hekadat.sdata,1);
-n.ooo=sum(hekadat.HEKAstagfind('ooo'));
-n.coc=sum(hekadat.HEKAstagfind('coc'));
-n.ccc=sum(hekadat.HEKAstagfind('ccc'));
-
-% random
-% plt.ooosi=find(cumsum(hekadat.HEKAstagfind('ooo'))>=floor(rand(1)*n.ooo),1,'first');
-% plt.cocsi=find(cumsum(hekadat.HEKAstagfind('coc'))>=floor(rand(1)*n.coc),1,'first');
-% fixed
-if strcmpi(hekadat.dirFile,'2011_06_29_E5GxTx') %GxTx
-    fixio=[.70 .50 .60 .91 .80];
-    fixic=[.70 .50 .60 .91 .80];
-elseif strcmpi(hekadat.dirFile,'2015_06_23_Juan') %Control
-    fixio=[.25 .90 .50 .65 .80];
-    fixic=[.1 1];
-elseif strcmpi(hekadat.dirFile,'2011_06_22_E1_Stair200_02') %Control
-    fixio=[.20 .50 .60 .70 .30];
-    fixic=[1];
-elseif strcmpi(hekadat.dirFile,'2011_06_30_E2_Stair500') %Control
-    fixio=[.25 .90 .75 .60 .30];
-    fixic=[.17 .334 .50 .67 1];
-elseif strcmpi(hekadat.dirFile,'2011_06_23_E4GxTx_Stair200') %GxTx
-    fixio=[.25 .90 .50 .65 .80];
-    fixic=[.30 .40 .55 .65 .80];
-elseif strcmpi(hekadat.dirFile,'2011_06_17_E4_GxTx_Stairs75') %GxTx
-    fixio=[.55 .25 .15 .65 .80];
-    fixic=[.18 .25 .50 .65 .55];
-elseif strcmpi(hekadat.dirFile,'2011_06_24_E4GxTx_Stair500') %GxTx
-    fixio=[.25 .90 .20 .65 .80];
-    fixic=[.70 .40 .50 .52 .90];
-elseif strcmpi(hekadat.dirFile,'2011_06_29_E4GxTx') %GxTx
-    fixio=[.60 .90 .50 .65 .80];
-    fixic=[.62 .90 .97 .85 .80];
-elseif strcmpi(hekadat.dirFile,'2016_06_17_E4_Control') %GxTx
-    fixio=[.25 .90 .99 .65 .80];
-    fixic=[.50 1];
-elseif strcmpi(hekadat.dirFile,'2016_06_17_E5_Control') %GxTx
-    fixio=[.50 .25 .99 .65 .80];
-    fixic=[.05];
-else
-    fixio=[.25 .90 .50 .65 .80];
-    fixic=[.25 .90 .50 .65 .80];
-end
-
-for i=1:length(fixio)
-    plt.ooosi(i)=find(cumsum(hekadat.HEKAstagfind('ooo'))>=floor(n.ooo*fixio(i)),1,'first');
-    plt.oooname{i}=hekadat.swaveNames{plt.ooosi(i)};
-    plt.oooi(i)=hekadat.HEKAnamefind(plt.oooname(i));
-end
-
-for i=1:length(fixic)
-    plt.cocsi(i)=find(cumsum(hekadat.HEKAstagfind('coc'))>=floor(n.coc*fixic(i)),1,'first');
-    plt.cocname{i}=hekadat.swaveNames{plt.cocsi(i)};
-    plt.coci(i)=hekadat.HEKAnamefind(plt.cocname(i));
-end
-
+%% Stairs stimulus
+f1=getfigH(1);
+set(f1,'xlim',[0 0.84])
+lH=line(CtEx.tAxis,CtEx.stim,'Parent',f1);
+set(lH,'linewidth',2,'color',plt.k,'displayname','stim');
+%% Raw data, subtracted/corrected data and idealized
 f2=getfigH(2);
 set(get(f2,'xlabel'),'string','Time (s)')
 set(get(f2,'ylabel'),'string','i (pA)')
-set(f2,'ylim',[-2 5])
-lH=line(hekadat.tAxis,hekadat.data(plt.oooi(1),:),'parent',f2);
-set(lH,'linewidth',1,'color',plt.nocol,'displayname','raw_ooo');
+set(f2,'xlim',[0 0.84])
+set(f2,'ylim',[-12 2])
 
+tlims=struct;
+tlims.delta=.025;
+tlims.on=[0.1 0.22 0.74];
+tlims.off=[0.2 0.72];
+tlims.ion=cell2mat(arrayfun(@(x)find(CtEx.tAxis<=x,1,'last'),tlims.on,'UniformOutput',0));
+tlims.ioff=cell2mat(arrayfun(@(x)find(CtEx.tAxis<=x,1,'last'),tlims.off,'UniformOutput',0));
+tlims.iondelta=cell2mat(arrayfun(@(x)find(CtEx.tAxis<=x,1,'last'),tlims.on+tlims.delta,'UniformOutput',0));
+tlims.ioffdelta=cell2mat(arrayfun(@(x)find(CtEx.tAxis<=x,1,'last'),tlims.off+tlims.delta,'UniformOutput',0));
+
+cccsnuff=zeros(size(CtEx.tAxis));
+cccsnuff(tlims.ion(1):tlims.iondelta(1))=1;
+cccsnuff(tlims.ion(2):tlims.iondelta(2))=1;
+cccsnuff(tlims.ion(3):tlims.iondelta(3))=1;
+
+cccsnuff(tlims.ioff(1):tlims.ioffdelta(1))=1;
+cccsnuff(tlims.ioff(2):tlims.ioffdelta(2))=1;
+
+
+nCt.all=size(CtEx.sdata,1);
+nCt.ooo=sum(CtEx.HEKAstagfind('ooo'));
+nCt.coc=sum(CtEx.HEKAstagfind('coc'));
+nCt.ccc=sum(CtEx.HEKAstagfind('ccc'));
+
+Ct.fixio=[.25 .90 .50 .65 .80];
+for i=1:length(Ct.fixio)
+    Ct.ooosi(i)=find(cumsum(CtEx.HEKAstagfind('ooo'))>=floor(nCt.ooo*Ct.fixio(i)),1,'first');
+    Ct.oooname{i}=CtEx.swaveNames{Ct.ooosi(i)};
+    Ct.oooi(i)=CtEx.HEKAnamefind(Ct.oooname(i));
+end
+
+
+for i=1:length(Ct.fixio)
+    bldata=CtEx.data(Ct.oooi(i),:)-CtEx.HEKAtagmean('ccc');
+    [cccL,cccR]=CtEx.HEKAcccFlanks(Ct.oooi(i));
+    cccflanks=mean(CtEx.data([cccL,cccR],:))-CtEx.HEKAtagmean('ccc');
+    cccflanks=cccflanks.*cccsnuff;
+    
+    lH=line(CtEx.tAxis,(bldata-cccflanks)-(2.6*(i-1)),'parent',f2);
+    set(lH,'linewidth',1,'color',plt.ctcol,'displayname',sprintf('ctooo_%g',i));
+end
+%%
+f3=getfigH(3);
+set(get(f3,'xlabel'),'string','Time (s)')
+set(get(f3,'ylabel'),'string','i (pA)')
+set(f3,'xlim',[0 0.84])
+set(f3,'ylim',[-12 2])
+
+nGx.all=size(GxEx.sdata,1);
+nGx.ooo=sum(GxEx.HEKAstagfind('ooo'));
+nGx.coc=sum(GxEx.HEKAstagfind('coc'));
+nGx.ccc=sum(GxEx.HEKAstagfind('ccc'));
+
+Gx.fixio=[.70 .99 .75 .60 .90];
+for i=1:length(Gx.fixio)
+    Gx.ooosi(i)=find(cumsum(GxEx.HEKAstagfind('ooo'))>=floor(nGx.ooo*Gx.fixio(i)),1,'first');
+    Gx.oooname{i}=GxEx.swaveNames{Gx.ooosi(i)};
+    Gx.oooi(i)=GxEx.HEKAnamefind(Gx.oooname(i));
+end
+
+for i=1:length(Gx.fixio)
+    bldata=GxEx.data(Gx.oooi(i),:)-GxEx.HEKAtagmean('ccc');
+    [cccL,cccR]=GxEx.HEKAcccFlanks(Gx.oooi(i));
+    cccflanks=mean(GxEx.data([cccL,cccR],:))-GxEx.HEKAtagmean('ccc');
+    cccflanks=cccflanks.*cccsnuff;
+    
+    lH=line(GxEx.tAxis,(bldata-cccflanks)-(2.6*(i-1)),'parent',f3);
+    set(lH,'linewidth',1,'color',plt.nocol,'displayname',sprintf('rawooo_%g',i));
+end
+%%
+f4=getfigH(4);
+set(get(f4,'xlabel'),'string','Time (s)')
+set(get(f4,'ylabel'),'string','i (pA)')
+set(f4,'xlim',[0 0.84])
+set(f4,'ylim',[-12 2])
+
+Gx.fixic=[.68 .28 .60 .91 .80];
+for i=1:length(Gx.fixic)
+    Gx.cocsi(i)=find(cumsum(GxEx.HEKAstagfind('coc'))>=floor(nGx.coc*Gx.fixic(i)),1,'first');
+    Gx.cocname{i}=GxEx.swaveNames{Gx.cocsi(i)};
+    Gx.coci(i)=GxEx.HEKAnamefind(Gx.cocname(i));
+end
+
+for i=1:length(Gx.fixic)
+    bldata=GxEx.data(Gx.coci(i),:)-GxEx.HEKAtagmean('ccc');
+    [cccL,cccR]=GxEx.HEKAcccFlanks(Gx.coci(i));
+    cccflanks=mean(GxEx.data([cccL,cccR],:))-GxEx.HEKAtagmean('ccc');
+    cccflanks=cccflanks.*cccsnuff;
+    
+    lH=line(GxEx.tAxis,(bldata-cccflanks)-(2.6*(i-1)),'parent',f4);
+    set(lH,'linewidth',1,'color',plt.gxcol,'displayname',sprintf('rawcoc_%g',i));
+end
+%%
+
+
+
+
+
+
+
+
+
+
+%%
 f3=getfigH(3);
 set(get(f3,'xlabel'),'string','Time (s)')
 set(get(f3,'ylabel'),'string','i (pA)')
 set(f3,'ylim',[-2 5])
-lH=line(hekadat.tAxis,hekadat.data(plt.coci(1),:),'parent',f3);
+lH=line(hekadat.stAxis,hekadat.sdata(plt.coci(1),:),'parent',f3);
 set(lH,'linewidth',1,'color',plt.gxcol,'displayname','raw_coc');
 
 f4=getfigH(4);
@@ -159,7 +161,7 @@ for i=1:length(fixic)
     set(lH,'linewidth',1,'color',plt.gxcol,'displayname',sprintf('gxtx_i%g',i));
 end
 
-%% All points histogram dividing ooo and coc
+%% All points histogram dibiding ooo and coc
 noh=struct;
 [noh.hx,noh.hy,noh.sx,noh.sy]=hekadat.HEKAhistbytag('ooo',400,-hekadat.hath*2,hekadat.hath*4);
 gxh=struct;
@@ -184,19 +186,19 @@ set(get(f7,'xlabel'),'string','Fraction of trials')
 set(f7,'xaxislocation','bottom')
 set(f7,'YTick',[1 4 7],'YTickLabel',{'Closed';'Bound';'Unbound'})
 
-lH=line([0 n.ooo/n.all],[6 6],'parent',f7);
+lH=line([0 nCt.ooo/nCt.all],[6 6],'parent',f7);
 set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx1');
-lH=line([0 n.ooo/n.all],[8 8],'parent',f7);
+lH=line([0 nCt.ooo/nCt.all],[8 8],'parent',f7);
 set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx2');
 
-lH=line([0 n.coc/n.all],[3 3],'parent',f7);
+lH=line([0 nCt.coc/nCt.all],[3 3],'parent',f7);
 set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx1');
-lH=line([0 n.coc/n.all],[5 5],'parent',f7);
+lH=line([0 nCt.coc/nCt.all],[5 5],'parent',f7);
 set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx2');
 
-lH=line([0 n.ccc/n.all],[0 0],'parent',f7);
+lH=line([0 nCt.ccc/nCt.all],[0 0],'parent',f7);
 set(lH,'linewidth',2,'color',plt.k,'displayname','closed1');
-lH=line([0 n.ccc/n.all],[2 2],'parent',f7);
+lH=line([0 nCt.ccc/nCt.all],[2 2],'parent',f7);
 set(lH,'linewidth',2,'color',plt.k,'displayname','closed2');
 %% Average from idealized waves
 f8=getfigH(8);
