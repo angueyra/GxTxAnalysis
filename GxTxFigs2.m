@@ -5,15 +5,22 @@ clear; clear classes; clc; close all;
 % % Control cell (finished analysis)
 CtEx=HEKAdat('2015_06_23_Juan');
 CtiA=CtEx.HEKAiAnalysis;
+CtPop = HEKApopdata('Controls');
+Ct = struct;
 % % Example cell (finished analysis)
 GxEx=HEKAdat('2011_06_29_E5GxTx');
 GxiA=GxEx.HEKAiAnalysis;
+NoPop = HEKApopdata('NoToxin');
+GxPop = HEKApopdata('GxToxin');
+No = struct;
+Gx = struct;
 
 plt.k=[0 0 0];
 plt.g=whithen(plt.k,.5);
 plt.ctcol=[.3 .3 .3];
 plt.nocol=[0 0 1];
 plt.gxcol=[1 0 0];
+plt.ctcolw=whithen(plt.ctcol,.5);
 plt.nocolw=whithen(plt.nocol,.5);
 plt.gxcolw=whithen(plt.gxcol,.5);
 %% Stairs stimulus
@@ -22,6 +29,7 @@ set(f1,'xlim',[0 0.84])
 lH=line(CtEx.tAxis,CtEx.stim,'Parent',f1);
 set(lH,'linewidth',2,'color',plt.k,'displayname','stim');
 %% Raw data, subtracted/corrected data and idealized
+% Control
 f2=getfigH(2);
 set(get(f2,'xlabel'),'string','Time (s)')
 set(get(f2,'ylabel'),'string','i (pA)')
@@ -68,7 +76,7 @@ for i=1:length(Ct.fixio)
     lH=line(CtEx.tAxis,(bldata-cccflanks)-(2.6*(i-1)),'parent',f2);
     set(lH,'linewidth',1,'color',plt.ctcol,'displayname',sprintf('ctooo_%g',i));
 end
-%%
+% Gx Free
 f3=getfigH(3);
 set(get(f3,'xlabel'),'string','Time (s)')
 set(get(f3,'ylabel'),'string','i (pA)')
@@ -96,7 +104,7 @@ for i=1:length(Gx.fixio)
     lH=line(GxEx.tAxis,(bldata-cccflanks)-(2.6*(i-1)),'parent',f3);
     set(lH,'linewidth',1,'color',plt.nocol,'displayname',sprintf('rawooo_%g',i));
 end
-%%
+% Gx Bound
 f4=getfigH(4);
 set(get(f4,'xlabel'),'string','Time (s)')
 set(get(f4,'ylabel'),'string','i (pA)')
@@ -119,312 +127,243 @@ for i=1:length(Gx.fixic)
     lH=line(GxEx.tAxis,(bldata-cccflanks)-(2.6*(i-1)),'parent',f4);
     set(lH,'linewidth',1,'color',plt.gxcol,'displayname',sprintf('rawcoc_%g',i));
 end
-%%
-
-
-
-
-
-
-
-
-
-
-%%
-f3=getfigH(3);
-set(get(f3,'xlabel'),'string','Time (s)')
-set(get(f3,'ylabel'),'string','i (pA)')
-set(f3,'ylim',[-2 5])
-lH=line(hekadat.stAxis,hekadat.sdata(plt.coci(1),:),'parent',f3);
-set(lH,'linewidth',1,'color',plt.gxcol,'displayname','raw_coc');
-
-f4=getfigH(4);
-set(get(f4,'xlabel'),'string','Time (s)')
-set(get(f4,'ylabel'),'string','i (pA)')
+%% Fraction of "bound" trials: f = P_bound / (Pbound + Pfree)
 
 f5=getfigH(5);
-set(get(f5,'xlabel'),'string','Time (s)')
-set(get(f5,'ylabel'),'string','i (pA)')
+set(get(f5,'ylabel'),'string','Fraction of bound trials')
+set(f5,'XTick',[1 2],'XTickLabel',{'Control';'+GxTx'})
+set(f5,'XLim',[0.5 2.5])
 
-for i=1:length(fixio)
-    lH=line(hekadat.stAxis,hekadat.sdata(plt.ooosi(i),:)-(2.2*(i-1)),'parent',f4);
-    set(lH,'linewidth',1,'color',plt.k,'displayname',sprintf('notx_%g',i));
-    lH=line(hekadat.stAxis,(hekadat.idata(plt.ooosi(i),:)*hekadat.hath*2)-(2.2*(i-1)),'parent',f4);
-    set(lH,'linewidth',1,'color',plt.nocol,'displayname',sprintf('notx_i%g',i));
-end
+Ct.npop=size(CtPop.names,1);
+Gx.npop=size(GxPop.names,1);
+Ct.fbound=(CtPop.n.coc)./(CtPop.n.coc+CtPop.n.ooo);
+Gx.fbound=(GxPop.n.coc)./(GxPop.n.coc+GxPop.n.ooo);
+% Ct.fbound=(CtPop.n.coc)./(CtPop.n.total);
+% Gx.fbound=(GxPop.n.coc)./(GxPop.n.total);
 
-% hekadat.idata(plt.cocsi(i),:)
-for i=1:length(fixic)
-    lH=line(hekadat.stAxis,hekadat.sdata(plt.cocsi(i),:)-(2.2*(i-1)),'parent',f5);
-    set(lH,'linewidth',1,'color',plt.k,'displayname',sprintf('gxtx_%g',i));
-    lH=line(hekadat.stAxis,(hekadat.idata(plt.cocsi(i),:)*hekadat.hath*2)-(2.2*(i-1)),'parent',f5);
-    set(lH,'linewidth',1,'color',plt.gxcol,'displayname',sprintf('gxtx_i%g',i));
-end
+lH=line(ones(Ct.npop,1),Ct.fbound,'Parent',f5);
+set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+lH=line(ones(Gx.npop,1)*2,Gx.fbound,'Parent',f5);
+set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
 
-%% All points histogram dibiding ooo and coc
-noh=struct;
-[noh.hx,noh.hy,noh.sx,noh.sy]=hekadat.HEKAhistbytag('ooo',400,-hekadat.hath*2,hekadat.hath*4);
-gxh=struct;
-[gxh.hx,gxh.hy,gxh.sx,gxh.sy]=hekadat.HEKAhistbytag('coc',400,-hekadat.hath*2,hekadat.hath*4);
+lH=line([-.25 +.25]+1,[mean(Ct.fbound) mean(Ct.fbound)],'Parent',f5);
+set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
+    'displayname','Ctmean');
+lH=line([-.25 +.25]+2,[mean(Gx.fbound) mean(Gx.fbound)],'Parent',f5);
+set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
+    'displayname','Gxmean');
 
+
+% %% Alternative: P_bound vs P_free
+% f5=getfigH(5);
+% 
+% lH=line(CtPop.n.ooo./CtPop.n.total,CtPop.n.coc./CtPop.n.total,'Parent',f5);
+% set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+% lH=line(GxPop.n.ooo./GxPop.n.total,GxPop.n.coc./GxPop.n.total,'Parent',f5);
+% set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
+
+%% Average from corrected waves + tau_activation and steady state i
+% average i
 f6=getfigH(6);
-set(get(f6,'xlabel'),'string','i (pA)')
-set(get(f6,'ylabel'),'string','Frequency')
+set(get(f6,'xlabel'),'string','Time (s)')
+set(get(f6,'ylabel'),'string','i (pA)')
+set(f6,'XLim',[0 .5])
+set(f6,'YLim',[0 1.4])
 
-lH=line(noh.sx,noh.sy,'parent',f6);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx_hist');
+lH=line(CtEx.itAxis,CtEx.HEKAstagmean('ooo')*CtEx.hath*2,'parent',f6);
+set(lH,'linewidth',2,'color',plt.ctcol,'displayname','Ct');
+lH=line(GxEx.itAxis,GxEx.HEKAstagmean('ooo')*GxEx.hath*2,'parent',f6);
+set(lH,'linewidth',2,'color',plt.nocol,'displayname','No');
+lH=line(GxEx.itAxis,GxEx.HEKAstagmean('coc')*GxEx.hath*2,'parent',f6);
+set(lH,'linewidth',2,'color',plt.gxcol,'displayname','Gx');
 
-lH=line(gxh.sx,gxh.sy,'parent',f6);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx_hist');
 
-% lH=line([hekadat.hath hekadat.hath], [0 1.1*max([max(noh.hy) max(gxh.hy)])],'parent',f6);
-lH=line([hekadat.hath hekadat.hath], [0 .05],'parent',f6);
-set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','hath');
-%% Bar graph for fraction of data according to states (closed/bound/unbound)
+lH=line(CtEx.itAxis,CtPop.actfx([.95 0.006 1.2449],CtEx.itAxis),'parent',f6);
+set(lH,'linewidth',2,'color',plt.ctcolw,'displayname','CtFit');
+lH=line(NoEx.itAxis,GxPop.actfx([.95 0.006 1.2449],CtEx.itAxis),'parent',f6);
+set(lH,'linewidth',2,'color',plt.ctcolw,'displayname','CtFit');
+
+
+%% tau_activation
 f7=getfigH(7);
-set(get(f7,'xlabel'),'string','Fraction of trials')
-set(f7,'xaxislocation','bottom')
-set(f7,'YTick',[1 4 7],'YTickLabel',{'Closed';'Bound';'Unbound'})
-
-lH=line([0 nCt.ooo/nCt.all],[6 6],'parent',f7);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx1');
-lH=line([0 nCt.ooo/nCt.all],[8 8],'parent',f7);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx2');
-
-lH=line([0 nCt.coc/nCt.all],[3 3],'parent',f7);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx1');
-lH=line([0 nCt.coc/nCt.all],[5 5],'parent',f7);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx2');
-
-lH=line([0 nCt.ccc/nCt.all],[0 0],'parent',f7);
-set(lH,'linewidth',2,'color',plt.k,'displayname','closed1');
-lH=line([0 nCt.ccc/nCt.all],[2 2],'parent',f7);
-set(lH,'linewidth',2,'color',plt.k,'displayname','closed2');
-%% Average from idealized waves
-f8=getfigH(8);
-set(get(f8,'xlabel'),'string','Time (s)')
-set(get(f8,'ylabel'),'string','i (pA)')
-
-lH=line(hekadat.itAxis,hekadat.HEKAitagmean('ooo')*hekadat.hath*2,'parent',f8);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx');
-
-lH=line(hekadat.itAxis,hekadat.HEKAitagmean('coc')*hekadat.hath*2,'parent',f8);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx');
-
-%% First latencies
-f9=getfigH(9);
-set(get(f9,'xlabel'),'string','Latency to first opening (ms)')
-set(get(f9,'ylabel'),'string','Cumulative probability')
-
-lH=line(iA.notx.flat,iA.notx.flatp,'parent',f9);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx');
-
-lH=line(iA.gxtx.flat,iA.gxtx.flatp,'parent',f9);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx');
-
-f18=getfigH(18);
-set(get(f18,'ylabel'),'string','Median latency (ms)')
-set(f18,'xaxislocation','bottom')
-set(f18,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
-set(f18,'XLim',[0.5 2.5])
-
-lH=line(1,median(iA.notx.flat),'parent',f18);
-set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_midflat');
-
-lH=line(2,median(iA.gxtx.flat),'parent',f18);
-set(lH,'Marker','o','linewidth',1,'color',plt.gxcol,'displayname','gxtx_midflat');
-
-lH=line([1 2],[median(iA.notx.flat) median(iA.gxtx.flat)],'parent',f18);
-set(lH,'Marker','none','linewidth',1,'color',plt.g,'displayname','line_medianflat');
-
-%% Open dwell times
-f10=getfigH(10);
-set(get(f10,'xlabel'),'string','Open dwell times (ms)')
-set(get(f10,'ylabel'),'string','sqrt(log(n))')
-xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
-set(f10,'xtick',log10(xt))
-set(f10,'xticklabel',xt)
-
-lH=line(iA.notx.osx,iA.notx.osy,'parent',f10);
-set(lH,'linewidth',1,'color',plt.k,'displayname','notx_odt');
-lH=line(iA.notx.ohx,iA.notx.ofit,'parent',f10);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx_odtfit');
-lH=line([-.5 iA.notx.ocoeffs(2)],[iA.notx.ocoeffs(1) iA.notx.ocoeffs(1)],'parent',f10);
-set(lH,'linestyle','--','linewidth',2,'color',plt.nocolw,'displayname','notx_odtcoeff1');
-lH=line([iA.notx.ocoeffs(2) iA.notx.ocoeffs(2)],[0 iA.notx.ocoeffs(1)],'parent',f10);
-set(lH,'linestyle','--','linewidth',2,'color',plt.nocolw,'displayname','notx_odtcoeff2');
-
-f11=getfigH(11);
-set(get(f11,'xlabel'),'string','Open dwell times (ms)')
-set(get(f11,'ylabel'),'string','sqrt(log(n))')
-xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
-set(f11,'xtick',log10(xt))
-set(f11,'xticklabel',xt)
-
-lH=line(iA.gxtx.osx,iA.gxtx.osy,'parent',f11);
-set(lH,'linewidth',1,'color',plt.k,'displayname','gxtx_odt');
-lH=line(iA.gxtx.ohx,iA.gxtx.ofit,'parent',f11);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx_odtfit');
-lH=line([-.5 iA.gxtx.ocoeffs(2)],[iA.gxtx.ocoeffs(1) iA.gxtx.ocoeffs(1)],'parent',f11);
-set(lH,'linestyle','--','linewidth',2,'color',plt.gxcolw,'displayname','gxtx_ot');
-lH=line([iA.gxtx.ocoeffs(2) iA.gxtx.ocoeffs(2)],[0 iA.gxtx.ocoeffs(1)],'parent',f11);
-set(lH,'linestyle','--','linewidth',2,'color',plt.gxcolw,'displayname','gxtx_oh');
-
-% ODT bar plots for population data
-f12=getfigH(12);
-set(get(f12,'ylabel'),'string','Tau open (ms)')
-set(f12,'xaxislocation','bottom')
-set(f12,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
-set(f12,'XLim',[0.5 2.5])%,'YLim',[0 14])
-
-lH=line(1,10^iA.notx.ocoeffs(2),'parent',f12);
-set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_tau');
-
-lH=line(2,10^iA.gxtx.ocoeffs(2),'parent',f12);
-set(lH,'Marker','o','linewidth',1,'color',plt.gxcol,'displayname','gxtx_tau');
-
-lH=line([1 2],[10^iA.notx.ocoeffs(2) 10^iA.gxtx.ocoeffs(2)],'parent',f12);
-set(lH,'linewidth',1,'color',plt.g,'displayname','line_tau');
+set(f7,'YScale','log')
+set(get(f7,'ylabel'),'string','tau activation (ms)')
+set(f7,'XTick',[1 2 3],'XTickLabel',{'Control';'Free';'Bound'})
+set(f7,'XLim',[0 4])
 
 
-%% Closed dwell times
+lH=line(ones(Ct.npop,1)*1,CtPop.tactivation,'Parent',f7);
+set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+lH=line(ones(Gx.npop,1)*2,NoPop.tactivation,'Parent',f7);
+set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.nocolw,'displayname','No');
+lH=line(ones(Gx.npop,1)*3,GxPop.tactivation,'Parent',f7);
+set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
 
-notx_cfits1=sqrt( (10.^iA.notx.chx) .* iA.notx.logexp(iA.notx.ccoeffs(1:2),iA.notx.chx));
-notx_cfits2=sqrt( (10.^iA.notx.chx) .* iA.notx.logexp(iA.notx.ccoeffs(3:4),iA.notx.chx));
+lH=line([-.2 +.2]+1,[mean(CtPop.tactivation) mean(CtPop.tactivation)],'Parent',f7);
+set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
+    'displayname','Ctmean');
+lH=line([-.2 +.2]+2,[mean(NoPop.tactivation) mean(NoPop.tactivation)],'Parent',f7);
+set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
+    'displayname','Nomean');
+lH=line([-.2 +.2]+3,[mean(GxPop.tactivation) mean(GxPop.tactivation)],'Parent',f7);
+set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
+    'displayname','Gxmean');
 
-f13=getfigH(13);
-set(get(f13,'xlabel'),'string','Closed dwell times (ms)')
-set(get(f13,'ylabel'),'string','sqrt(log(n))')
-xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
-set(f13,'xtick',log10(xt))
-set(f13,'xticklabel',xt)
-
-lH=line(iA.notx.csx,iA.notx.csy,'parent',f13);
-set(lH,'linewidth',1,'color',plt.k,'displayname','notx_cdt');
-
-lH=line(iA.notx.chx,iA.notx.cfit,'parent',f13);
-set(lH,'linewidth',2,'color',plt.nocol,'displayname','notx_cdtfit');
-
-lH=line(iA.notx.chx,notx_cfits1,'parent',f13);
-set(lH,'linewidth',1,'color',plt.nocolw,'displayname','notx_cdtfit1');
-lH=line(iA.notx.chx,notx_cfits2,'parent',f13);
-set(lH,'linewidth',1,'color',plt.nocolw,'displayname','notx_cdtfit2');
-
-lH=line([-.5 iA.notx.ccoeffs(2)],[iA.notx.ccoeffs(1) iA.notx.ccoeffs(1)],'parent',f13);
-set(lH,'linestyle','--','linewidth',1,'color',plt.nocolw,'displayname','notx_ct1');
-lH=line([iA.notx.ccoeffs(2) iA.notx.ccoeffs(2)],[0 iA.notx.ccoeffs(1)],'parent',f13);
-set(lH,'linestyle','--','linewidth',1,'color',plt.nocolw,'displayname','notx_ch1');
-
-lH=line([-.5 iA.notx.ccoeffs(4)],[iA.notx.ccoeffs(3) iA.notx.ccoeffs(3)],'parent',f13);
-set(lH,'linestyle','--','linewidth',1,'color',plt.nocolw,'displayname','notx_ct2');
-lH=line([iA.notx.ccoeffs(4) iA.notx.ccoeffs(4)],[0 iA.notx.ccoeffs(3)],'parent',f13);
-set(lH,'linestyle','--','linewidth',1,'color',plt.nocolw,'displayname','notx_ch2');
-
-gxtx_cfits1=sqrt( (10.^iA.gxtx.chx) .* iA.gxtx.logexp(iA.gxtx.ccoeffs(1:2),iA.gxtx.chx));
-gxtx_cfits2=sqrt( (10.^iA.gxtx.chx) .* iA.gxtx.logexp(iA.gxtx.ccoeffs(3:4),iA.gxtx.chx));
-gxtx_cfits3=sqrt( (10.^iA.gxtx.chx) .* iA.gxtx.logexp(iA.gxtx.ccoeffs(5:6),iA.gxtx.chx));
-
-f14=getfigH(14);
-set(get(f14,'xlabel'),'string','Closed dwell time (ms)')
-set(get(f14,'ylabel'),'string','sqrt(log(n))')
-xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
-set(f14,'xtick',log10(xt))
-set(f14,'xticklabel',xt)
-
-lH=line(iA.gxtx.csx,iA.gxtx.csy,'parent',f14);
-set(lH,'linewidth',1,'color',plt.k,'displayname','gxtx_cdt');
-lH=line(iA.gxtx.chx,iA.gxtx.cfit,'parent',f14);
-set(lH,'linewidth',2,'color',plt.gxcol,'displayname','gxtx_cdtfit');
-
-lH=line(iA.gxtx.chx,gxtx_cfits1,'parent',f14);
-set(lH,'linewidth',1,'color',plt.gxcolw,'displayname','gxtx_cdtfit1');
-lH=line(iA.gxtx.chx,gxtx_cfits2,'parent',f14);
-set(lH,'linewidth',1,'color',plt.gxcolw,'displayname','gxtx_cdtfit2');
-lH=line(iA.gxtx.chx,gxtx_cfits3,'parent',f14);
-set(lH,'linewidth',1,'color',plt.gxcolw,'displayname','gxtx_cdtfit3');
-
-lH=line([-.5 iA.gxtx.ccoeffs(2)],[iA.gxtx.ccoeffs(1) iA.gxtx.ccoeffs(1)],'parent',f14);
-set(lH,'linestyle','--','linewidth',1,'color',plt.gxcolw,'displayname','gxtx_ct1');
-lH=line([iA.gxtx.ccoeffs(2) iA.gxtx.ccoeffs(2)],[0 iA.gxtx.ccoeffs(1)],'parent',f14);
-set(lH,'linestyle','--','linewidth',1,'color',plt.gxcolw,'displayname','gxtx_ch1');
-
-lH=line([-.5 iA.gxtx.ccoeffs(4)],[iA.gxtx.ccoeffs(3) iA.gxtx.ccoeffs(3)],'parent',f14);
-set(lH,'linestyle','--','linewidth',1,'color',plt.gxcolw,'displayname','gxtx_ct2');
-lH=line([iA.gxtx.ccoeffs(4) iA.gxtx.ccoeffs(4)],[0 iA.gxtx.ccoeffs(3)],'parent',f14);
-set(lH,'linestyle','--','linewidth',1,'color',plt.gxcolw,'displayname','gxtx_ch2');
-
-lH=line([-.5 iA.gxtx.ccoeffs(6)],[iA.gxtx.ccoeffs(5) iA.gxtx.ccoeffs(5)],'parent',f14);
-set(lH,'linestyle','--','linewidth',1,'color',plt.gxcolw,'displayname','gxtx_ct3');
-lH=line([iA.gxtx.ccoeffs(6) iA.gxtx.ccoeffs(6)],[0 iA.gxtx.ccoeffs(5)],'parent',f14);
-set(lH,'linestyle','--','linewidth',1,'color',plt.gxcolw,'displayname','gxtx_ch3');
-
-% CDT bar plots for population data
-f15=getfigH(15);
-set(get(f15,'ylabel'),'string','1st Tau closed (ms)')
-set(f15,'xaxislocation','bottom')
-set(f15,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
-set(f15,'XLim',[0.5 2.5],'YLim',[0 1.5])
-
-lH=line(1,10^iA.notx.ccoeffs(2),'parent',f15);
-set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_tau1');
-
-lH=line(2,10^iA.gxtx.ccoeffs(2),'parent',f15);
-set(lH,'Marker','o','linewidth',1,'color',plt.gxcol,'displayname','gxtx_tau1');
-
-lH=line([1 2],[10^iA.notx.ccoeffs(2) 10^iA.gxtx.ccoeffs(2)],'parent',f15);
-set(lH,'linewidth',1,'color',plt.g,'displayname','line_tau1');
-
-f16=getfigH(16);
-set(get(f16,'ylabel'),'string','2nd Tau closed (ms)')
-set(f16,'xaxislocation','bottom')
-set(f16,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
-set(f16,'XLim',[0.5 2.5],'YLim',[0 10])
-
-lH=line(1,10^iA.notx.ccoeffs(4),'parent',f16);
-set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_tau2');
-
-lH=line(2,10^iA.gxtx.ccoeffs(4),'parent',f16);
-set(lH,'Marker','o','linewidth',1,'color',plt.gxcol,'displayname','gxtx_tau2');
-
-lH=line([1 2],[10^iA.notx.ccoeffs(4) 10^iA.gxtx.ccoeffs(4)],'parent',f16);
-set(lH,'linewidth',1,'color',plt.g,'displayname','line_tau2');
-
-
-f17=getfigH(17);
-set(get(f17,'ylabel'),'string','3rd Tau closed (ms)')
-set(f17,'xaxislocation','bottom')
-set(f17,'XTick',[1 2],'XTickLabel',{'Unbound';'Bound'})
-set(f17,'XLim',[0.5 2.5],'YLim',[0 40])
-
-% lH=line(7,10^iA.notx.ccoeffs(6),'parent',f15);
-% set(lH,'Marker','o','linewidth',1,'color',plt.nocol,'displayname','notx_tau3');
-
-lH=line(2,10^iA.gxtx.ccoeffs(6),'parent',f17);
-set(lH,'Marker','o','linewidth',1,'color',plt.gxcol,'displayname','gxtx_tau3');
-
-% lH=line([7 8],[10^iA.notx.ccoeffs(6) 10^iA.gxtx.ccoeffs(6)],'parent',f15);
-% set(lH,'linewidth',1,'color',plt.g,'displayname','line_tau3');
-%%
-% check if directory already exists
-if ~isdir(sprintf('/Users/angueyraaristjm/hdf5/GxTx/SummaryFigures/%s',hekadat.dirFile))
-    mkdir('/Users/angueyraaristjm/hdf5/GxTx/SummaryFigures/',hekadat.dirFile)
+for i=1:Gx.npop
+    lH=line([2 3],[NoPop.tactivation(i) GxPop.tactivation(i)],'Parent',f7);
+    set(lH,'Marker','none','Linestyle','-','color',plt.g,...
+        'displayname',sprintf('tau%g',i));
 end
 
-makeAxisStruct(f1,'a_stim',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f2,'b_rawno',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f3,'c_rawgx',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f4,'d_singlesno',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f5,'e_singlesgx',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f6,'f_ihist',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f7,'g_statefrac',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f8,'h_imean',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f9,'i_flats',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f10,'j_odtno',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f11,'k_odtgx',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f12,'l_odttau',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f13,'m_cdtno',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f14,'n_cdtgx',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f15,'o_cdttau1',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f16,'p_cdttau2',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f17,'q_cdttau3',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
-makeAxisStruct(f18,'i2_midflat',sprintf('GxTx/SummaryFigures/%s',hekadat.dirFile));
+% steady state current (>100 ms)
+f8=getfigH(8);
+set(f8,'YScale','linear')
+set(get(f8,'ylabel'),'string','mean i 100 - 500 ms (pA)')
+set(f8,'XTick',[1 2 3],'XTickLabel',{'Control';'Free';'Bound'})
+set(f8,'XLim',[0 4])
+set(f8,'YLim',[0 1.5])
+
+
+lH=line(ones(Ct.npop,1)*1,CtPop.averagei,'Parent',f8);
+set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+lH=line(ones(Gx.npop,1)*2,NoPop.averagei,'Parent',f8);
+set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.nocolw,'displayname','No');
+lH=line(ones(Gx.npop,1)*3,GxPop.averagei,'Parent',f8);
+set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
+
+lH=line([-.2 +.2]+1,[mean(CtPop.averagei) mean(CtPop.averagei)],'Parent',f8);
+set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
+    'displayname','Ctmean');
+lH=line([-.2 +.2]+2,[mean(NoPop.averagei) mean(NoPop.averagei)],'Parent',f8);
+set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
+    'displayname','Nomean');
+lH=line([-.2 +.2]+3,[mean(GxPop.averagei) mean(GxPop.averagei)],'Parent',f8);
+set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
+    'displayname','Gxmean');
+
+for i=1:Gx.npop
+    lH=line([2 3],[NoPop.averagei(i) GxPop.averagei(i)],'Parent',f8);
+    set(lH,'Marker','none','Linestyle','-','color',plt.g,...
+        'displayname',sprintf('tau%g',i));
+end
+
+%% All points histograms
+% Control
+f9=getfigH(9);
+set(get(f9,'xlabel'),'string','i (pA)')
+set(get(f9,'ylabel'),'string','Frequency')
+
+Ct.h=struct;
+[Ct.h.hx,Ct.h.hy,Ct.h.sx,Ct.h.sy]=CtEx.HEKAhistbytag('ooo',400,-CtEx.hath*2,CtEx.hath*4);
+
+lH=line(Ct.h.sx,Ct.h.sy,'parent',f9);
+set(lH,'linewidth',2,'color',plt.ctcol,'displayname','Ct');
+lH=line([CtEx.hath CtEx.hath], [0 .03],'parent',f9);
+set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','Hath');
+
+% Free
+f10=getfigH(10);
+set(get(f10,'xlabel'),'string','i (pA)')
+set(get(f10,'ylabel'),'string','Frequency')
+
+No.h=struct;
+[No.h.hx,No.h.hy,No.h.sx,No.h.sy]=GxEx.HEKAhistbytag('ooo',400,-GxEx.hath*2,GxEx.hath*4);
+
+lH=line(No.h.sx,No.h.sy,'parent',f10);
+set(lH,'linewidth',2,'color',plt.nocol,'displayname','No');
+lH=line([GxEx.hath GxEx.hath], [0 .03],'parent',f10);
+set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','Hath');
+
+% Bound
+f11=getfigH(11);
+set(get(f11,'xlabel'),'string','i (pA)')
+set(get(f11,'ylabel'),'string','Frequency')
+
+Gx.h=struct;
+[Gx.h.hx,Gx.h.hy,Gx.h.sx,Gx.h.sy]=GxEx.HEKAhistbytag('coc',400,-GxEx.hath*2,GxEx.hath*4);
+
+lH=line(Gx.h.sx,Gx.h.sy,'parent',f11);
+set(lH,'linewidth',2,'color',plt.gxcol,'displayname','Gx');
+lH=line([GxEx.hath GxEx.hath], [0 .03],'parent',f11);
+set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','Hath');
+
+%% single channel current and open probability
+f12=getfigH(12);
+set(get(f12,'ylabel'),'string','single channel current (pA)')
+set(f12,'XTick',[1 2 3],'XTickLabel',{'Control';'Free';'Bound'})
+set(f12,'XLim',[0 4])
+set(f12,'YLim',[0 1.6])
+
+
+lH=line(ones(Ct.npop,1)*1,CtPop.isingle,'Parent',f12);
+set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+lH=line(ones(Gx.npop,1)*2,NoPop.isingle,'Parent',f12);
+set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.nocolw,'displayname','No');
+lH=line(ones(Gx.npop,1)*3,GxPop.isingle,'Parent',f12);
+set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
+
+lH=line([-.2 +.2]+1,[mean(CtPop.isingle) mean(CtPop.isingle)],'Parent',f12);
+set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
+    'displayname','Ctmean');
+lH=line([-.2 +.2]+2,[mean(NoPop.isingle) mean(NoPop.isingle)],'Parent',f12);
+set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
+    'displayname','Nomean');
+lH=line([-.2 +.2]+3,[mean(GxPop.isingle) mean(GxPop.isingle)],'Parent',f12);
+set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
+    'displayname','Gxmean');
+
+for i=1:Gx.npop
+    lH=line([2 3],[NoPop.isingle(i) GxPop.isingle(i)],'Parent',f12);
+    set(lH,'Marker','none','Linestyle','-','color',plt.g,...
+        'displayname',sprintf('i%g',i));
+end
+
+% open probability
+f13=getfigH(13);
+set(get(f13,'ylabel'),'string','open probability')
+set(f13,'XTick',[1 2 3],'XTickLabel',{'Control';'Free';'Bound'})
+set(f13,'XLim',[0 4])
+set(f13,'YLim',[0 1])
+
+
+lH=line(ones(Ct.npop,1)*1,CtPop.popen,'Parent',f13);
+set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+lH=line(ones(Gx.npop,1)*2,NoPop.popen,'Parent',f13);
+set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.nocolw,'displayname','No');
+lH=line(ones(Gx.npop,1)*3,GxPop.popen,'Parent',f13);
+set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
+
+lH=line([-.2 +.2]+1,[mean(CtPop.popen) mean(CtPop.popen)],'Parent',f13);
+set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
+    'displayname','Ctmean');
+lH=line([-.2 +.2]+2,[mean(NoPop.popen) mean(NoPop.popen)],'Parent',f13);
+set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
+    'displayname','Nomean');
+lH=line([-.2 +.2]+3,[mean(GxPop.popen) mean(GxPop.popen)],'Parent',f13);
+set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
+    'displayname','Gxmean');
+
+for i=1:Gx.npop
+    lH=line([2 3],[NoPop.popen(i) GxPop.popen(i)],'Parent',f13);
+    set(lH,'Marker','none','Linestyle','-','color',plt.g,...
+        'displayname',sprintf('Po%g',i));
+end
+%%
+h5root='GxTx/Fig2';
+
+makeAxisStruct(f1, 'a_stim',h5root);
+makeAxisStruct(f2, 'b1_rawCt',h5root);
+makeAxisStruct(f3, 'b2_rawNo',h5root);
+makeAxisStruct(f4, 'b3_rawGx',h5root);
+makeAxisStruct(f5, 'c_fbound',h5root);
+makeAxisStruct(f6, 'd1_averagei',h5root);
+makeAxisStruct(f6, 'd2_averagei',h5root);
+makeAxisStruct(f6, 'd3_averagei',h5root);
+makeAxisStruct(f7, 'e_tactivation',h5root);
+makeAxisStruct(f8, 'f_ssi',h5root);
+makeAxisStruct(f9, 'g1_hCt',h5root);
+makeAxisStruct(f10,'g2_hNo',h5root);
+makeAxisStruct(f11,'g3_hGx',h5root);
+makeAxisStruct(f12,'h_sci',h5root);
+makeAxisStruct(f13,'i_popen',h5root);
+

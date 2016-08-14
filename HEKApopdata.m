@@ -4,27 +4,35 @@ classdef HEKApopdata < handle
     %   patches
     
     properties
-        names
+        names           % patch/cell identifiers
+                        % number of trials for each tag
         n = struct('ccc',[],'ooo',[],'coc',[],'zzz',[],'total',[]);
         
-        isingle
-        popen
-        hath
-        hathi
+        isingle         % single-channel current 
+        popen           % open probability
+        hath            % half-amplitude threshold
+        hathi           % index of hath
         
-        tactivation
-        averagei
+        averagei        % steady state current (>100 ms) of singles average current
+        tactivation     % activation tau fit to 10%-90% rise of singles average current
+                        % activation equation
         actfx=@(b,t)( b(1) * (1 - exp(-t./b(2)) ).^b(3) );
-        act_coeffs
+        act_coeffs      % fit coefficients to extract activation tau
         
-        tflats
-        tflat_coeffs
+                        % activation equation
+        taufx=@(b,t)((1 - exp(-t./b(1)) ).^b(2) );
+        tflats          % tau of first latencies 
+        tflat_coeffs    % fit coefficients to extract tau of first latencies (using same activation equation)
         
-        odt1
+        odt1            % tau of closing
         
-        cdt1
-        cdt2
-        cdt3
+        cdt1            % 1st tau of opening
+        cdt2            % 2nd tau of opening
+        cdt3            % 3rd tau of opening
+        
+        cdtlong         % fraction of closed dwell times > 100 ms
+        cdtnlong        % number of closed dwell times > 100ms
+        cdtntotal       % number of closed dwell times
         
         % path
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKApopdata/';
@@ -91,32 +99,59 @@ classdef HEKApopdata < handle
             i10=find(single_ave>=averagei*.1,1,'first');
             i90=find(single_ave<=averagei*.9,1,'last');
 
-            a0=[1 1 1];
+            a0=[averagei .004 1];
             a_coeffs=nlinfit(t(i10:i90),single_ave(i10:i90),popdata.actfx,a0);
             fprintf('a_coeffs = %.03f\t%.03f\t%.03f\n',a_coeffs)
-            popdata.tactivation(idx)=a_coeffs(2);
+            popdata.tactivation(idx)=a_coeffs(2)*1000;
             popdata.averagei(idx)=averagei;
             popdata.act_coeffs(idx,:)=a_coeffs;
+            
+            f1=getfigH(1);
+            lH=line(t,single_ave,'Parent',f1);
+            set(lH,'marker','o','linewidth',2)
+            
+            lH=line(t,popdata.actfx(a_coeffs,t),'Parent',f1);
+            set(lH,'marker','none','linestyle','-','color','r','linewidth',2)
+        end
+        
+        function popdata=HEKAtauflat2(popdata,flati,flatp,idx)
+            % calculates mean current of single average after 100ms and
+            % fits them to extract a time constant for activation
+            i10=find(flatp>=0,1,'first');
+            i90=find(flatp<=.90,1,'last');
+
+            a0=[10 1];
+            a_coeffs=nlinfit(flati(i10:i90),flatp(i10:i90),popdata.taufx,a0);
+            fprintf('a_coeffs = %.03f\t%.03f\n',a_coeffs)
+            popdata.tflats(idx)=a_coeffs(1);
+            popdata.tflat_coeffs(idx,:)=a_coeffs;
+
+            f2=getfigH(2);
+            lH=line(flati,flatp,'Parent',f2);
+            set(lH,'marker','o','linewidth',2)
+            
+            lH=line(flati,popdata.taufx(a_coeffs,flati),'Parent',f2);
+            set(lH,'marker','none','linestyle','-','color','r','linewidth',2)
         end
         
         function popdata=HEKAtauflat(popdata,flati,flatp,idx)
             % calculates mean current of single average after 100ms and
             % fits them to extract a time constant for activation
-            i10=find(flatp>=.1,1,'first');
-            i90=find(flatp<=.9,1,'last');
+            i10=find(flatp>=0,1,'first');
+            i90=find(flatp<=1,1,'last');
 
-            a0=[1 1 1];
+            a0=[1 6 1];
             a_coeffs=nlinfit(flati(i10:i90),flatp(i10:i90),popdata.actfx,a0);
             fprintf('a_coeffs = %.03f\t%.03f\t%.03f\n',a_coeffs)
             popdata.tflats(idx)=a_coeffs(2);
             popdata.tflat_coeffs(idx,:)=a_coeffs;
 
-%             f1=getfigH(1);
-%             lH=line(flati,flatp,'Parent',f1);
-%             set(lH,'marker','o')
-%             
-%             lH=line(flati,popdata.actfx(a_coeffs,flati),'Parent',f1);
-%             set(lH,'marker','none','linestyle','-','color','r')
+            f2=getfigH(2);
+            lH=line(flati,flatp,'Parent',f2);
+            set(lH,'marker','o','linewidth',2)
+            
+            lH=line(flati,popdata.actfx(a_coeffs,flati),'Parent',f2);
+            set(lH,'marker','none','linestyle','-','color','r','linewidth',2)
         end
     end
     
