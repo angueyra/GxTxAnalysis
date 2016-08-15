@@ -28,7 +28,7 @@ f1=getfigH(1);
 set(f1,'xlim',[0 0.84])
 lH=line(CtEx.tAxis,CtEx.stim,'Parent',f1);
 set(lH,'linewidth',2,'color',plt.k,'displayname','stim');
-%% Raw data, subtracted/corrected data and idealized
+%% Raw data, subtracted/corrected data
 % Control
 f2=getfigH(2);
 set(get(f2,'xlabel'),'string','Time (s)')
@@ -180,9 +180,10 @@ set(lH,'linewidth',2,'color',plt.gxcol,'displayname','Gx');
 
 lH=line(CtEx.itAxis,CtPop.actfx([.95 0.006 1.2449],CtEx.itAxis),'parent',f6);
 set(lH,'linewidth',2,'color',plt.ctcolw,'displayname','CtFit');
-lH=line(NoEx.itAxis,GxPop.actfx([.95 0.006 1.2449],CtEx.itAxis),'parent',f6);
-set(lH,'linewidth',2,'color',plt.ctcolw,'displayname','CtFit');
-
+lH=line(GxEx.itAxis,NoPop.actfx([1.2 0.0088 1.1047],GxEx.itAxis),'parent',f6);
+set(lH,'linewidth',2,'color',plt.nocolw,'displayname','NoFit');
+lH=line(GxEx.itAxis,GxPop.actfx([0.63 0.0124 3.0235],GxEx.itAxis),'parent',f6);
+set(lH,'linewidth',2,'color',plt.gxcolw,'displayname','GxFit');
 
 %% tau_activation
 f7=getfigH(7);
