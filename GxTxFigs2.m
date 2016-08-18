@@ -178,12 +178,27 @@ lH=line(GxEx.itAxis,GxEx.HEKAstagmean('coc')*GxEx.hath*2,'parent',f6);
 set(lH,'linewidth',2,'color',plt.gxcol,'displayname','Gx');
 
 
-lH=line(CtEx.itAxis,CtPop.actfx([.95 0.006 1.2449],CtEx.itAxis),'parent',f6);
+lH=line(CtEx.itAxis,CtPop.actfx([.9973 0.0076528 1.0154],CtEx.itAxis),'parent',f6);
 set(lH,'linewidth',2,'color',plt.ctcolw,'displayname','CtFit');
 lH=line(GxEx.itAxis,NoPop.actfx([1.2 0.0088 1.1047],GxEx.itAxis),'parent',f6);
 set(lH,'linewidth',2,'color',plt.nocolw,'displayname','NoFit');
 lH=line(GxEx.itAxis,GxPop.actfx([0.63 0.0124 3.0235],GxEx.itAxis),'parent',f6);
 set(lH,'linewidth',2,'color',plt.gxcolw,'displayname','GxFit');
+
+
+% Igor fits
+% Ct
+% 	A    	=0.9973 ± 0.00278
+% 	tau  	=0.0076528 ± 0.000186
+% 	sigma	=1.0154 ± 0.0262
+% No
+% 	A    	=1.2 ± 2.7e-18
+% 	tau  	=0.0088 ± 1.59e-19
+% 	sigma	=1.1047 ± 2.14e-17
+% Gx
+% 	A    	=0.63 ± 1.66e-18
+% 	tau  	=0.0124 ± 1.76e-19
+% 	sigma	=3.0235 ± 6.92e-17
 
 %% tau_activation
 f7=getfigH(7);
@@ -200,13 +215,13 @@ set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.n
 lH=line(ones(Gx.npop,1)*3,GxPop.tactivation,'Parent',f7);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
 
-lH=line([-.2 +.2]+1,[mean(CtPop.tactivation) mean(CtPop.tactivation)],'Parent',f7);
+lH=line([-.2 +.2]+1,[geomean(CtPop.tactivation) geomean(CtPop.tactivation)],'Parent',f7);
 set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
     'displayname','Ctmean');
-lH=line([-.2 +.2]+2,[mean(NoPop.tactivation) mean(NoPop.tactivation)],'Parent',f7);
+lH=line([-.2 +.2]+2,[geomean(NoPop.tactivation) geomean(NoPop.tactivation)],'Parent',f7);
 set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
     'displayname','Nomean');
-lH=line([-.2 +.2]+3,[mean(GxPop.tactivation) mean(GxPop.tactivation)],'Parent',f7);
+lH=line([-.2 +.2]+3,[geomean(GxPop.tactivation) geomean(GxPop.tactivation)],'Parent',f7);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gxmean');
 

@@ -23,25 +23,25 @@ end
 
 function loada1()
 	loadfx("a1_ict")
-	SetAxis left -12,2
+	SetAxis left -11,2.5
 	SetAxis bottom 0,.5
 	FormatCal()
 	ModifyGraph margin(left)=10,margin(bottom)=10,margin(top)=10,margin(right)=5
+	Execute("MakeScaleBarsRT(.20, .15, 1.6, 3.1,\"\", \"\",2)")
 end
 function loada2()
 	loadfx("a2_ino")
-	SetAxis left -12,2
+	SetAxis left -11,2.5
 	SetAxis bottom 0,.5
 	FormatCal()
 	ModifyGraph margin(left)=10,margin(bottom)=10,margin(top)=10,margin(right)=5
 end
 function loada3()
 	loadfx("a3_igx")
-	SetAxis left -12,2
+	SetAxis left -11,2.5
 	SetAxis bottom 0,.5
 	FormatCal()
 	ModifyGraph margin(left)=10,margin(bottom)=10,margin(top)=10,margin(right)=5
-//	Execute("MakeScaleBarsRT(.48, .46, -11, -9,\"\", \"\",2)")
 end
 
 function loadb1()
@@ -51,6 +51,8 @@ function loadb1()
 	ReorderTraces CtFit_Y,{Ct_Y}
 	ModifyGraph hideTrace(GxFit_Y)=1,hideTrace(Gx_Y)=1
 	ModifyGraph hideTrace(No_Y)=1,hideTrace(NoFit_Y)=1
+	Label left ""
+	HideBottom()
 end
 function loadb2()
 	loadfx("b2_flat")
@@ -59,6 +61,8 @@ function loadb2()
 	ReorderTraces NoFit_Y,{No_Y}
 	ModifyGraph hideTrace(GxFit_Y)=1,hideTrace(Gx_Y)=1
 	ModifyGraph hideTrace(Ct_Y)=1,hideTrace(CtFit_Y)=1
+	Label left ""
+	HideBottom()
 end
 function loadb3()
 	loadfx("b3_flat")
@@ -67,6 +71,7 @@ function loadb3()
 	ReorderTraces GxFit_Y,{Gx_Y}
 	ModifyGraph hideTrace(CtFit_Y)=1,hideTrace(Ct_Y)=1
 	ModifyGraph hideTrace(No_Y)=1,hideTrace(NoFit_Y)=1
+	Label left ""
 end
 
 function loadc()
@@ -154,8 +159,8 @@ function loadh()
 end
 
 function revlogticks()
-Make/O/T oLabels={"0.1","","","","","1","","","","","10","","","","","100","","","","","1000"}
-Make/O oLocs={0.1,.2,.3,.4,0.5,1,2,3,4,5,10,20,30,40,50,100,200,300,400,500,1000}
+Make/O/T oLabels={"0.1","","","","","","","","","1","","","","","","","","","10","","","","","","","","","100","","","","","","","","","1000"}
+Make/O oLocs={0.1,.2,.3,.4,.5,.6,.7,.8,.9,1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100,200,300,400,500,600,700,800,900,1000}
 oLocs=log(oLocs)
 ModifyGraph /W=d1_odtct userticks(bottom)={oLocs,oLabels}
 ModifyGraph /W=d2_odtno userticks(bottom)={oLocs,oLabels}
@@ -207,18 +212,69 @@ Window layfx() : Layout
 	
 	
 	
-	Append a_stim/O=1/F=0/T
+	Append a1_ict/O=1/F=0/T
+	Append a2_ino/O=1/F=0/T
+	Append a3_igx/O=1/F=0/T
+	Append b1_flat/O=1/F=0/T
+	Append b2_flat/O=1/F=0/T
+	Append b3_flat/O=1/F=0/T
+	Append c_tflat/O=1/F=0/T
+	Append d1_odtct/O=1/F=0/T
+	Append d2_odtno/O=1/F=0/T
+	Append d3_odtgx/O=1/F=0/T
+	Append e_todt/O=1/F=0/T
+	Append f1_cdtct/O=1/F=0/T
+	Append f2_cdtno/O=1/F=0/T
+	Append f3_cdtgx/O=1/F=0/T
+	Append g_tcdt/O=1/F=0/T
+	Append h_longcdt/O=1/F=0/T
 
 	
-	variable rawL=20
-	variable rawW=330
-	variable rawH=220
-	ModifyLayout left(b_rawno)=rawL,top(b_rawno)=0,width(b_rawno)=rawW,height(b_rawno)=rawH
-	ModifyLayout left(c_rawgx)=rawL,top(c_rawgx)=222,width(c_rawgx)=rawW,height(c_rawgx)=rawH
-	ModifyLayout left(a_stim)=rawL,top(a_stim)=450,width(a_stim)=rawW,height(a_stim)=rawH/2
+	variable rawL=40
+	variable rawT=60
+	variable rawW=980
+	variable rawH=200
+	ModifyLayout left(a1_ict)=rawL,top(a1_ict)=rawT+(rawH*0),width(a1_ict)=rawW,height(a1_ict)=rawH
+	ModifyLayout left(a2_ino)=rawL,top(a2_ino)=rawT+(rawH*1),width(a2_ino)=rawW,height(a2_ino)=rawH
+	ModifyLayout left(a3_igx)=rawL,top(a3_igx)=rawT+(rawH*2),width(a3_igx)=rawW,height(a3_igx)=rawH
 	
-	//TextBox/C/N=text2/F=0/S=1/A=LB/X=13.65/Y=82 "2 pA"
-	//TextBox/C/N=text3/F=0/S=1/A=LB/X=15.40/Y=78.46 "100 ms"
+	variable popW = 125
+	variable popH = 300
+	variable popL = rawW-popW+50
+	variable flatL=rawL+15
+	variable flatT=rawT+(rawH*3)+25
+	variable flatW=rawW-popW-25
+	variable flatH=120
+	ModifyLayout left(b1_flat)=flatL,top(b1_flat)=flatT+(flatH*0*2/3),width(b1_flat)=flatW,height(b1_flat)=flatH
+	ModifyLayout left(b2_flat)=flatL,top(b2_flat)=flatT+(flatH*1*2/3),width(b2_flat)=flatW,height(b2_flat)=flatH
+	ModifyLayout left(b3_flat)=flatL,top(b3_flat)=flatT+(flatH*2*2/3),width(b3_flat)=flatW,height(b3_flat)=flatH
+	ModifyLayout left(c_tflat)=popL,top(c_tflat)=flatT,width(c_tflat)=popW,height(c_tflat)=popH
+	
+	variable odtL=flatL
+	variable odtT=flatT+(flatH*3*2/3)+80
+	variable odtW=310
+	variable odtH=150
+	ModifyLayout left(d1_odtct)=odtL,top(d1_odtct)=odtT+(odtH*0),width(d1_odtct)=odtW,height(d1_odtct)=odtH
+	ModifyLayout left(d2_odtno)=odtL,top(d2_odtno)=odtT+(odtH*1),width(d2_odtno)=odtW,height(d2_odtno)=odtH
+	ModifyLayout left(d3_odtgx)=odtL,top(d3_odtgx)=odtT+(odtH*2),width(d3_odtgx)=odtW,height(d3_odtgx)=odtH
+
+	variable todtL=odtL+odtW
+	variable todtT=odtT+100
+	ModifyLayout left(e_todt)=todtL,top(e_todt)=todtT,width(e_todt)=popW,height(e_todt)=popH
+	
+	variable cdtL=todtL+popW
+	ModifyLayout left(f1_cdtct)=cdtL,top(f1_cdtct)=odtT+(odtH*0),width(f1_cdtct)=odtW,height(f1_cdtct)=odtH
+	ModifyLayout left(f2_cdtno)=cdtL,top(f2_cdtno)=odtT+(odtH*1),width(f2_cdtno)=odtW,height(f2_cdtno)=odtH
+	ModifyLayout left(f3_cdtgx)=cdtL,top(f3_cdtgx)=odtT+(odtH*2),width(f3_cdtgx)=odtW,height(f3_cdtgx)=odtH
+	
+	variable tcdtL=cdtL+odtW
+	ModifyLayout left(g_tcdt)=tcdtL,top(g_tcdt)=todtT,width(g_tcdt)=popW,height(g_tcdt)=popH
+	ModifyLayout left(h_longcdt)=tcdtL+popW,top(h_longcdt)=todtT,width(h_longcdt)=popW,height(h_longcdt)=popH
+
+	TextBox/C/N=text1/O=90/F=0/S=1/A=LB/X=4.33/Y=45.39 "Cumulative Probability"
+	
+	TextBox/C/N=text2/F=0/S=1/A=LB/X=28.32/Y=95.20 "1.5 pA"
+	TextBox/C/N=text3/F=0/S=1/A=LB/X=34.81/Y=95.01 "50 ms"
 	
 	ModifyLayout mag=.5, units=0
 EndMacro

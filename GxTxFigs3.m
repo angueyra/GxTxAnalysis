@@ -145,13 +145,13 @@ set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.n
 lH=line(ones(Gx.npop,1)*3,GxPop.tflats,'Parent',f5);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
 
-lH=line([-.2 +.2]+1,[mean(CtPop.tflats(1:end-1)) mean(CtPop.tflats(1:end-1))],'Parent',f5);
+lH=line([-.2 +.2]+1,[geomean(CtPop.tflats(1:end-1)) geomean(CtPop.tflats(1:end-1))],'Parent',f5);
 set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
     'displayname','Ctmean');
-lH=line([-.2 +.2]+2,[mean(NoPop.tflats) mean(NoPop.tflats)],'Parent',f5);
+lH=line([-.2 +.2]+2,[geomean(NoPop.tflats) geomean(NoPop.tflats)],'Parent',f5);
 set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
     'displayname','Nomean');
-lH=line([-.2 +.2]+3,[mean(GxPop.tflats) mean(GxPop.tflats)],'Parent',f5);
+lH=line([-.2 +.2]+3,[geomean(GxPop.tflats) geomean(GxPop.tflats)],'Parent',f5);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gxmean');
 
@@ -220,13 +220,13 @@ set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.n
 lH=line(ones(Gx.npop,1)*3,GxPop.odt1,'Parent',f9);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
 
-lH=line([-.2 +.2]+1,[mean(CtPop.odt1(1:end)) mean(CtPop.odt1(1:end))],'Parent',f9);
+lH=line([-.2 +.2]+1,[geomean(CtPop.odt1(1:end)) geomean(CtPop.odt1(1:end))],'Parent',f9);
 set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
     'displayname','Ctmean');
-lH=line([-.2 +.2]+2,[mean(NoPop.odt1) mean(NoPop.odt1)],'Parent',f9);
+lH=line([-.2 +.2]+2,[geomean(NoPop.odt1) geomean(NoPop.odt1)],'Parent',f9);
 set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
     'displayname','Nomean');
-lH=line([-.2 +.2]+3,[mean(GxPop.odt1) mean(GxPop.odt1)],'Parent',f9);
+lH=line([-.2 +.2]+3,[geomean(GxPop.odt1) geomean(GxPop.odt1)],'Parent',f9);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gxmean');
 
@@ -331,13 +331,13 @@ set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.n
 lH=line(ones(Gx.npop,1)*3,GxPop.cdt1,'Parent',f13);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx1');
 
-lH=line([-.2 +.2]+1,[mean(CtPop.cdt1(1:end)) mean(CtPop.cdt1(1:end))],'Parent',f13);
+lH=line([-.2 +.2]+1,[geomean(CtPop.cdt1(1:end)) geomean(CtPop.cdt1(1:end))],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
     'displayname','Ct1mean');
-lH=line([-.2 +.2]+2,[mean(NoPop.cdt1) mean(NoPop.cdt1)],'Parent',f13);
+lH=line([-.2 +.2]+2,[geomean(NoPop.cdt1) geomean(NoPop.cdt1)],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
     'displayname','No1mean');
-lH=line([-.2 +.2]+3,[mean(GxPop.cdt1) mean(GxPop.cdt1)],'Parent',f13);
+lH=line([-.2 +.2]+3,[geomean(GxPop.cdt1) geomean(GxPop.cdt1)],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gx1mean');
 
@@ -354,13 +354,13 @@ set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.n
 lH=line(ones(Gx.npop,1)*3,GxPop.cdt2,'Parent',f13);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx2');
 
-lH=line([-.2 +.2]+1,[mean(CtPop.cdt2(1:end)) mean(CtPop.cdt2(1:end))],'Parent',f13);
+lH=line([-.2 +.2]+1,[geomean(CtPop.cdt2(1:end)) geomean(CtPop.cdt2(1:end))],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
     'displayname','Ct2mean');
-lH=line([-.2 +.2]+2,[mean(NoPop.cdt2) mean(NoPop.cdt2)],'Parent',f13);
+lH=line([-.2 +.2]+2,[geomean(NoPop.cdt2) geomean(NoPop.cdt2)],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
     'displayname','No2mean');
-lH=line([-.2 +.2]+3,[mean(GxPop.cdt2) mean(GxPop.cdt2)],'Parent',f13);
+lH=line([-.2 +.2]+3,[geomean(GxPop.cdt2) geomean(GxPop.cdt2)],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gx2mean');
 
@@ -374,7 +374,7 @@ end
 lH=line(ones(Gx.npop,1)*3,GxPop.cdt3,'Parent',f13);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx3');
 
-lH=line([-.2 +.2]+3,[mean(GxPop.cdt3) mean(GxPop.cdt3)],'Parent',f13);
+lH=line([-.2 +.2]+3,[geomean(GxPop.cdt3) geomean(GxPop.cdt3)],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gx3mean');
 
