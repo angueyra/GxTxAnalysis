@@ -276,6 +276,10 @@ lH=line(Ct.h.sx,Ct.h.sy,'parent',f9);
 set(lH,'linewidth',2,'color',plt.ctcol,'displayname','Ct');
 lH=line([CtEx.hath CtEx.hath], [0 .03],'parent',f9);
 set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','Hath');
+% lH=line(Ct.h.hx, CtPop.gaussfx(CtPop.hc_coeffs(1,:),Ct.h.hx),'parent',f9);
+% set(lH,'linestyle','-','linewidth',2,'color',plt.ctcolw,'displayname','CtFit_c');
+% lH=line(Ct.h.hx, CtPop.gaussfx(CtPop.ho_coeffs(1,:),Ct.h.hx),'parent',f9);
+% set(lH,'linestyle','-','linewidth',2,'color',plt.ctcolw,'displayname','CtFit_o');
 
 % Free
 f10=getfigH(10);
@@ -289,6 +293,10 @@ lH=line(No.h.sx,No.h.sy,'parent',f10);
 set(lH,'linewidth',2,'color',plt.nocol,'displayname','No');
 lH=line([GxEx.hath GxEx.hath], [0 .03],'parent',f10);
 set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','Hath');
+% lH=line(No.h.hx, NoPop.gaussfx(NoPop.hc_coeffs(1,:),No.h.hx),'parent',f10);
+% set(lH,'linestyle','-','linewidth',2,'color',plt.nocolw,'displayname','NoFit_c');
+% lH=line(No.h.hx, NoPop.gaussfx(NoPop.ho_coeffs(1,:),No.h.hx),'parent',f10);
+% set(lH,'linestyle','-','linewidth',2,'color',plt.nocolw,'displayname','NoFit_o');
 
 % Bound
 f11=getfigH(11);
@@ -302,6 +310,10 @@ lH=line(Gx.h.sx,Gx.h.sy,'parent',f11);
 set(lH,'linewidth',2,'color',plt.gxcol,'displayname','Gx');
 lH=line([GxEx.hath GxEx.hath], [0 .03],'parent',f11);
 set(lH,'linestyle','--','linewidth',1,'color',plt.g,'displayname','Hath');
+% lH=line(Gx.h.hx, GxPop.gaussfx(GxPop.hc_coeffs(1,:),Gx.h.hx),'parent',f11);
+% set(lH,'linestyle','-','linewidth',2,'color',plt.gxcolw,'displayname','GxFit_c');
+% lH=line(Gx.h.hx, GxPop.gaussfx(GxPop.ho_coeffs(1,:),Gx.h.hx),'parent',f11);
+% set(lH,'linestyle','-','linewidth',2,'color',plt.gxcolw,'displayname','GxFit_o');
 
 %% single channel current and open probability
 f12=getfigH(12);

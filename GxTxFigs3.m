@@ -160,11 +160,41 @@ for i=1:Gx.npop
     set(lH,'Marker','none','Linestyle','-','color',plt.g,...
         'displayname',sprintf('tau%g',i));
 end
+%% popen after flat
+f15=getfigH(15);
+set(f15,'YScale','linear')
+set(get(f15,'ylabel'),'string','open prob. after first opening')
+set(f15,'XTick',[1 2 3],'XTickLabel',{'Control';'Free';'Bound'})
+set(f15,'XLim',[0 4])
+
+lH=line(ones(Ct.npop,1)*1,CtPop.popen_afo(1:end),'Parent',f15);
+set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
+lH=line(ones(Gx.npop,1)*2,NoPop.popen_afo,'Parent',f15);
+set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.nocolw,'displayname','No');
+lH=line(ones(Gx.npop,1)*3,GxPop.popen_afo,'Parent',f15);
+set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
+
+lH=line([-.2 +.2]+1,[geomean(CtPop.popen_afo(1:end)) geomean(CtPop.popen_afo(1:end))],'Parent',f15);
+set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
+    'displayname','Ctmean');
+lH=line([-.2 +.2]+2,[geomean(NoPop.popen_afo) geomean(NoPop.popen_afo)],'Parent',f15);
+set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
+    'displayname','Nomean');
+lH=line([-.2 +.2]+3,[geomean(GxPop.popen_afo) geomean(GxPop.popen_afo)],'Parent',f15);
+set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
+    'displayname','Gxmean');
+
+for i=1:Gx.npop
+    lH=line([2 3],[NoPop.popen_afo(i) GxPop.popen_afo(i)],'Parent',f15);
+    set(lH,'Marker','none','Linestyle','-','color',plt.g,...
+        'displayname',sprintf('tau%g',i));
+end
+
 %% Open dwell times
 % Control
 f6=getfigH(6);
 set(get(f6,'xlabel'),'string','Open dwell times (ms)')
-set(get(f6,'ylabel'),'string','sqrt(log(n))')
+set(get(f6,'ylabel'),'string','sqrt(n)/bin')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f6,'xtick',log10(xt))
 set(f6,'xticklabel',xt)
@@ -179,7 +209,7 @@ set(lH,'linestyle','--','linewidth',2,'color',plt.ctcolw,'displayname','Ct_line'
 % Free
 f7=getfigH(7);
 set(get(f7,'xlabel'),'string','Open dwell times (ms)')
-set(get(f7,'ylabel'),'string','sqrt(log(n))')
+set(get(f7,'ylabel'),'string','sqrt(n)/bin')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f7,'xtick',log10(xt))
 set(f7,'xticklabel',xt)
@@ -194,7 +224,7 @@ set(lH,'linestyle','--','linewidth',2,'color',plt.nocolw,'displayname','No_line'
 % Bound
 f8=getfigH(8);
 set(get(f8,'xlabel'),'string','Open dwell times (ms)')
-set(get(f8,'ylabel'),'string','sqrt(log(n))')
+set(get(f8,'ylabel'),'string','sqrt(n)/bin')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f8,'xtick',log10(xt))
 set(f8,'xticklabel',xt)
@@ -238,7 +268,7 @@ end
 %% Closed dwell times
 f10=getfigH(10);
 set(get(f10,'xlabel'),'string','Closed dwell time (ms)')
-set(get(f10,'ylabel'),'string','sqrt(log(n))')
+set(get(f10,'ylabel'),'string','sqrt(n)/bin')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f10,'xtick',log10(xt))
 set(f10,'xticklabel',xt)
@@ -263,7 +293,7 @@ set(lH,'linestyle','--','linewidth',1,'color',plt.ctcolw,'displayname','NoLine2'
 
 f11=getfigH(11);
 set(get(f11,'xlabel'),'string','Closed dwell time (ms)')
-set(get(f11,'ylabel'),'string','sqrt(log(n))')
+set(get(f11,'ylabel'),'string','sqrt(n)/bin')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f11,'xtick',log10(xt))
 set(f11,'xticklabel',xt)
@@ -288,7 +318,7 @@ set(lH,'linestyle','--','linewidth',1,'color',plt.nocolw,'displayname','NoLine2'
 
 f12=getfigH(12);
 set(get(f12,'xlabel'),'string','Closed dwell time (ms)')
-set(get(f12,'ylabel'),'string','sqrt(log(n))')
+set(get(f12,'ylabel'),'string','sqrt(n)/bin')
 xt=[.1 .2 .5 1 2 5 10 20 50 100 200 500 1000];
 set(f12,'xtick',log10(xt))
 set(f12,'xticklabel',xt)
@@ -422,6 +452,7 @@ makeAxisStruct(f4, 'b1_flat',h5root);
 makeAxisStruct(f4, 'b2_flat',h5root);
 makeAxisStruct(f4, 'b3_flat',h5root);
 makeAxisStruct(f5, 'c_tflat',h5root);
+makeAxisStruct(f15,'c_poafo',h5root);
 makeAxisStruct(f6, 'd1_odtct',h5root);
 makeAxisStruct(f7, 'd2_odtno',h5root);
 makeAxisStruct(f8, 'd3_odtgx',h5root);

@@ -66,7 +66,8 @@ function loadc()
 	ModifyGraph axThick(bottom)=0
 	ModifyGraph tkLblRot(bottom)=90
 	ModifyGraph margin(bottom)=60
-//	ModifyGraph margin(left)=60
+	ModifyGraph margin(left)=50
+	ModifyGraph msize=3
 end
 
 function loadd1()
@@ -113,7 +114,7 @@ function loade()
 	ModifyGraph axThick(bottom)=0
 	ModifyGraph tkLblRot(bottom)=90
 	ModifyGraph margin(bottom)=60
-//	ModifyGraph margin(left)=60
+	ModifyGraph margin(left)=50
 end
 
 function loadf()
@@ -130,7 +131,7 @@ function loadf()
 	ModifyGraph axThick(bottom)=0
 	ModifyGraph tkLblRot(bottom)=90
 	ModifyGraph margin(bottom)=60
-//	ModifyGraph margin(left)=60
+	ModifyGraph margin(left)=50
 end
 
 function loadg1()
@@ -180,7 +181,7 @@ function loadh()
 	ModifyGraph axThick(bottom)=0
 	ModifyGraph tkLblRot(bottom)=90
 	ModifyGraph margin(bottom)=60
-//	ModifyGraph margin(left)=60
+	ModifyGraph margin(left)=50
 end
 
 function loadi()
@@ -197,7 +198,7 @@ function loadi()
 	ModifyGraph axThick(bottom)=0
 	ModifyGraph tkLblRot(bottom)=90
 	ModifyGraph margin(bottom)=60
-//	ModifyGraph margin(left)=60
+	ModifyGraph margin(left)=50
 end
 
 
@@ -277,8 +278,9 @@ Window layfx() : Layout
 	ModifyLayout left(h_sci)=pop3L,top(h_sci)=popT,width(h_sci)=pop2W,height(h_sci)=popH
 	ModifyLayout left(i_popen)=pop3L+pop2W,top(i_popen)=popT,width(i_popen)=pop2W,height(i_popen)=popH
 	
-	TextBox/C/N=text2/F=0/S=1/A=LB/X=4.80/Y=61.25 "2 pA"
-	TextBox/C/N=text3/F=0/S=1/A=LB/X=7.06/Y=62.64 "25 ms"
+	TextBox/C/N=text1/F=0/S=1/A=LB/X=4.80/Y=61.25 "2 pA"
+	TextBox/C/N=text2/F=0/S=1/A=LB/X=7.06/Y=62.64 "25 ms"
+	TextBox/C/N=text3/O=90/F=0/S=1/A=LB/X=13.17/Y=33.68 "1 pA"
 	
 	ModifyLayout mag=.5, units=0
 EndMacro
@@ -339,8 +341,19 @@ Window layfxalt() : Layout
 	ModifyLayout left(h_sci)=550,top(h_sci)=pop2T,width(h_sci)=pop2W,height(h_sci)=popH
 	ModifyLayout left(i_popen)=800,top(i_popen)=pop2T,width(i_popen)=pop2W,height(i_popen)=popH
 	
-	TextBox/C/N=text2/F=0/S=1/A=LB/X=4.80/Y=61.25 "2 pA"
-	TextBox/C/N=text3/F=0/S=1/A=LB/X=7.06/Y=62.64 "25 ms"
+	TextBox/C/N=text1/F=0/S=1/A=LB/X=4.80/Y=61.25 "2 pA"
+	TextBox/C/N=text2/F=0/S=1/A=LB/X=7.06/Y=62.64 "25 ms"
+	TextBox/C/N=text3/O=90/F=0/S=1/A=LB/X=20.32/Y=33.82 "1 pA"
+	
+	TextBox/C/N=textA/F=0/S=1/A=LB/X=1.88/Y=96.65 "\\Z28A"
+	TextBox/C/N=textB/F=0/S=1/A=LB/X=1.88/Y=87.17 "\\Z28B"
+	TextBox/C/N=textC/F=0/S=1/A=LB/X=1.88/Y=48.23 "\\Z28C"
+	TextBox/C/N=textD/F=0/S=1/A=LB/X=18.44/Y=48.23 "\\Z28D"
+	TextBox/C/N=textE/F=0/S=1/A=LB/X=50.05/Y=48.23 "\\Z28E"
+	TextBox/C/N=textF/F=0/S=1/A=LB/X=74.50/Y=48.23 "\\Z28F"
+	TextBox/C/N=textG/F=0/S=1/A=LB/X=18.44/Y=27.50 "\\Z28G"
+	TextBox/C/N=textH/F=0/S=1/A=LB/X=50.05/Y=27.50 "\\Z28H"
+	TextBox/C/N=textI/F=0/S=1/A=LB/X=74.50/Y=27.50 "\\Z28I"
 	
 	ModifyLayout mag=.5, units=0
 EndMacro

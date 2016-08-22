@@ -20,11 +20,16 @@ CtPop.isingle = NaN(size(CtPop.names));
 CtPop.popen = NaN(size(CtPop.names));
 CtPop.hath = NaN(size(CtPop.names));
 CtPop.hathi = NaN(size(CtPop.names));
+CtPop.hc_coeffs = NaN(size(CtPop.names,1),3);
+CtPop.ho_coeffs = NaN(size(CtPop.names,1),3);
 CtPop.act_coeffs = NaN(size(CtPop.names,1),3);
 CtPop.tactivation = NaN(size(CtPop.names));
 CtPop.averagei = NaN(size(CtPop.names));
 CtPop.tflats = NaN(size(CtPop.names));
 CtPop.tflat_coeffs = NaN(size(CtPop.names,1),3);
+CtPop.popen_afo = NaN(size(CtPop.names));
+CtPop.popen_afosd = NaN(size(CtPop.names));
+CtPop.popen_afon = NaN(size(CtPop.names));
 CtPop.odt1 = NaN(size(CtPop.names));
 CtPop.cdt1 = NaN(size(CtPop.names));
 CtPop.cdt2 = NaN(size(CtPop.names));
@@ -57,6 +62,8 @@ for i=1:size(CtPop.names,1)
     
     % %% tau first latencies
     CtPop.HEKAtauflat(iA.notx.flat,iA.notx.flatp,i);
+    CtPop.HEKApafo(iA,i,'ooo');
+    drawnow
     % %% dwell time taus
     CtPop.odt1(i)=10^iA.notx.ocoeffs(2);
     CtPop.cdt1(i)=10^iA.notx.ccoeffs(2);
@@ -101,11 +108,16 @@ NoPop.isingle = NaN(size(NoPop.names));
 NoPop.popen = NaN(size(NoPop.names));
 NoPop.hath = NaN(size(NoPop.names));
 NoPop.hathi = NaN(size(NoPop.names));
+NoPop.hc_coeffs = NaN(size(NoPop.names,1),3);
+NoPop.ho_coeffs = NaN(size(NoPop.names,1),3);
 NoPop.act_coeffs = NaN(size(NoPop.names,1),3);
 NoPop.tactivation = NaN(size(NoPop.names));
 NoPop.averagei = NaN(size(NoPop.names));
 NoPop.tflats = NaN(size(NoPop.names));
 NoPop.tflat_coeffs = NaN(size(NoPop.names,1),3);
+NoPop.popen_afo = NaN(size(NoPop.names));
+NoPop.popen_afosd = NaN(size(NoPop.names));
+NoPop.popen_afon = NaN(size(NoPop.names));
 NoPop.odt1 = NaN(size(NoPop.names));
 NoPop.cdt1 = NaN(size(NoPop.names));
 NoPop.cdt2 = NaN(size(NoPop.names));
@@ -138,6 +150,7 @@ for i=1:size(NoPop.names,1)
     
     % %% tau first latencies
     NoPop.HEKAtauflat(iA.notx.flat,iA.notx.flatp,i);
+    NoPop.HEKApafo(iA,i,'ooo');
     drawnow
     % %% dwell time taus
     NoPop.odt1(i)=10^iA.notx.ocoeffs(2);
@@ -176,11 +189,16 @@ GxPop.isingle = NaN(size(GxPop.names));
 GxPop.popen = NaN(size(GxPop.names));
 GxPop.hath = NaN(size(GxPop.names));
 GxPop.hathi = NaN(size(GxPop.names));
+GxPop.hc_coeffs = NaN(size(GxPop.names,1),3);
+GxPop.ho_coeffs = NaN(size(GxPop.names,1),3);
 GxPop.act_coeffs = NaN(size(GxPop.names,1),3);
 GxPop.tactivation = NaN(size(GxPop.names));
 GxPop.averagei = NaN(size(GxPop.names));
 GxPop.tflats = NaN(size(GxPop.names));
 GxPop.tflat_coeffs = NaN(size(GxPop.names,1),3);
+GxPop.popen_afo = NaN(size(GxPop.names));
+GxPop.popen_afosd = NaN(size(GxPop.names));
+GxPop.popen_afon = NaN(size(GxPop.names));
 GxPop.odt1 = NaN(size(GxPop.names));
 GxPop.cdt1 = NaN(size(GxPop.names));
 GxPop.cdt2 = NaN(size(GxPop.names));
@@ -213,6 +231,7 @@ for i=1:size(GxPop.names,1)
     
     % %% tau first latencies
     GxPop.HEKAtauflat(iA.gxtx.flat,iA.gxtx.flatp,i);
+    GxPop.HEKApafo(iA,i,'coc');
     drawnow
     % %% dwell time taus
     GxPop.odt1(i)=10^iA.gxtx.ocoeffs(2);

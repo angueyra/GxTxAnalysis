@@ -12,6 +12,10 @@ classdef HEKApopdata < handle
         popen           % open probability
         hath            % half-amplitude threshold
         hathi           % index of hath
+                        % gaussian function for hist fits
+        gaussfx=@(b,x)(b(3).*normalize(normpdf(x,b(1),b(2))));
+        hc_coeffs   % fit coefficients for closed peak
+        ho_coeffs   % fit coefficients for open peak
         
         averagei        % steady state current (>100 ms) of singles average current
         tactivation     % activation tau fit to 10%-90% rise of singles average current
@@ -23,6 +27,10 @@ classdef HEKApopdata < handle
         taufx=@(b,t)((1 - exp(-t./b(1)) ).^b(2) );
         tflats          % tau of first latencies 
         tflat_coeffs    % fit coefficients to extract tau of first latencies (using same activation equation)
+        
+        popen_afo       % mean open probability after first opening
+        popen_afosd     % s.d. open probability after first opening
+        popen_afon      % n trials with openings
         
         odt1            % tau of closing
         
@@ -58,6 +66,32 @@ classdef HEKApopdata < handle
            fprintf('Saved to %s%s\n',popdata.dirSave,popdata.dirFile);
         end
         
+        function popdata=HEKApafo(popdata,iA,idx,tag)
+            % calculates the open probability after the first opening
+            tagi=find(iA.IAOtagfind(tag));
+            popen=NaN(1,sum(~isnan(iA.flati(tagi))));
+            popen_afo=NaN(1,sum(~isnan(iA.flati(tagi))));
+            cnt=0;
+            for p=1:size(tagi,1)
+                i=tagi(p);
+                if ~isnan(iA.flati(i))
+                    cnt=cnt+1;
+                    popen(cnt)=sum(iA.idata(i,1:end))/size(iA.idata(i,1:end),2);
+                    popen_afo(cnt)=sum(iA.idata(i,iA.flati(i):end))/size(iA.idata(i,iA.flati(i):end),2);
+                end
+            end
+
+            popdata.popen_afo(idx)=mean(popen_afo);
+            popdata.popen_afosd(idx)=std(popen_afo);
+            popdata.popen_afon(idx)=sum(~isnan(iA.flati(tagi)));
+            
+            f3=getfigH(3);
+            lH=line(popen,popen_afo,'Parent',f3);
+            set(lH,'Marker','o','LineStyle','none');
+            
+            lH=line([0 1],[0 1],'Parent',f3);
+            set(lH,'Color',[0 0 0],'LineStyle','-','LineWidth',2);
+        end
         
         function popdata=HEKAhistfit(popdata,hs,idx)
             % calculates single channel current and open probability based
@@ -76,7 +110,7 @@ classdef HEKApopdata < handle
             o_hw1=find(hs.hy(tg_ind+1:end)>o_peak/2,1,'first')+tg_ind; %half width
             o_hw2=find(hs.hy(tg_ind+1:end)>o_peak/2,1,'last')+tg_ind; %half width
             
-            gauss=@(b,x)(b(3).*normalize(normpdf(x,b(1),b(2))));
+            gauss=popdata.gaussfx;
             c0=[0 0.1 c_peak];
             c_coeffs=nlinfit(hs.hx(c_hw1:c_hw2),hs.hy(c_hw1:c_hw2),gauss,c0);
             fprintf('c_coeffs = %.03f \t%.03f \t%.03f\n',c_coeffs)
@@ -86,10 +120,12 @@ classdef HEKApopdata < handle
             fprintf('o_coeffs = %.03f\t%.03f\t%.03f\n',o_coeffs)
             
             popdata.isingle(idx)=o_coeffs(1)-c_coeffs(1);
-            popdata.hath=((o_coeffs(1)-c_coeffs(1))/2)+c_coeffs(1);
-            popdata.hathi=find(hs.hx>=popdata.hath,1,'first');
-            popdata.popen(idx)=(trapz(hs.hx(popdata.hathi:end),hs.hy(popdata.hathi:end)))./...
+            popdata.hath(idx)=((o_coeffs(1)-c_coeffs(1))/2)+c_coeffs(1);
+            popdata.hathi(idx)=find(hs.hx>=popdata.hath(idx),1,'first');
+            popdata.popen(idx)=(trapz(hs.hx(popdata.hathi(idx):end),hs.hy(popdata.hathi(idx):end)))./...
                 (trapz(hs.hx,hs.hy));
+            popdata.hc_coeffs(idx,:)=c_coeffs;
+            popdata.ho_coeffs(idx,:)=o_coeffs;
         end
         
         function popdata=HEKAtauact(popdata,t,single_ave,idx)
