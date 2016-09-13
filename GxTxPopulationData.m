@@ -37,6 +37,9 @@ CtPop.cdt3 = NaN(size(CtPop.names));
 CtPop.cdtlong = NaN(size(CtPop.names));
 CtPop.cdtnlong = NaN(size(CtPop.names));
 CtPop.cdtntotal = NaN(size(CtPop.names));
+
+CtPop.cdtlong50 = NaN(size(CtPop.names));
+CtPop.cdtnlong50 = NaN(size(CtPop.names));
 %
 for i=1:size(CtPop.names,1)
     % %% n trials by tag
@@ -69,9 +72,12 @@ for i=1:size(CtPop.names,1)
     CtPop.cdt1(i)=10^iA.notx.ccoeffs(2);
     CtPop.cdt2(i)=10^iA.notx.ccoeffs(4);
     
-    CtPop.cdtnlong(i)=sum(iA.notx.cdt>log10(50));
+    CtPop.cdtnlong(i)=sum(iA.notx.cdt>100);
     CtPop.cdtntotal(i)=size(iA.notx.cdt,1);
     CtPop.cdtlong(i)=CtPop.cdtnlong(i)/CtPop.cdtntotal(i);
+    
+    CtPop.cdtnlong50(i)=sum(iA.notx.cdt>50);
+    CtPop.cdtlong50(i)=CtPop.cdtnlong50(i)/CtPop.cdtntotal(i);
 end
 
 % for i=1:size(CtPop.names,1)
@@ -125,6 +131,9 @@ NoPop.cdt3 = NaN(size(NoPop.names));
 NoPop.cdtlong = NaN(size(NoPop.names));
 NoPop.cdtnlong = NaN(size(NoPop.names));
 NoPop.cdtntotal = NaN(size(NoPop.names));
+
+NoPop.cdtlong50 = NaN(size(NoPop.names));
+NoPop.cdtnlong50 = NaN(size(NoPop.names));
 %
 for i=1:size(NoPop.names,1)
     % %% n trials by tag
@@ -157,9 +166,12 @@ for i=1:size(NoPop.names,1)
     NoPop.cdt1(i)=10^iA.notx.ccoeffs(2);
     NoPop.cdt2(i)=10^iA.notx.ccoeffs(4);
     
-    NoPop.cdtnlong(i)=sum(iA.notx.cdt>log10(50));
+    NoPop.cdtnlong(i)=sum(iA.notx.cdt>100);
     NoPop.cdtntotal(i)=size(iA.notx.cdt,1);
     NoPop.cdtlong(i)=NoPop.cdtnlong(i)/NoPop.cdtntotal(i);
+    
+    NoPop.cdtnlong50(i)=sum(iA.notx.cdt>50);
+    NoPop.cdtlong50(i)=NoPop.cdtnlong50(i)/NoPop.cdtntotal(i);
 end
 
 for i=1:size(NoPop.names,1)
@@ -206,6 +218,9 @@ GxPop.cdt3 = NaN(size(GxPop.names));
 GxPop.cdtlong = NaN(size(GxPop.names));
 GxPop.cdtnlong = NaN(size(GxPop.names));
 GxPop.cdtntotal = NaN(size(GxPop.names));
+
+GxPop.cdtlong50 = NaN(size(GxPop.names));
+GxPop.cdtnlong50 = NaN(size(GxPop.names));
 %
 for i=1:size(GxPop.names,1)
     % %% n trials by tag
@@ -239,9 +254,12 @@ for i=1:size(GxPop.names,1)
     GxPop.cdt2(i)=10^iA.gxtx.ccoeffs(4);
     GxPop.cdt3(i)=10^iA.gxtx.ccoeffs(6);
     
-    GxPop.cdtnlong(i)=sum(iA.gxtx.cdt>log10(50));
+    GxPop.cdtnlong(i)=sum(iA.gxtx.cdt>100);
     GxPop.cdtntotal(i)=size(iA.gxtx.cdt,1);
     GxPop.cdtlong(i)=GxPop.cdtnlong(i)/GxPop.cdtntotal(i);
+    
+    GxPop.cdtnlong50(i)=sum(iA.gxtx.cdt>50);
+    GxPop.cdtlong50(i)=GxPop.cdtnlong50(i)/GxPop.cdtntotal(i);
 end
 
 for i=1:size(GxPop.names,1)

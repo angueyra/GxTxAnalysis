@@ -395,3 +395,31 @@ makeAxisStruct(f11,'g3_hGx',h5root);
 makeAxisStruct(f12,'h_sci',h5root);
 makeAxisStruct(f13,'i_popen',h5root);
 
+
+%%
+%% Calculation of statistical significance of changes
+Stats=struct();
+
+Stats.fnames={'fbound';'tactivation';'averagei';'isingle';'popen'};
+Stats.n=size(Stats.fnames,1);
+Stats.p=NaN(Stats.n,1);
+Stats.h=NaN(Stats.n,1);
+Stats.nno=NaN(Stats.n,1);
+Stats.ngx=NaN(Stats.n,1);
+Stats.stats=cell(Stats.n,1);
+
+
+for i=1:Stats.n
+    fname=Stats.fnames{i};
+    if strcmp(fname,'fbound')
+        [Stats.p(i),Stats.h(i),Stats.stats{i}]=ranksum(...
+            Ct.(fname),Gx.(fname));
+        Stats.nno(i)=size(Ct.(fname),1);
+        Stats.ngx(i)=size(Gx.(fname),1);
+    else
+        [Stats.p(i),Stats.h(i),Stats.stats{i}]=ranksum(...
+            [CtPop.(fname);NoPop.(fname)],GxPop.(fname));
+        Stats.nno(i)=size([CtPop.(fname);NoPop.(fname)],1);
+        Stats.ngx(i)=size(GxPop.(fname),1);
+    end
+end

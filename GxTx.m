@@ -16,20 +16,21 @@
 %           Fits open and closed dwell log histograms and cumulative
 %           distributions of first latencies
 %% Open all relevant code
-edit gxtx_tagBlanks.m
-edit gxtx_tagOpenings.m
-edit gxtx_refineBlanks.m
-edit gxtx_correctBaseline.m
-edit gxtx_fitHist.m
-edit gxtx_iAnalysisPlots.m
-edit genericGUI.m
-edit hekaGUI.m
-edit iAnalysisGUI.m
-edit iAnalysisGUI.m
-edit HEKAdat.m
-edit iAnalysisObj.m
-edit iASubObj.m
-edit GxTxFigs1.m
+% edit gxtx_tagBlanks.m
+% edit gxtx_tagOpenings.m
+% edit gxtx_refineBlanks.m
+% edit gxtx_correctBaseline.m
+% edit gxtx_fitHist.m
+% edit gxtx_iAnalysisPlots.m
+% edit genericGUI.m
+% edit hekaGUI.m
+% edit iAnalysisGUI.m
+% edit iAnalysisGUI.m
+% edit HEKAdat.m
+% edit iAnalysisObj.m
+% edit iASubObj.m
+edit GxTxFigs2.m
+edit GxTxFigs3.m
 %%
 %% Data loading
 % Patchmaster mat file exports

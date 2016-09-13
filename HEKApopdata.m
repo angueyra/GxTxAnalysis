@@ -42,6 +42,8 @@ classdef HEKApopdata < handle
         cdtnlong        % number of closed dwell times > 100ms
         cdtntotal       % number of closed dwell times
         
+        cdtlong50         % fraction of closed dwell times > 50 ms
+        cdtnlong50        % number of closed dwell times > 50 ms
         % path
         dirSave='/Users/angueyraaristjm/Documents/DataGxTx/HEKApopdata/';
         dirFile

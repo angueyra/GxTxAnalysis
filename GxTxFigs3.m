@@ -20,6 +20,11 @@ Gx = struct;
 Ct.npop=size(CtPop.names,1);
 Gx.npop=size(GxPop.names,1);
 
+nCt.all=size(CtEx.sdata,1);
+nCt.ooo=sum(CtEx.HEKAstagfind('ooo'));
+nCt.coc=sum(CtEx.HEKAstagfind('coc'));
+nCt.ccc=sum(CtEx.HEKAstagfind('ccc'));
+
 plt.k=[0 0 0];
 plt.g=whithen(plt.k,.5);
 plt.ctcol=[.3 .3 .3];
@@ -36,10 +41,6 @@ set(get(f1,'ylabel'),'string','i (pA)')
 set(f1,'xlim',[0 0.5])
 set(f1,'ylim',[-12 2])
 
-nCt.all=size(CtEx.sdata,1);
-nCt.ooo=sum(CtEx.HEKAstagfind('ooo'));
-nCt.coc=sum(CtEx.HEKAstagfind('coc'));
-nCt.ccc=sum(CtEx.HEKAstagfind('ccc'));
 
 Ct.fixio=[.25 .90 .50 .65 .80];
 for i=1:length(Ct.fixio)
@@ -408,38 +409,36 @@ lH=line([-.2 +.2]+3,[geomean(GxPop.cdt3) geomean(GxPop.cdt3)],'Parent',f13);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gx3mean');
 
-%% long cdts (>50ms)
+%% long cdts (> 50 ms)
 f14=getfigH(14);
 set(get(f14,'ylabel'),'string','prob. closed times > 50 ms')
 set(f14,'XTick',[1 2 3],'XTickLabel',{'Control';'Free';'Bound'})
 set(f14,'XLim',[0 4])
-set(f14,'YLim',[0 .4])
+set(f14,'YLim',[0 .025])
 
 
-lH=line(ones(Ct.npop,1)*1,CtPop.cdtlong(1:end),'Parent',f14);
+lH=line(ones(Ct.npop,1)*1,CtPop.cdtlong50(1:end),'Parent',f14);
 set(lH,'Marker','o','Linestyle','none','color',plt.ctcol,'MarkerFaceColor',plt.ctcolw,'displayname','Ct');
-lH=line(ones(Gx.npop,1)*2,NoPop.cdtlong,'Parent',f14);
+lH=line(ones(Gx.npop,1)*2,NoPop.cdtlong50,'Parent',f14);
 set(lH,'Marker','o','Linestyle','none','color',plt.nocol,'MarkerFaceColor',plt.nocolw,'displayname','No');
-lH=line(ones(Gx.npop,1)*3,GxPop.cdtlong,'Parent',f14);
+lH=line(ones(Gx.npop,1)*3,GxPop.cdtlong50,'Parent',f14);
 set(lH,'Marker','o','Linestyle','none','color',plt.gxcol,'MarkerFaceColor',plt.gxcolw,'displayname','Gx');
 
-lH=line([-.2 +.2]+1,[mean(CtPop.cdtlong(1:end)) mean(CtPop.cdtlong(1:end))],'Parent',f14);
+lH=line([-.2 +.2]+1,[mean(CtPop.cdtlong50(1:end)) mean(CtPop.cdtlong50(1:end))],'Parent',f14);
 set(lH,'Marker','none','Linestyle','-','color',plt.ctcol,'LineWidth',2,...
     'displayname','Ctmean');
-lH=line([-.2 +.2]+2,[mean(NoPop.cdtlong) mean(NoPop.cdtlong)],'Parent',f14);
+lH=line([-.2 +.2]+2,[mean(NoPop.cdtlong50) mean(NoPop.cdtlong50)],'Parent',f14);
 set(lH,'Marker','none','Linestyle','-','color',plt.nocol,'LineWidth',2,...
     'displayname','Nomean');
-lH=line([-.2 +.2]+3,[mean(GxPop.cdtlong) mean(GxPop.cdtlong)],'Parent',f14);
+lH=line([-.2 +.2]+3,[mean(GxPop.cdtlong50) mean(GxPop.cdtlong50)],'Parent',f14);
 set(lH,'Marker','none','Linestyle','-','color',plt.gxcol,'LineWidth',2,...
     'displayname','Gxmean');
 
 for i=1:Gx.npop
-    lH=line([2 3],[NoPop.cdtlong(i) GxPop.cdtlong(i)],'Parent',f14);
+    lH=line([2 3],[NoPop.cdtlong50(i) GxPop.cdtlong50(i)],'Parent',f14);
     set(lH,'Marker','none','Linestyle','-','color',plt.g,...
         'displayname',sprintf('tau%g',i));
 end
-
-
 
 %%
 
@@ -462,3 +461,25 @@ makeAxisStruct(f11,'f2_cdtno',h5root);
 makeAxisStruct(f12,'f3_cdtgx',h5root);
 makeAxisStruct(f13,'g_tcdt',h5root);
 makeAxisStruct(f14,'h_longcdt',h5root);
+%%
+%% Calculation of statistical significance of changes
+Stats=struct();
+
+Stats.fnames={'tflats';'popen_afo';'odt1';'cdt1';'cdt2';'cdtlong50'};
+Stats.n=size(Stats.fnames,1);
+Stats.p=NaN(Stats.n,1);
+Stats.h=NaN(Stats.n,1);
+Stats.stats=cell(Stats.n,1);
+
+
+
+for i=1:Stats.n
+    fname=Stats.fnames{i};
+    if strcmp(fname,'tflats')
+        [Stats.p(i),Stats.h(i),Stats.stats{i}]=ranksum(...
+            [CtPop.(fname)(1:end-1);NoPop.(fname)],GxPop.(fname));
+    else
+        [Stats.p(i),Stats.h(i),Stats.stats{i}]=ranksum(...
+            [CtPop.(fname);NoPop.(fname)],GxPop.(fname));
+    end
+end
