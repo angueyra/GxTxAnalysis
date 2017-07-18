@@ -21,33 +21,33 @@ tnil=tnil.st;
 lH=line(hekadat.tAxis-tnil,hekadat.stim*1000,'Parent',f1);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',[0 0 0])
 set(lH,'DisplayName','stim')
-makeAxisStruct(f1,sprintf('aStim'),'GxTx/PoCNSci');
+%%%makeAxisStruct(f1,sprintf('aStim'),'GxTx/PoCNSci');
 %% Raw data examples
 for i=1:length(NoTxExamples)
     %Raw Data
     p.PlotNow=hekadat.HEKAnamefind(sprintf('e_1_2_%g',NoTxExamples(i)));
     hGUI=gxtx_tagBlanks(hekadat,p,10);
-    makeAxisStruct(hGUI.figData.plotCurr,sprintf('bNoTxRaw%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
+    %%%makeAxisStruct(hGUI.figData.plotCurr,sprintf('bNoTxRaw%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
     %Blank subtracted
     p.PlotNow=hekadat.HEKAnamefind(sprintf('e_1_2_%g',NoTxExamples(i)));
     hGUI=gxtx_tagOpenings(hekadat,p,10);
-    makeAxisStruct(hGUI.figData.plotCurr,sprintf('cNoTxSub%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
+    %%%makeAxisStruct(hGUI.figData.plotCurr,sprintf('cNoTxSub%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
     %Subtracted, nose corrected, clipped data + Histogram
     p.PlotNow=hekadat.HEKAsnamefind(sprintf('e_1_2_%g',NoTxExamples(i)));
     hGUI=gxtx_refineBlanks(hekadat,p,10);
-    makeAxisStruct(hGUI.figData.plotSub,sprintf('dNoTxSub%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
-    makeAxisStruct(hGUI.figData.plotHist2,sprintf('eNoTxHist%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
+    %%%makeAxisStruct(hGUI.figData.plotSub,sprintf('dNoTxSub%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
+    %%%makeAxisStruct(hGUI.figData.plotHist2,sprintf('eNoTxHist%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
 end
 %% Fitted all data histogram
 i=4;
 p.PlotNow=hekadat.HEKAsnamefind(sprintf('e_1_2_%g',NoTxExamples(i)));
 hGUI=gxtx_fitHist(hekadat,p,10);
-makeAxisStruct(hGUI.figData.plotHist,sprintf('fNoTxHistFit%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotHist,sprintf('fNoTxHistFit%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
 %% Idealized data
 for i=1:length(NoTxExamples)
     p.PlotNow=hekadat.HEKAsnamefind(sprintf('e_1_2_%g',NoTxExamples(i)));
     hGUI=gxtx_fitHist(hekadat,p,10);
-    makeAxisStruct(hGUI.figData.plotSub,sprintf('gNoTxIdeal%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
+    %%%makeAxisStruct(hGUI.figData.plotSub,sprintf('gNoTxIdeal%s',sprintf('2%g',NoTxExamples(i))),'GxTx/PoCNSci');
 end
 BIPBIP;
 %% idealized analysis
@@ -55,18 +55,18 @@ p=struct('norm',0);
 hGUI=gxtx_iAnalysisPlots(iA,p,10);
 %run fits
 %%
-makeAxisStruct(hGUI.figData.plotEvolution,'gNoTxiA_Evo','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotEvolution2,'gNoTxiA_Evo2','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotFlats,'gNoTxiA_Flats','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotOdt,'gNoTxiA_Odt','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotCdt,'gNoTxiA_Cdt','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotEvolution,'gNoTxiA_Evo','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotEvolution2,'gNoTxiA_Evo2','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotFlats,'gNoTxiA_Flats','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotOdt,'gNoTxiA_Odt','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotCdt,'gNoTxiA_Cdt','GxTx/PoCNSci');
 %%
 p=struct('norm',1);
 hGUI=gxtx_iAnalysisPlots(iA,p,10);
 %run fits
 %%
-makeAxisStruct(hGUI.figData.plotOdt,'gNoTxiA_OdtNorm','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotCdt,'gNoTxiA_CdtNorm','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotOdt,'gNoTxiA_OdtNorm','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotCdt,'gNoTxiA_CdtNorm','GxTx/PoCNSci');
 %% Ensemble average
 f1=getfigH(1);
 % ens_mean=mean(hekadat.sdata(hekadat.HEKAstagfind('ooo'),:))/(hekadat.hist_o(1)-hekadat.hist_c(1));
@@ -78,7 +78,7 @@ xlim([0 .5])
 ylim([0 1])
 xlabel('Time (ms)')
 ylabel('i (pA)')
-makeAxisStruct(f1,'hNoTxEnsMean','GxTx/PoCNSci');
+%%%makeAxisStruct(f1,'hNoTxEnsMean','GxTx/PoCNSci');
 %%
 %% Recreating linear histogram
 figure(1);clf;f1=gca;
@@ -109,7 +109,7 @@ set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',[0 0.2 0.8])
 set(lH,'DisplayName','notx_otauv')
 
 %%
-makeAxisStruct(f1,'gNoTxiA_LinOdt','GxTx/PoCNSci');
+%%%makeAxisStruct(f1,'gNoTxiA_LinOdt','GxTx/PoCNSci');
 %%
 %%
 %% Guangxi Toxin 
@@ -143,13 +143,13 @@ for i=1:length(GxTxExamples)
     %Subtracted, nose corrected, clipped data + Histogram
     p.PlotNow=hekadat.HEKAsnamefind(GxTxExamples(i));
     hGUI=gxtx_refineBlanks(hekadat,p,10);
-%     makeAxisStruct(hGUI.figData.plotSub,sprintf('dGxTxSub%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
-%     makeAxisStruct(hGUI.figData.plotHist2,sprintf('eGxTxHist%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
+%     %%%makeAxisStruct(hGUI.figData.plotSub,sprintf('dGxTxSub%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
+%     %%%makeAxisStruct(hGUI.figData.plotHist2,sprintf('eGxTxHist%s',strrep(GxTxExamples{i}(4:end),'_','')),'GxTx/PoCNSci');
 end
 %% Fitted all data histogram
 p.PlotNow=hekadat.HEKAsnamefind('e_5_49_1');
 hGUI=gxtx_fitHist(hekadat,p,10);
-% makeAxisStruct(hGUI.figData.plotHist,sprintf('gxfGxTxHistFit%s','491'),'GxTx/PoCNSci');
+% %%%makeAxisStruct(hGUI.figData.plotHist,sprintf('gxfGxTxHistFit%s','491'),'GxTx/PoCNSci');
 %% Idealized data
 
 
@@ -158,18 +158,18 @@ hGUI=gxtx_fitHist(hekadat,p,10);
 hGUI=gxtx_iAnalysisPlots(iA,[],10);
 %run fits
 %%
-makeAxisStruct(hGUI.figData.plotEvolution,'gxgGxTxiA_Evo','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotEvolution2,'gxgGxTxiA_Evo2','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotFlats,'gxgGxTxiA_Flats','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotOdt,'gxgGxTxiA_Odt','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotCdt,'gxgGxTxiA_Cdt','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotEvolution,'gxgGxTxiA_Evo','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotEvolution2,'gxgGxTxiA_Evo2','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotFlats,'gxgGxTxiA_Flats','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotOdt,'gxgGxTxiA_Odt','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotCdt,'gxgGxTxiA_Cdt','GxTx/PoCNSci');
 %%
 p=struct('norm',1);
 hGUI=gxtx_iAnalysisPlots(iA,p,10);
 %run fits
 %%
-makeAxisStruct(hGUI.figData.plotOdt,'gGxTxiA_OdtNorm','GxTx/PoCNSci');
-makeAxisStruct(hGUI.figData.plotCdt,'gGxTxiA_CdtNorm','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotOdt,'gGxTxiA_OdtNorm','GxTx/PoCNSci');
+%%%makeAxisStruct(hGUI.figData.plotCdt,'gGxTxiA_CdtNorm','GxTx/PoCNSci');
 
 %% Ensemble average
 f1=getfigH(1);
@@ -187,7 +187,7 @@ xlim([0 .5])
 ylim([0 1])
 xlabel('Time (ms)')
 ylabel('i (pA)')
-makeAxisStruct(f1,'gxhGxTxEnsMean','GxTx/PoCNSci');
+%%%makeAxisStruct(f1,'gxhGxTxEnsMean','GxTx/PoCNSci');
 %%
 %% Recreating linear histogram 
 %% OPEN
@@ -241,7 +241,7 @@ lH=line([otau otau],[0 otauy],'Parent',f1);
 set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',[1 0 0])
 set(lH,'DisplayName','gxtx_otauv')
 %%
-makeAxisStruct(f1,'gGxTxiA_LinOdt','GxTx/PoCNSci');
+%%%makeAxisStruct(f1,'gGxTxiA_LinOdt','GxTx/PoCNSci');
 
 %% CLOSED
 figure(1);clf;f1=gca;
@@ -294,5 +294,5 @@ lH=line([ctau ctau],[0 ctauy],'Parent',f1);
 set(lH,'Marker','none','LineStyle','--','LineWidth',2,'Color',[1 0 0])
 set(lH,'DisplayName','gxtx_ctauv')
 %%
-makeAxisStruct(f1,'gGxTxiA_LinCdt','GxTx/PoCNSci');
+%%%makeAxisStruct(f1,'gGxTxiA_LinCdt','GxTx/PoCNSci');
 end

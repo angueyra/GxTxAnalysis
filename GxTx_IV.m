@@ -65,7 +65,7 @@ lH=line([0 1],[0 0],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','ic');
 lH=line([0 1],[s0.i s0.i],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','io');
-makeAxisStruct(f1,'IV0mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f1,'IV0mV','GxTx/PoCNSciIV');
 
 
 f2=getfigH(2);
@@ -76,7 +76,7 @@ lH=line(s0.hx,s0.ofit,'Parent',f2);
 set(lH,'Color','r','DisplayName','hofit');
 lH=line(s0.hx,s0.cfit,'Parent',f2);
 set(lH,'Color','b','DisplayName','hcfit');
-makeAxisStruct(f2,'h0mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f2,'h0mV','GxTx/PoCNSciIV');
 
 %% 25 mV
 ccci=hekadat.HEKAtagfind('ccc');
@@ -130,7 +130,7 @@ lH=line([0 1],[0 0],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','ic');
 lH=line([0 1],[s25.i s25.i],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','io');
-makeAxisStruct(f1,'IV25mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f1,'IV25mV','GxTx/PoCNSciIV');
 
 
 f2=getfigH(2);
@@ -141,7 +141,7 @@ lH=line(s25.hx,s25.ofit,'Parent',f2);
 set(lH,'Color','r','DisplayName','hofit');
 lH=line(s25.hx,s25.cfit,'Parent',f2);
 set(lH,'Color','b','DisplayName','hcfit');
-makeAxisStruct(f2,'h25mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f2,'h25mV','GxTx/PoCNSciIV');
 
 %% 50 mV
 ccci=hekadat.HEKAtagfind('ccc');
@@ -194,7 +194,7 @@ lH=line([0 1],[0 0],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','ic');
 lH=line([0 1],[s50.i s50.i],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','io');
-makeAxisStruct(f1,'IV50mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f1,'IV50mV','GxTx/PoCNSciIV');
 
 
 f2=getfigH(2);
@@ -205,7 +205,7 @@ lH=line(s50.hx,s50.ofit,'Parent',f2);
 set(lH,'Color','r','DisplayName','hofit');
 lH=line(s50.hx,s50.cfit,'Parent',f2);
 set(lH,'Color','b','DisplayName','hcfit');
-makeAxisStruct(f2,'h50mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f2,'h50mV','GxTx/PoCNSciIV');
 
 
 %% 75 mV
@@ -259,7 +259,7 @@ lH=line([0 1],[0 0],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','ic');
 lH=line([0 1],[s75.i s75.i],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','io');
-makeAxisStruct(f1,'IV75mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f1,'IV75mV','GxTx/PoCNSciIV');
 
 
 f2=getfigH(2);
@@ -270,7 +270,7 @@ lH=line(s75.hx,s75.ofit,'Parent',f2);
 set(lH,'Color','r','DisplayName','hofit');
 lH=line(s75.hx,s75.cfit,'Parent',f2);
 set(lH,'Color','b','DisplayName','hcfit');
-makeAxisStruct(f2,'h75mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f2,'h75mV','GxTx/PoCNSciIV');
 %% 100 mV
 ccci=hekadat.HEKAtagfind('ccc');
 s100.stname='e_3_9_1';
@@ -322,7 +322,7 @@ lH=line([0 1],[0 0],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','ic');
 lH=line([0 1],[s100.i s100.i],'Parent',f1);
 set(lH,'Color',[.5 .5 .5],'DisplayName','io');
-makeAxisStruct(f1,'IV100mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f1,'IV100mV','GxTx/PoCNSciIV');
 
 
 f2=getfigH(2);
@@ -333,7 +333,7 @@ lH=line(s100.hx,s100.ofit,'Parent',f2);
 set(lH,'Color','r','DisplayName','hofit');
 lH=line(s100.hx,s100.cfit,'Parent',f2);
 set(lH,'Color','b','DisplayName','hcfit');
-makeAxisStruct(f2,'h100mV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f2,'h100mV','GxTx/PoCNSciIV');
 
 %% full IV
 IV=struct;
@@ -349,11 +349,11 @@ IV.fity=linef(IV.coeffs,IV.fitx);
 
 f3=getfigH(3);
 lH=line(IV.v,IV.i,'Parent',f3);
-set(lH,'Marker','.','LineStyle','none','Color','k','DisplayName','IV');
+set(lH,'Marker','o','LineStyle','none','Color','k','DisplayName','IV');
 
 lH=line(IV.fitx,IV.fity,'Parent',f3);
 set(lH,'Marker','none','LineStyle','--','Color','k','DisplayName','IVfit');
 
 lH=line([-100 100],[0 0],'Parent',f3);
 set(lH,'Marker','none','LineStyle','--','Color','k','DisplayName','zeroi');
-makeAxisStruct(f3,'IV','GxTx/PoCNSciIV');
+%%%makeAxisStruct(f3,'IV','GxTx/PoCNSciIV');

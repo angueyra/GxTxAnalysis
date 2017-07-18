@@ -1,4 +1,4 @@
-clear; clear classes; clc;
+close all; clear; clear classes; clc;
 hekadat=HEKAdat('2011_06_23_E4GxTx_Stair500'); %GxTx cell no TTX 
 hekadat.HEKAstairs;
 stairs=hekadat.stim;
@@ -24,7 +24,7 @@ lH=line(tAxis,stairs,'Parent',f2);
 set(lH,'Marker','none','LineStyle','-','LineWidth',2,'Color',[0 0 0])
 set(lH,'DisplayName','Stim')
 
-makeAxisStruct(f2,sprintf('ttxStim'),'GxTx/PoCNSci');
+%%%makeAxisStruct(f2,sprintf('ttxStim'),'GxTx/PoCNSci');
 
 figure(1);clf;f1=gca;
 set(get(f1,'xlabel'),'string','Time (s)')
@@ -40,7 +40,7 @@ for i=1:length(ttx_epochs)
     set(lH,'Marker','none','LineStyle','-','LineWidth',1,'Color',[0 0 0])
     set(lH,'DisplayName',sprintf('ttxdata%g',i))
     drawnow
-    makeAxisStruct(f1,sprintf('ttx%g',i),'GxTx/PoCNSci');
+    %%%makeAxisStruct(f1,sprintf('ttx%g',i),'GxTx/PoCNSci');
 end
 
 
