@@ -483,3 +483,12 @@ for i=1:Stats.n
             [CtPop.(fname);NoPop.(fname)],GxPop.(fname));
     end
 end
+
+
+%% Collecting fit parameters for log bin histogram fittings
+
+% Control
+i=1;
+CtEx=HEKAdat('2015_06_23_Juan');
+CtiA=CtEx.HEKAiAnalysis;
+lbhf.Ct_ocoeffs(i,:)=CtiA.notx.ocoeffs;
